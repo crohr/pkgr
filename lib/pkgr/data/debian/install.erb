@@ -1,0 +1,16 @@
+<% config_files.each do |file| %>
+config/<%= file %> etc/<%= name %>
+<% end %>
+config <%= pkg_prefix %>/<%= name %>
+.bundle <%= pkg_prefix %>/<%= name %>
+Gemfile <%= pkg_prefix %>/<%= name %>
+Gemfile.lock <%= pkg_prefix %>/<%= name %>
+config.ru <%= pkg_prefix %>/<%= name %>
+Rakefile <%= pkg_prefix %>/<%= name %>
+app <%= pkg_prefix %>/<%= name %>
+bin <%= pkg_prefix %>/<%= name %>
+db/* var/db/<%= name %>
+lib <%= pkg_prefix %>/<%= name %>
+public <%= pkg_prefix %>/<%= name %>
+script <%= pkg_prefix %>/<%= name %>
+vendor <%= pkg_prefix %>/<%= name %>

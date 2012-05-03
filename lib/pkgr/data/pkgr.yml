@@ -1,0 +1,31 @@
+version: 0.0.0
+name: 
+description:
+# The git reference from which to build the package:
+git_ref: HEAD
+# The list of configuration files taht you want to see in /etc/{{name}}/
+config_files:
+  - pkgr.yml
+  - database.yml
+# The target architecture of the server on which your app will be built (must
+# be the same as the one on which it is deployed):
+architecture: amd64
+# The list of dependencies required for your app to correctly run:
+debian_runtime_dependencies:
+  - ${shlibs:Depends}
+  - ${misc:Depends}
+  - ruby1.9.1-full
+  - git-core
+  - libxml2
+  - libxslt1.1
+# The list of dependencies required for your app to be packaged (i.e.
+# dependencies of your app's gems + dependencies required to build the
+# package):
+debian_build_dependencies:
+  - debhelper (>= 7)
+  - dpkg-dev
+  - libmysqlclient15-dev
+  - libxml2-dev
+  - libxslt-dev
+  - libsqlite3-dev
+  

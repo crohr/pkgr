@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+
+config = YAML.load_file(::File.expand_path("../../config/pkgr.yml", __FILE__))
+
+require ::File.expand_path("../../config/boot", __FILE__)
+
+supported_commands = ["server", "rake", "console"]
+command = ARGV.shift
+
+case command
+when "rake"
+  ENV['RACK_ENV'] ||= "production"
+  ARGV << "-f" << ::File.expand_path("../../Rakefile", __FILE__)
+  require 'rake'
+  Rake.application.run
+when "console"
+  APP_PATH = ::File.expand_path('../../config/application',  __FILE__)
+  require ::File.expand_path('../../config/boot',  __FILE__)
+  ARGV.push("production") if ARGV.empty?
+  ARGV.unshift("console")
+  require 'rails/commands'
+when "server"
+  require 'thin'
+  rackup_file = ::File.expand_path('../../config.ru',  __FILE__)
+  argv = ARGV
+  argv << ["-R", rackup_file] unless ARGV.include?("-R")
+  argv << ["-p", "8000"] unless ARGV.include?("-p")
+  argv << ["-e", "production"] unless ARGV.include?("-e")
+  argv << ["--tag", "#{config['name']}-#{config['version']}"] unless ARGV.include?("--tag")
+  Thin::Runner.new(argv.flatten).run!
+else
+  STDERR.puts "You must choose one of the following commands: #{supported_commands.inspect}"
+  exit(1)
+end

@@ -1,0 +1,12 @@
+Source: <%= name %>
+Section: unknown
+Priority: extra
+Maintainer: <%= author_name %> <<%= author_email %>>
+Build-Depends: <%= debian_build_dependencies.join(",") %>
+Standards-Version: 3.7.3
+Homepage: <%= homepage %>
+
+Package: <%= name %>
+Architecture: <%= architecture %>
+Depends: <%= debian_runtime_dependencies.join(", ") %>
+Description: <%= description %>

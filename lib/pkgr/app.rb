@@ -162,10 +162,12 @@ module Pkgr
         new_version = fragments.join(".")
       else
         raise ArgumentError, "new_version must not be nil when bumping with a :custom version" if new_version.nil?
-        return true if new_version == version
       end
 
       changelog = File.read(debian_file("changelog"))
+      dist = (changelog.scan(/#{name} \(#{new_version}-(\d+)\)/).flatten[0].to_i)
+      dist += 1 if new_version == version
+      dist = 1 if dist == 0
 
       last_commit = changelog.scan(/\s+\* ([a-z0-9]{7}) /).flatten[0]
 
@@ -177,7 +179,7 @@ module Pkgr
         raise "Command failed. Aborting."
       else
         content_changelog = [
-          "#{name} (#{new_version}-1) unstable; urgency=low",
+          "#{name} (#{new_version}-#{dist}) unstable; urgency=low",
           "",
           result.split("\n").reject{|l| l =~ / v#{version}/}.map{|l| "  * #{l}"}.join("\n"),
           "",
@@ -195,7 +197,7 @@ module Pkgr
 
         puts "Committing changelog and version file..."
         files_to_commit = [debian_file('changelog'), @config['_path']]
-        sh "git add #{files_to_commit.join(" ")} && git commit -m 'v#{new_version}' #{files_to_commit.join(" ")}"
+        sh "git add #{files_to_commit.join(" ")} && git commit -m '[pkgr] v#{new_version}-#{dist}' #{files_to_commit.join(" ")}"
       end
     end
 

@@ -100,7 +100,7 @@ module Pkgr
     # Download the given config files
     def copy_remote_config_files
       (config_files || []).each do |file|
-        filename, file_uri = file.split(":")
+        filename, file_uri = file.split("::")
         if file_uri.nil?
           file_uri = filename
           filename = File.basename(file_uri)

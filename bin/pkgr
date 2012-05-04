@@ -31,7 +31,7 @@ BANNER
   opts.on("--ref=", "Sets the git reference to checkout [default=#{OPTIONS[:ref]}]") do |v|
     OPTIONS[:ref] = v
   end
-  opts.on("-h=", "--host=", "Sets the build machine hostname. If none, the process will stop just before building the package.") do |v|
+  opts.on("--host=", "Sets the build machine hostname. If none, the process will stop just before building the package.") do |v|
     OPTIONS[:host] = v
   end
 

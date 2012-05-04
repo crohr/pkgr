@@ -68,6 +68,8 @@ The default target installation directory for the other app files will be
   [`thin`](http://code.macournoyer.com/thin/) web server. Don't forget to add
   `thin` to your Gemfile!
 
+* Your Rails application must have a `config.ru` file.
+
 * Your application must be checked into a **Git** repository. Your name and
   email is taken from the git configuration, and the changelog is populated
   based on the git log between two versions.
@@ -377,6 +379,41 @@ Once you're ready to package your app, just run the following commands:
   app. Next step is probably to upload it to a local apt repository, and then
   a simple `apt-get install my-app` will install everything. Enjoy!
 
+## CLI usage
+
+Starting from version 0.3.0, pkgr now comes with an executable, which allows
+to package any app stored in a git repository with one command.
+
+For instance, here is how you would package the Redmine app:
+
+    pkgr --uri https://github.com/edavis10/redmine --ref master --bump 1.4.1 \
+      -c https://raw.github.com/crohr/pkgr/master/examples/redmine/configuration.yml \
+      -c https://raw.github.com/crohr/pkgr/master/examples/redmine/database.yml \
+      -c https://raw.github.com/crohr/pkgr/master/examples/redmine/pkgr.yml \
+      --host debian-build
+
+You .deb package will be available in `redmine/pkg/`. In this example, the given `pkgr.yml` configuration file automatically adds a dependency on `mysql-server`, which means that when you install the generated redmine package, it will be ready to be accessed on `0.0.0.0:8000`.
+
+Note that for simple projects, you may not need to specify any configuration
+file on the command line. See `pkgr -h` for the list of options available:
+
+    $ pkgr -h
+    * Description
+      pkgr 0.2.0 - Package Rails apps effortlessly.
+    * Usage
+      pkgr --uri GIT_REPOSITORY --config database.yml:http://path/to/database.yml --config ...
+
+    * Common options
+            --uri=                       Sets the Git repository URI (FILE, HTTP, SSH, GIT, etc.) [required]
+        -c, --config=                    Download a configuration file into the config/ folder of the app (HTTP or FILE URIs)
+        -b, --bump=                      Sets the app version [required]
+        -n, --name=                      Sets the app name [optional]
+            --ref=                       Sets the git reference to checkout [default=master]
+            --host=                      Sets the build machine hostname. If none, the process will stop just before building the package.
+
+    * Other
+        -h, --help                       Show this message
+            --version                    Show version
 
 ## Todo
 

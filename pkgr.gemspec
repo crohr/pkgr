@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.summary                   = "Package your Rails apps as debian packages"
   s.description               = "Package your Rails apps as debian packages"
 
-  s.add_development_dependency('rake', '~> 0.8')
+  s.add_dependency('rake')
   s.add_development_dependency('rspec', '~> 2')  
  
   s.files = Dir.glob("{lib}/**/*") + %w(LICENSE README.md)

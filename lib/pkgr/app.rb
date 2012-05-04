@@ -1,5 +1,7 @@
 require 'rake'
 require 'erb'
+require 'pkgr/version'
+require 'yaml'
 
 module Pkgr
   class App
@@ -148,16 +150,17 @@ module Pkgr
     end
 
     # FIXME: this is ugly
-    def bump!(version_index = :patch)
-      indices = [:major, :minor, :patch]
-      index = indices.index(version_index) || raise(ArgumentError, "The given version index is not valid (#{version_index})")
-      version = @config.fetch('version') { '0.0.0' }
-      fragments = version.split(".")
-      fragments[index] = fragments[index].to_i+1
-      ((index+1)..2).each{|i|
-        fragments[i] = 0
-      }
-      new_version = fragments.join(".")
+    def bump!(version_index = :patch, new_version = nil)
+      unless version_index == :custom
+        indices = [:major, :minor, :patch]
+        index = indices.index(version_index) || raise(ArgumentError, "The given version index is not valid (#{version_index})")
+        fragments = version.split(".")
+        fragments[index] = fragments[index].to_i+1
+        ((index+1)..2).each{|i|
+          fragments[i] = 0
+        }
+        new_version = fragments.join(".")
+      end
 
       changelog = File.read(debian_file("changelog"))
 
@@ -215,7 +218,7 @@ module Pkgr
     def debian_steps
       target_vendor = "vendor/bundle/ruby/1.9.1"
       [
-        "sudo apt-get install #{debian_runtime_dependencies(true).join(" ")} -y",
+        # "sudo apt-get install #{debian_runtime_dependencies(true).join(" ")} -y",
         "sudo apt-get install #{debian_build_dependencies(true).join(" ")} -y",
         # Vendor bundler
         "gem1.9.1 install bundler --no-ri --no-rdoc --version #{bundler_version} -i #{target_vendor}",

@@ -1,0 +1,29 @@
+---
+version: 1.4.1
+name: redmine
+description: Package for the Redmine project management software
+config_files:
+- pkgr.yml
+- database.yml
+- configuration.yml
+architecture: amd64
+debian_runtime_dependencies:
+- ${shlibs:Depends}
+- ${misc:Depends}
+- ruby1.9.1-full
+- libmagickcore3
+- libmagickwand3
+- mysql-server
+- git-core
+- libxml2
+- libxslt1.1
+debian_build_dependencies:
+- debhelper (>= 7)
+- dpkg-dev
+- libmagickcore-dev
+- libmagickwand-dev
+- postgresql-server-dev-8.4
+- libmysqlclient15-dev
+- libxml2-dev
+- libxslt-dev
+- libsqlite3-dev

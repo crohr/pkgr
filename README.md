@@ -2,7 +2,16 @@
 
 Plug this [Railtie](http://api.rubyonrails.org/classes/Rails/Railtie.html)
 into your Rails 3 app (ruby1.9 only), and you'll be ready to package your
-Rails app as a DEB package. RPM support could be added in the short future.
+Rails app as a DEB package. RPM support could/will be added in the short
+future.
+
+This gem originates from hours spent trying to figure out how to package a
+Ruby app for CentOS, and then Debian. It's definitely not trivial, because
+there are so many pieces to put together before getting something working.
+Hopefully this will save time for everyone :)
+
+Fair warning: there are probably a few things that could be done better, or in
+a more standard way. Feel free to open an issue and/or a pull-request.
 
 ## Why?
 

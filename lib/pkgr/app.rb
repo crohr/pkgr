@@ -160,6 +160,9 @@ module Pkgr
           fragments[i] = 0
         }
         new_version = fragments.join(".")
+      else
+        raise ArgumentError, "new_version must not be nil when bumping with a :custom version" if new_version.nil?
+        return true if new_version == version
       end
 
       changelog = File.read(debian_file("changelog"))
@@ -251,8 +254,8 @@ module Pkgr
     end
 
     def debian_file(filename)
-      file = File.join(Pkgr::DEBIAN_DIR, filename)
-      return nil unless File.exist?(file)
+      file = File.join(root, Pkgr::DEBIAN_DIR, filename)
+      raise "The debian/changelog file does not exist. Please generate it first." unless File.exist?(file)
       file
     end
   end

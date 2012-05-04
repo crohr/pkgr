@@ -15,7 +15,7 @@ BANNER
 
   opts.separator ""
   opts.separator "* Common options"
-  opts.on("--uri=", "Sets the base URI [required]") do |v|
+  opts.on("--uri=", "Sets the Git repository URI (FILE, HTTP, SSH, GIT, etc.) [required]") do |v|
     OPTIONS[:uri] = v
   end
   opts.on("-c=", "--config=", "Download a configuration file into the config/ folder of the app (HTTP or FILE URIs)") do |v|

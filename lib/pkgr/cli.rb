@@ -1,13 +1,14 @@
 require 'open-uri'
 require 'fileutils'
 require 'pkgr'
+require 'uri'
 
 module Pkgr
   class CLI
     include Rake::DSL
 
     class Error < StandardError; end
-    
+
     attr_reader :errors
     attr_reader :uri
     attr_reader :dir
@@ -37,6 +38,7 @@ module Pkgr
         bundle
         configure_app
         generate
+        bump
         build
       end
     end
@@ -50,20 +52,23 @@ module Pkgr
 
     def build
       if host.nil?
-        puts "Can't build. You must pass the --host option for this."
+        puts "Can't build the package. You must pass the --host option for this."
       else
         @app.build_debian_package(host)
       end
     end
 
+    def bump
+      @app.bump!(:custom, version)
+    end
+
     def bundle
       sh "bundle install"
       sh "git add -f Gemfile.lock"
-      sh "git commit -m '[pkgr] Add Gemfile.lock.'"
+      sh "if git status --porcelain | grep Gemfile.lock; then git commit -m '[pkgr] Update Gemfile.lock.'; fi"
     end
 
     def checkout
-      pkgr_branch = "pkgr-#{ref}"
       sh "if git branch | grep '#{pkgr_branch}'; then git checkout #{pkgr_branch}; else git checkout -b #{pkgr_branch} #{ref}; fi"
     end
 
@@ -76,10 +81,13 @@ module Pkgr
         @dir = File.basename(uri, ".git")
         sh "git clone #{uri}"
       end
+      @dir = File.expand_path @dir
     end
 
     def configure_app
-      @app = Pkgr::App.new(dir, YAML.load_file(File.join("config/pkgr.yml")))
+      @app = Pkgr::App.new(dir, "config/pkgr.yml")
+      @app.config['git_ref'] = pkgr_branch
+      @app.config['config_files'].push(*Dir["config/*.yml"].map{|f| File.basename(f)}).uniq!
       if name.nil?
         @app.config['name'] = File.basename(dir) if @app.name.nil?
       else
@@ -87,7 +95,6 @@ module Pkgr
       end
       raise Error, "The app is not correctly configured: #{@app.errors.join(", ")}" unless @app.valid?
       @app.write_config
-      @app.bump!(version)
     end
 
     # Download the given config files
@@ -96,10 +103,13 @@ module Pkgr
         filename, file_uri = file.split(":")
         if file_uri.nil?
           file_uri = filename
-          filename = File.basename(uri)
+          filename = File.basename(file_uri)
         end
 
-        File.open("config/#{filename}", "w+") { |f| f << open(file_uri).read }
+        file_uri = File.expand_path(file_uri) if URI.parse(file_uri).scheme.nil?
+        target = "config/#{filename}"
+        puts "Copying #{file_uri} into #{target}..."
+        File.open(target, "w+") { |f| f << open(file_uri).read }
       end
     end
 
@@ -117,18 +127,37 @@ module Pkgr
     def generate
       @app.generate_required_files
       sh "git add debian/"
-      sh "git commit -m '[pkgr] Add debian files.'"
+      sh "if git status --porcelain | grep debian/; then git commit -m '[pkgr] Add debian files.'; fi"
+      sh "git add bin/"
+      sh "if git status --porcelain | grep bin/; then git commit -m '[pkgr] Add executable file.'; fi"
+    end
+
+    def pkgr_branch
+      "pkgr-#{ref}"
     end
 
     def setup
       Pkgr.setup(dir)
-      File.open("Gemfile", "a") do |f|
-        f.puts
-        f.puts "gem 'pkgr'"
-        f.puts "gem 'thin'"
+
+      gemfile = File.read("Gemfile")
+      unless gemfile =~ /$gem 'pkgr'/
+        File.open("Gemfile", "a") do |f|
+          f.puts
+          f.puts "gem 'pkgr'"
+        end
       end
-      sh "git add -f config/*.yml Gemfile"
-      sh "git commit -m '[pkgr] Add configuration files.'"
+
+      unless gemfile =~ /$gem 'thin'/
+        File.open("Gemfile", "a") do |f|
+          f.puts
+          f.puts "gem 'pkgr'"
+        end
+      end
+
+      sh "git add Gemfile"
+      sh" if git status --porcelain | grep Gemfile; then git commit -m '[pkgr] Update Gemfile.'; fi"
+      sh "git add -f config/*.yml"
+      sh" if git status --porcelain | grep config/*.yml; then git commit -m '[pkgr] Update configuration files.'; fi"
     end
   end
 

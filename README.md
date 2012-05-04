@@ -387,6 +387,8 @@ Once you're ready to package your app, just run the following commands:
 
 * Better debian initd script.
 
+* Populate dependencies based on gems declared in the Gemfile.
+
 * Some tests.
 
 ## Authors

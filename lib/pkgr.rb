@@ -18,7 +18,7 @@ module Pkgr
       puts "'#{target}' already exists. Skipped."
     else
       FileUtils.cp(File.expand_path("../pkgr/data/pkgr.yml", __FILE__), target, :verbose => true)
-      puts "Edit '#{target}' and fill in the required information, then enter 'rake pkgr:generate:debian' to generate the debian control files."
+      puts "Edit '#{target}' and fill in the required information, then enter 'rake pkgr:generate' to generate the debian files."
     end
   end
 

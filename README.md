@@ -114,7 +114,7 @@ Once you're ready to package your app, just run the following steps:
   app. Next step is probably to upload it to a local apt repository, and then
   a simple `apt-get install my-app` will install everything. Enjoy!
 
-
+Have a look at the Getting Started guide in the `doc` folder of this repository.
 
 ## Requirements
 

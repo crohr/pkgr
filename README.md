@@ -37,7 +37,7 @@ So, how are we going to easily package Ruby applications and avoid dependency
 issues? Well, I know package maintainers will scream at me, but we'll just
 vendor the required gems in the package we'll build, and use bundler to manage
 those dependencies. Thus, the only dependency we'll put in our package will be
-the Ruby1.9 (+rubygems).
+Ruby1.9 (+rubygems).
 
 ## What?
 
@@ -49,6 +49,19 @@ few other things.
 
 The default target installation directory for the other app files will be
 `/opt/local/app-name`. This can be configured.
+
+## Requirements
+
+* You must use Rails3+ and ruby1.9+ in your application. This may work with
+  other rubies but then you'll need to add a rubygems dependency.
+
+* Your Rails application must be able to run with the
+  [`thin`](http://code.macournoyer.com/thin/) web server. Don't forget to add
+  `thin` to your Gemfile!
+
+* Your application must be checked into a **Git** repository. Your name and
+  email is taken from the git configuration, and the changelog is populated
+  based on the git log between two versions.
 
 ## Getting started
 
@@ -93,6 +106,32 @@ Setup `pkgr`:
     Edit '/Users/crohr/tmp/my-app/config/pkgr.yml' and fill in the required information, then enter 'rake pkgr:generate' to generate the debian files.
 
 As outlined, edit `config/pkgr.yml` and fill in your app name. In our example I'll fill in `my-app` as the app name. Also, you should edit the runtime and build dependencies (though the default ones should be fine with a base Rails app).
+
+An example `pkgr.yml` file is given below:
+
+    ---
+    version: 0.4.0
+    name: my-app
+    description: This is a description
+    git_ref: HEAD
+    config_files:
+    - pkgr.yml
+    - database.yml
+    architecture: amd64
+    debian_runtime_dependencies:
+    - ${shlibs:Depends}
+    - ${misc:Depends}
+    - ruby1.9.1-full
+    - git-core
+    - libxml2
+    - libxslt1.1
+    debian_build_dependencies:
+    - debhelper (>= 7)
+    - dpkg-dev
+    - libmysqlclient15-dev
+    - libxml2-dev
+    - libxslt-dev
+    - libsqlite3-dev
 
 ### Generate the packaging files
 
@@ -213,6 +252,44 @@ Now you can send a first request:
 
 Obviously this app does nothing, so you'll get a 404. So go back to building your app, and then just type `rake pkgr:bump:patch` and `HOST=debian-build-machine rake pkgr:build:deb` to generate a new package !
 
+## Release it (debian)
+
+As of 0.2.0, you can now release the latest package on a server, and add it to
+your list of APT sources for easy installation. In the following we'll assume
+that you want to serve your packages from a host called `apt-server`.
+
+Once you've built the package, run the following to upload it to the
+apt-server and generate the manifest:
+
+    $ HOST=apt-server rake pkgr:release:deb
+
+Note that you need **sudo** privileges for this. If all goes well, you should
+now have a directory named `/var/www/my-app` on `apt-server`. The next step is
+to serve this directory over HTTP. Simply enough, install `apache2` and you're
+good to go:
+
+    $ ssh apt-server 'sudo apt-get install apache2 -y'
+
+Now, on the server on which you want to install the package (let's say
+`production-server`), just add an additional APT source file referencing this
+new APT server:
+
+    
+    production-server # cat /etc/apt/sources.list.d/my-app.list
+    deb http://apt-server.ltd/my-app /
+
+And then:
+
+    production-server # apt-get update && apt-get install my-app
+
+Note that you may need to add the following to a
+`/etc/apt/apt.conf.d/allow-unauthenticated` file if apt complains about
+unauthenticated packages:
+
+    production-server # echo 'APT::Get::AllowUnauthenticated "true";' >> /etc/apt/apt.conf.d/allow-unauthenticated
+
+Easy.
+
 ## Notes of interest
 
 * your configuration files will be stored in `/etc/my-app/*.yml`, making it easy to manage with Puppet or manually (don't forget to `/etc/init.d/my-app restart` after making changes).
@@ -273,8 +350,8 @@ Once you're ready to package your app, just run the following commands:
         rake pkgr:bump:patch # or rake pkgr:bump:minor or rake pkgr:bump:major
 
 * Build the package on your machine (default, but you better be running a
-  Debian Squeeze), or on a remote machine (recommended, for instance you can
-  get a Vagrant VM in no time):
+  Debian Squeeze, and have an SSH server running), or on a remote machine
+  (recommended, for instance you can get a Vagrant VM in no time):
 
         HOST=debian-build-machine rake pkgr:build:deb
         # or HOST=localhost rake pkgr:build:deb, or just rake pkgr:build:deb
@@ -291,18 +368,6 @@ Once you're ready to package your app, just run the following commands:
   app. Next step is probably to upload it to a local apt repository, and then
   a simple `apt-get install my-app` will install everything. Enjoy!
 
-## Requirements
-
-* You must use Rails3+ and ruby1.9+ in your application. This may work with
-  other rubies but then you'll need to add a rubygems dependency.
-
-* Your Rails application must be able to run with the
-  [`thin`](http://code.macournoyer.com/thin/) web server. Don't forget to add
-  `thin` to your Gemfile!
-
-* Your application must be checked into a **Git** repository. Your name and
-  email is taken from the git configuration, and the changelog is populated
-  based on the git log between two versions.
 
 ## Todo
 

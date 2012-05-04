@@ -38,5 +38,13 @@ namespace :pkgr do
         APP.build_debian_package(build_host)
       end
     end
+    
+    namespace :release do
+      desc "Release the latest package on a custom APT repository"
+      task :deb do
+        apt_host = ENV.fetch('HOST') { 'localhost' }
+        APP.release_debian_package(apt_host)
+      end
+    end
   end
 end

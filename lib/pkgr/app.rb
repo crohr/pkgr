@@ -197,25 +197,18 @@ module Pkgr
       puts "Building debian package on '#{host}'..."
       Dir.chdir(root) do
         Pkgr.mkdir("pkg")
-        case host
-        when 'localhost'
-          debian_steps.each do |step|
-            sh step
-          end
-        else
-          archive = "#{name}-#{version}"
-          sh "scp #{File.expand_path("../data/config/pre_boot.rb", __FILE__)} #{host}:/tmp/"
-          cmd = %Q{
-            git archive #{git_ref} --prefix=#{archive}/ | ssh #{host} 'cat - > /tmp/#{archive}.tar &&
-              set -x && rm -rf /tmp/#{archive} &&
-              cd /tmp && tar xf #{archive}.tar && cd #{archive} &&
-              cat config/boot.rb >> /tmp/pre_boot.rb && cp -f /tmp/pre_boot.rb config/boot.rb &&
-              #{debian_steps.join(" &&\n")}'
-          }
-          sh cmd
-          # Fetch the .deb, and put it in the `pkg` directory
-          sh "scp #{host}:/tmp/#{name}_#{version}*.deb pkg/"
-        end
+        archive = "#{name}-#{version}"
+        sh "scp #{File.expand_path("../data/config/pre_boot.rb", __FILE__)} #{host}:/tmp/"
+        cmd = %Q{
+          git archive #{git_ref} --prefix=#{archive}/ | ssh #{host} 'cat - > /tmp/#{archive}.tar &&
+            set -x && rm -rf /tmp/#{archive} &&
+            cd /tmp && tar xf #{archive}.tar && cd #{archive} &&
+            cat config/boot.rb >> /tmp/pre_boot.rb && cp -f /tmp/pre_boot.rb config/boot.rb &&
+            #{debian_steps.join(" &&\n")}'
+        }
+        sh cmd
+        # Fetch the .deb, and put it in the `pkg` directory
+        sh "scp #{host}:/tmp/#{name}_#{version}*.deb pkg/"
       end
     end
 
@@ -230,6 +223,23 @@ module Pkgr
         "rm -rf #{target_vendor}/{cache,doc}",
         "dpkg-buildpackage -us -uc -d"
       ]
+    end
+    
+    def release_debian_package(host, apt_directory = nil)
+      apt_directory ||= "/var/www/#{name}"
+      latest = Dir[File.join(root, "pkg", "*.deb")].find{|file| file =~ /#{version}/}
+      raise "No .deb available in pkg/" if latest.nil?
+      latest_name = File.basename(latest)
+      sh "scp #{latest} #{host}:/tmp/"
+      sh "ssh #{host} 'sudo mkdir -p #{apt_directory} && sudo chown $USER #{apt_directory} && mv /tmp/#{latest_name} #{apt_directory} && cd #{apt_directory} && ( which dpkg-scanpackages || sudo apt-get update && sudo apt-get install dpkg-dev -y ) && dpkg-scanpackages . | gzip -f9 > Packages.gz'"
+      puts "****"
+      puts "Now you just need to serve the '#{apt_directory}' directory over HTTP, and add a new source to your APT configuration on the production server:"
+      puts "$ cat /etc/apt/sources.list.d/#{name}.list"
+      puts "deb http://apt-server.ltd/#{name} /"
+      puts
+      puts "And then:"
+      puts "$ sudo apt-get update && sudo apt-get install #{name}"
+      puts "****"
     end
 
     private

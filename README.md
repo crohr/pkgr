@@ -252,7 +252,7 @@ Now you can send a first request:
 
 Obviously this app does nothing, so you'll get a 404. So go back to building your app, and then just type `rake pkgr:bump:patch` and `HOST=debian-build-machine rake pkgr:build:deb` to generate a new package !
 
-## Release it (debian)
+### Release it (debian)
 
 As of 0.2.0, you can now release the latest package on a server, and add it to
 your list of APT sources for easy installation. In the following we'll assume

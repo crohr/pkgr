@@ -2,7 +2,7 @@
 
 Plug this [Railtie](http://api.rubyonrails.org/classes/Rails/Railtie.html)
 into your Rails 3 app (ruby1.9 only), and you'll be ready to package your
-Rails app as a DEB or RPM (coming soon) package.
+Rails app as a DEB package. RPM support could be added in the short future.
 
 ## Why?
 
@@ -49,6 +49,10 @@ few other things.
 
 The default target installation directory for the other app files will be
 `/opt/local/app-name`. This can be configured.
+
+## Getting started
+
+Follow the getting started guide at <http://crohr.me/pkgr/doc/getting-started.html>.
 
 ## Usage
 

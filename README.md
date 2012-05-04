@@ -211,7 +211,7 @@ Now you can send a first request:
     </body>
     </html>
 
-Obviously this app does nothing, so you'll get a 404. So go back to building your app, and then just type `rake pkgr:bump:path` and `HOST=debian-build-machine rake pkgr:build:deb` to generate a new package !
+Obviously this app does nothing, so you'll get a 404. So go back to building your app, and then just type `rake pkgr:bump:patch` and `HOST=debian-build-machine rake pkgr:build:deb` to generate a new package !
 
 ## Notes of interest
 

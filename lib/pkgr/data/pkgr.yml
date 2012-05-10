@@ -24,6 +24,7 @@ debian_runtime_dependencies:
 debian_build_dependencies:
   - debhelper (>= 7)
   - dpkg-dev
+  - ruby1.9.1-full
   - libmysqlclient15-dev
   - libxml2-dev
   - libxslt-dev

@@ -26,7 +26,7 @@ namespace :pkgr do
       %w{patch minor major custom}.each do |version|
         desc "Increments the #{version} version. If using :custom, then you can pass a specific VERSION environment variable."
         task version.to_sym do
-          APP.bump!(version.to_sym, ENV.fetch('VERSION'))
+          APP.bump!(version.to_sym, ENV['VERSION'])
         end
       end
     end

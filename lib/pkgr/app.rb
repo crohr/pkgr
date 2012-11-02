@@ -215,8 +215,8 @@ module Pkgr
             #{debian_steps.join(" &&\n")}'
         }
         sh cmd
-        # Fetch the .deb, and put it in the `pkg` directory
-        sh "scp #{host}:/tmp/#{name}_#{version}*.deb pkg/"
+        # Fetch all package files, and put it in the `pkg` directory
+        sh "scp #{host}:/tmp/#{name}_#{version}* pkg/"
       end
     end
 

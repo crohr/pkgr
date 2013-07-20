@@ -22,6 +22,7 @@ module Pkgr
       @config = YAML::load_file(path)
       raise ArgumentError, "The given configuration file at '#{path}' is not a well-formed YAML file. Please fix it or remove it and run 'rake pkgr:setup'" unless @config.kind_of?(Hash)
       @config['_path'] = path
+      normalize_name!
     end
     
     def write_config
@@ -259,6 +260,20 @@ module Pkgr
       file = File.join(root, Pkgr::DEBIAN_DIR, filename)
       raise "The debian/changelog file does not exist. Please generate it first." unless File.exist?(file)
       file
+    end
+
+    def normalize_name!
+      # debian packages can not contain capitalized letters nor underscores
+      if (raw_name = @config.fetch('name', '')) =~ /[A-Z_-]/
+        normalized_name = raw_name.
+                            gsub(/[A-Z]/) { |m| "_#{m.downcase}" }.  # underscore each word
+                            gsub(/[_-]+/, '-').                      # normalize underscores/dashes
+                            sub(/^-/, '')                            # strip leading dash
+        puts "Normalized application name to %s (original: %s)." % [
+          normalized_name.inspect, raw_name.inspect
+        ] unless normalized_name == raw_name
+        @config['name'] = normalized_name
+      end
     end
   end
 end

@@ -252,7 +252,7 @@ module Pkgr
 
     private
     def bundler_version
-      @config.fetch('bundler_version') { '1.1.3' }
+      @config.fetch('bundler_version') { '1.3.5' }
     end
 
     def debian_file(filename)

@@ -33,7 +33,7 @@ case "$1" in
         " > /usr/bin/$NAME && chmod a+x /usr/bin/$NAME
         # Creating the user if it does not exist
         if ! getent passwd $USER > /dev/null; then
-          adduser --no-create-home --system --group $GROUP
+          adduser --home $PREFIX --no-create-home --system --group $GROUP
         fi
         chown -R $USER.$GROUP /etc/$NAME/
         chown -R $USER.$GROUP /var/db/$NAME/

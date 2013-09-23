@@ -18,6 +18,9 @@ Gem::Specification.new do |s|
   s.description               = "Package your Ruby & Rails apps as debian packages"
 
   s.add_dependency('rake')
+  s.add_dependency('thor')
+  s.add_dependency('mixlib-log')
+  s.add_dependency('mixlib-shellout')
   s.add_development_dependency('rspec', '~> 2')
 
   s.files = Dir.glob("{lib}/**/*") + %w(LICENSE README.md)

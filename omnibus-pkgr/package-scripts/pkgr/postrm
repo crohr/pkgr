@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# Perform necessary pkgr removal steps
+# after package is uninstalled.
+#
+
+echo "pkgr has been uninstalled!"
+
+exit 0

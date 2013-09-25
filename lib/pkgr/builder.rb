@@ -13,10 +13,17 @@ module Pkgr
     end
 
     def call
+      check
       setup
       extract
       compile
       package
+    end
+
+    def check
+      distribution.requirements.each do |package|
+        system("dpkg -l #{package} 2&>/dev/null") || Pkgr.debug("Can't find package `#{package}`. Further steps may fail.")
+      end
     end
 
     # Setup the build directory structure
@@ -96,6 +103,7 @@ module Pkgr
 
     # Buildpack detected for the app, if any
     def buildpack_for_app
+      raise "#{source_dir} does not exist" unless File.directory?(source_dir)
       @buildpack_for_app ||= buildpacks.find do |buildpack|
         buildpack.setup
         buildpack.detect(source_dir)
@@ -104,12 +112,13 @@ module Pkgr
 
     def fpm_command
       %{
-        fpm -t deb -s dir  --verbose --debug \
+        fpm -t deb -s dir  --verbose --debug --force \
         -C "#{build_dir}" \
         -n "#{config.app_name}" \
         --version "#{config.app_version}" \
         --iteration "#{config.app_iteration}" \
-        --provides "#{config.app_name}"
+        --provides "#{config.app_name}" \
+        .
       }
     end
   end

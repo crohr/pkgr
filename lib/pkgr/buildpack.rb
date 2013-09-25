@@ -22,16 +22,29 @@ module Pkgr
       self.class.buildpack_cache_dir
     end
 
-    def test(path)
-      buildpack_test = Mixlib::ShellOut.new("#{dir}/bin/detect \"#{path}\"")
-      buildpack_test.run_command
-      buildpack_test.exitstatus == 0
+    def detect(path)
+      buildpack_detect = Mixlib::ShellOut.new("#{dir}/bin/detect \"#{path}\"")
+      buildpack_detect.run_command
+      buildpack_detect.exitstatus == 0
     end
 
     def compile(path, compile_cache_dir)
-      buildpack_compile = Mixlib::ShellOut.new("#{dir}/bin/compile \"#{path}\" \"#{compile_cache_dir}\"")
-      buildpack_compile.run_command
-      buildpack_compile.exitstatus == 0
+      Dir.chdir(path) do
+        IO.popen(%{ env -i PATH="$PATH" #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" }) do |io|
+          until io.eof?
+            data = io.gets
+            data.gsub!(/^-----> /, "  + ")
+            data.gsub!(/^       /, "      ")
+            data.gsub!(/^\s+\!\s+$/, "")
+            data.gsub!(/^\s+\!\s+/, "  ! ")
+            data.gsub!(/^\s+$/, "")
+            print data
+          end
+        end
+        raise "compile failed" unless $?.exitstatus.zero?
+      end
+
+      true
     end
 
     def release(path, compile_cache_dir)
@@ -45,7 +58,7 @@ module Pkgr
     end
 
     def exists?
-      Dir.directory?(dir)
+      File.directory?(dir)
     end
 
     def setup

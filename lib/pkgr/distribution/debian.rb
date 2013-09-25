@@ -28,6 +28,13 @@ module Pkgr
           }.map{|url| Buildpack.new(url)}
         end
       end
+
+      def requirements
+        %w{
+          libssl0.9.8
+          curl
+        }
+      end
     end
   end
 end

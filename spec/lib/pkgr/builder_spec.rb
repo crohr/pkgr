@@ -13,6 +13,16 @@ describe Pkgr::Builder do
     expect(builder.config).to eq(config)
   end
 
+  describe "#check" do
+    let(:distribution) { double("distribution", :requirements => ["doesnotexist"]) }
+    let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config).tap{|b| b.stub(:distribution => distribution)} }
+
+    it "displays warnings if one of the current distribution's required packages can't be found" do
+      Pkgr.should_receive(:debug).with("Can't find package `doesnotexist`. Further steps may fail.")
+      expect{ builder.check }.to_not raise_error
+    end
+  end
+
   describe "#setup" do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
 

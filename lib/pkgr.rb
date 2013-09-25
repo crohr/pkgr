@@ -5,4 +5,9 @@ require 'mixlib/log'
 
 module Pkgr
   extend Mixlib::Log
+
+  module Errors
+    class Base < StandardError; end
+    class UnknownAppType < Base; end
+  end
 end

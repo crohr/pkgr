@@ -1,4 +1,5 @@
 require 'mixlib/shellout'
+require 'pkgr/builder'
 
 module Pkgr
   class Dispatcher
@@ -13,6 +14,7 @@ module Pkgr
     end
 
     def call
+      Builder.new(path)
     end
 
     def app_version

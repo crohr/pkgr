@@ -43,6 +43,17 @@ describe Pkgr::Dispatcher do
     end
   end
 
+  describe "#call" do
+    let(:dispatcher) { Pkgr::Dispatcher.new("path/to/dir") }
+
+    it "launches the builder if local execution" do
+      dispatcher.stub(:remote? => false)
+      builder = dispatcher.call
+      builder.should be_a(Pkgr::Builder)
+      builder.path.should == dispatcher.path
+    end
+  end
+
   describe "execution" do
     it "will execute remotely if a host option was given" do
       dispatcher = Pkgr::Dispatcher.new("path/to/dir", {host: "debian-host"})

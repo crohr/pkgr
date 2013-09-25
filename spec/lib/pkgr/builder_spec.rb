@@ -1,7 +1,11 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe Pkgr::Builder do
-  let(:config) { Pkgr::Config.new(:app_name => "my-app") }
+  let(:config) { Pkgr::Config.new(
+    :app_name => "my-app",
+    :app_version => "0.0.1",
+    :app_iteration => Time.now.strftime("%Y%m%d%H%M%S")
+  ) }
 
   it "accepts a tarball and config object" do
     builder = Pkgr::Builder.new("path/to/tarball.tgz", config)
@@ -87,6 +91,29 @@ describe Pkgr::Builder do
       builder.stub(:buildpack_for_app => buildpack)
 
       expect{ builder.compile }.to_not raise_error
+    end
+  end
+
+  describe "#package" do
+    let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
+
+    before do
+      builder.setup
+    end
+
+    after do
+      builder.teardown
+    end
+
+    it "builds the proper fpm command" do
+      builder.fpm_command.strip.squeeze(" ").should == "fpm -t deb -s dir --verbose --debug -C \"#{builder.build_dir}\" -n \"my-app\" --version \"0.0.1\" --iteration \"#{config.app_iteration}\" --provides \"my-app\""
+    end
+
+    it "launches fpm on build dir" do
+      fpm_command = "ls"
+      builder.stub(:fpm_command => fpm_command)
+
+      expect{ builder.package }.to_not raise_error
     end
   end
 end

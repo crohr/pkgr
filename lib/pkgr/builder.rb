@@ -60,7 +60,13 @@ module Pkgr
     end
 
     def package
-      true
+      app_package = Mixlib::ShellOut.new(fpm_command)
+      app_package.run_command
+      app_package.error!
+    end
+
+    def teardown
+      FileUtils.rm_rf(build_dir)
     end
 
     # Path to the source directory containing the main app files
@@ -94,6 +100,17 @@ module Pkgr
         buildpack.setup
         buildpack.detect(source_dir)
       end
+    end
+
+    def fpm_command
+      %{
+        fpm -t deb -s dir  --verbose --debug \
+        -C "#{build_dir}" \
+        -n "#{config.app_name}" \
+        --version "#{config.app_version}" \
+        --iteration "#{config.app_iteration}" \
+        --provides "#{config.app_name}"
+      }
     end
   end
 end

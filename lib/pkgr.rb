@@ -10,4 +10,9 @@ module Pkgr
     class Base < StandardError; end
     class UnknownAppType < Base; end
   end
+
+  def data_dir
+    File.expand_path("../pkgr/data", __FILE__)
+  end
+  module_function :data_dir
 end

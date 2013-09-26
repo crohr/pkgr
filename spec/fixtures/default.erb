@@ -1,0 +1,9 @@
+HOME="<%= home %>"
+
+for file in /etc/<%= name %>/conf.d/*; do
+  if [ -f $file ]; then . $file; fi
+done
+
+for file in <%= home %>/.profile.d/*.sh; do
+  if [ -f $file ]; then . $file; fi
+done

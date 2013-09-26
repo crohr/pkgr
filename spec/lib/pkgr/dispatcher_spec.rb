@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.dirname(__FILE__) + '/../../spec_helper'
 require 'tmpdir'
 
 describe Pkgr::Dispatcher do
@@ -47,10 +47,11 @@ describe Pkgr::Dispatcher do
     let(:dispatcher) { Pkgr::Dispatcher.new("path/to/dir") }
 
     it "launches the builder if local execution" do
+      pending
       dispatcher.stub(:remote? => false)
       builder = dispatcher.call
       builder.should be_a(Pkgr::Builder)
-      builder.path.should == dispatcher.path
+      builder.tarball.should == dispatcher.app_tarball
     end
   end
 

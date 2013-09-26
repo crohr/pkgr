@@ -10,15 +10,44 @@ module Pkgr
     def initialize(path, opts = {})
       @path = File.expand_path(path)
       @host = opts[:host]
-      @app_version = opts[:version]
+      @version = opts[:version]
+      @name = opts[:name]
+      @iteration = opts[:iteration] || Time.now.strftime("%Y%m%d%H%M%S")
+      @user = opts[:user]
+      @group = opts[:group]
     end
 
     def call
-      Builder.new(path)
+      tarify
+      Builder.new(app_tarball, config)
     end
 
-    def app_version
-      @app_version || version_from_git || DEFAULT_APP_VERSION
+    def tarify
+      system("tar czf #{app_tarball} -C \"#{path}\" .") || raise("Can't compress input directory")
+    end
+
+    def app_tarball
+      (@app_tarball_file ||= Tempfile.new(["pkgr-tarball", ".tar.gz"])).path
+    end
+
+    def version
+      @version || version_from_git || DEFAULT_APP_VERSION
+    end
+
+    def name
+      @name || File.basename(path)
+    end
+
+    def iteration
+      @iteration
+    end
+
+    def user
+      @user || name
+    end
+
+    def group
+      @group || user
     end
 
     def remote?
@@ -27,6 +56,16 @@ module Pkgr
 
     def git?
       File.directory?(File.join(path, ".git"))
+    end
+
+    def config
+      @config ||= Pkgr::Config.new(
+        :app_version => version,
+        :app_name => name,
+        :app_iteration => iteration,
+        :app_user => user,
+        :app_group => group
+      )
     end
 
     private

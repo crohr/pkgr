@@ -1,7 +1,10 @@
-require 'pkgr/distribution/debian'
+require 'pkgr/templates/file_template'
+require 'pkgr/templates/dir_template'
+require 'pkgr/distributions/debian'
+
 
 module Pkgr
-  module Distribution
+  module Distributions
     def current
       if File.exist?("/etc/debian_version")
         distro = File.read("/etc/debian_version").split("/")[0]

@@ -2,9 +2,9 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe Pkgr::Builder do
   let(:config) { Pkgr::Config.new(
-    :app_name => "my-app",
-    :app_version => "0.0.1",
-    :app_iteration => Time.now.strftime("%Y%m%d%H%M%S")
+    :name => "my-app",
+    :version => "0.0.1",
+    :iteration => Time.now.strftime("%Y%m%d%H%M%S")
   ) }
 
   it "accepts a tarball and config object" do
@@ -27,15 +27,21 @@ describe Pkgr::Builder do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
 
     it "creates the build hierarchy" do
+      builder.stub(:distribution => double(:distribution, :templates => [
+        Pkgr::Templates::DirTemplate.new("opt/my-app"),
+        Pkgr::Templates::FileTemplate.new("usr/local/bin/my-app", StringIO.new("some content")),
+        Pkgr::Templates::FileTemplate.new("etc/default/my-app", File.new(fixture("default.erb")))
+      ]))
+
       builder.setup
-      expect(Dir.glob(File.join(builder.build_dir, '*')).map{|dir| File.basename(dir)}).to eq(["etc", "opt", "usr"])
+      expect(Dir.glob(File.join(builder.build_dir, '*')).map{|dir| File.basename(dir)}.sort).to eq(["etc", "opt", "usr"])
     end
   end
 
   describe "#extract" do
     let(:expected_app_files) { %w{
         app config config.ru db doc Gemfile Gemfile.lock lib log Procfile public Rakefile README.md script vendor
-    } }
+    }.sort }
 
     it "fails if the given tarball does not exist" do
       builder = Pkgr::Builder.new("path/to/tarball.tgz", config)
@@ -50,7 +56,7 @@ describe Pkgr::Builder do
 
       builder.extract
 
-      expect(Dir.glob(File.join(builder.source_dir, "*")).map{|dir| File.basename(dir)}).to eq(expected_app_files)
+      expect(Dir.glob(File.join(builder.source_dir, "*")).map{|dir| File.basename(dir)}.sort).to eq(expected_app_files)
     end
 
     it "should extract the given stdin to the source directory" do
@@ -61,14 +67,14 @@ describe Pkgr::Builder do
         FileUtils.mkdir_p(builder.source_dir)
 
         builder.extract
-        expect(Dir.glob(File.join(builder.source_dir, "*")).map{|dir| File.basename(dir)}).to eq(expected_app_files)
+        expect(Dir.glob(File.join(builder.source_dir, "*")).map{|dir| File.basename(dir)}.sort).to eq(expected_app_files)
       }
     end
   end
 
   describe "#compile" do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
-    let(:distribution) { Pkgr::Distribution::Debian.new("wheezy") }
+    let(:distribution) { Pkgr::Distributions::Debian.new("wheezy") }
 
     it "has a list of buildpacks" do
       builder.stub(:distribution => distribution)
@@ -108,6 +114,7 @@ describe Pkgr::Builder do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
 
     before do
+      builder.stub(:distribution => Pkgr::Distributions::Debian.new("wheezy"))
       builder.setup
     end
 
@@ -116,7 +123,7 @@ describe Pkgr::Builder do
     end
 
     it "builds the proper fpm command" do
-      builder.fpm_command.strip.squeeze(" ").should == "fpm -t deb -s dir --verbose --debug -C \"#{builder.build_dir}\" -n \"my-app\" --version \"0.0.1\" --iteration \"#{config.app_iteration}\" --provides \"my-app\""
+      builder.fpm_command.strip.squeeze(" ").should == "fpm -t deb -s dir --verbose --debug --force -C \"#{builder.build_dir}\" -n \"my-app\" --version \"0.0.1\" --iteration \"#{config.iteration}\" --provides \"my-app\" ."
     end
 
     it "launches fpm on build dir" do

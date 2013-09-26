@@ -1,7 +1,7 @@
 require 'tempfile'
 require 'fileutils'
 require 'pkgr/config'
-require 'pkgr/distribution'
+require 'pkgr/distributions'
 
 module Pkgr
   class Builder
@@ -22,19 +22,16 @@ module Pkgr
 
     def check
       distribution.requirements.each do |package|
-        system("dpkg -l #{package} 2&>/dev/null") || Pkgr.debug("Can't find package `#{package}`. Further steps may fail.")
+        system("dpkg -l #{package} &>/dev/null") || Pkgr.debug("Can't find package `#{package}`. Further steps may fail.")
       end
     end
 
     # Setup the build directory structure
     def setup
-      [
-        "/usr/local/bin",
-        "/opt/#{config.app_name}",
-        "/etc/#{config.app_name}/conf.d",
-        "/etc/default"
-      ].each do |dir|
-        FileUtils.mkdir_p(File.join(build_dir, dir))
+      Dir.chdir(build_dir) do
+        distribution.templates(config.name).each do |template|
+          template.install(config.sesame)
+        end
       end
     end
 
@@ -48,7 +45,7 @@ module Pkgr
         opts[:input] = $stdin.read
       end
 
-      tarball_extract = Mixlib::ShellOut.new("tar xf #{tarball} -C #{source_dir}", opts)
+      tarball_extract = Mixlib::ShellOut.new("tar xzf #{tarball} -C #{source_dir}", opts)
       tarball_extract.run_command
       tarball_extract.error!
     end
@@ -78,7 +75,7 @@ module Pkgr
 
     # Path to the source directory containing the main app files
     def source_dir
-      File.join(build_dir, "opt/#{config.app_name}")
+      File.join(build_dir, "opt/#{config.name}")
     end
 
     # Build directory. Will be used by fpm to make the package
@@ -93,7 +90,7 @@ module Pkgr
 
     # Current distribution we're packaging for
     def distribution
-      @distribution ||= Distribution.current
+      @distribution ||= Distributions.current
     end
 
     # List of available buildpacks for the current distribution
@@ -111,15 +108,7 @@ module Pkgr
     end
 
     def fpm_command
-      %{
-        fpm -t deb -s dir  --verbose --debug --force \
-        -C "#{build_dir}" \
-        -n "#{config.app_name}" \
-        --version "#{config.app_version}" \
-        --iteration "#{config.app_iteration}" \
-        --provides "#{config.app_name}" \
-        .
-      }
+      distribution.fpm_command(build_dir, config)
     end
   end
 end

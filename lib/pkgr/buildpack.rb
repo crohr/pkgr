@@ -12,7 +12,7 @@ module Pkgr
       end
     end
 
-    attr_reader :url
+    attr_reader :url, :banner
 
     def initialize(url)
       @url = url
@@ -25,6 +25,7 @@ module Pkgr
     def detect(path)
       buildpack_detect = Mixlib::ShellOut.new("#{dir}/bin/detect \"#{path}\"")
       buildpack_detect.run_command
+      @banner = buildpack_detect.stdout.chomp
       buildpack_detect.exitstatus == 0
     end
 

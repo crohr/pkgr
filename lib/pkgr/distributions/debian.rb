@@ -18,13 +18,16 @@ module Pkgr
           "usr/local/bin",
           "opt/#{app_name}",
           "etc/#{app_name}/conf.d",
-          "etc/default"
+          "etc/default",
+          "var/log/#{app_name}"
         ].each{|dir| list.push Templates::DirTemplate.new(dir) }
 
         # default
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", File.new(File.join(data_dir, "default.erb")))
         # executable
         list.push Templates::FileTemplate.new("usr/local/bin/#{app_name}", File.new(File.join(data_dir, "runner.erb")), mode: 0755)
+        # logrotate
+        list.push Templates::FileTemplate.new("etc/logrotate.d/#{app_name}", File.new(File.join(data_dir, "logrotate.erb")))
 
         # conf.d
         Dir.glob(File.join(data_dir, "conf.d", "*")).each do |file|
@@ -43,7 +46,10 @@ module Pkgr
           --iteration "#{config.iteration}" \
           --provides "#{config.name}" \
           --deb-user "#{config.user}" \
+          --template-scripts \
           --deb-group "#{config.group}" \
+          --before-install #{preinstall_file} \
+          --after-install #{postinstall_file} \
           #{dependencies.map{|d| "-d '#{d}'"}.join(" ")} \
           .
         }
@@ -75,6 +81,14 @@ module Pkgr
           libssl0.9.8
           curl
         }
+      end
+
+      def preinstall_file
+        File.join(data_dir, "hooks", "preinstall.sh")
+      end
+
+      def postinstall_file
+        File.join(data_dir, "hooks", "postinstall.sh")
       end
 
       def dependencies

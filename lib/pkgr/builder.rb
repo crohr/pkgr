@@ -21,8 +21,10 @@ module Pkgr
     end
 
     def check
+      raise Errors::ConfigurationInvalid, config.errors.join("; ") unless config.valid?
+
       distribution.requirements.each do |package|
-        system("dpkg -l #{package} &>/dev/null") || Pkgr.debug("Can't find package `#{package}`. Further steps may fail.")
+        system("dpkg -l '#{package}' >/dev/null") || Pkgr.debug("Can't find package `#{package}`. Further steps may fail.")
       end
     end
 
@@ -64,6 +66,7 @@ module Pkgr
     end
 
     def package
+      Pkgr.info "Running command: #{fpm_command}"
       app_package = Mixlib::ShellOut.new(fpm_command)
       app_package.run_command
       app_package.error!

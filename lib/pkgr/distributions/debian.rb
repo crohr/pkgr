@@ -24,7 +24,7 @@ module Pkgr
         # default
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", File.new(File.join(data_dir, "default.erb")))
         # executable
-        list.push Templates::FileTemplate.new("usr/local/bin/#{app_name}", File.new(File.join(data_dir, "runner.erb")))
+        list.push Templates::FileTemplate.new("usr/local/bin/#{app_name}", File.new(File.join(data_dir, "runner.erb")), mode: 0755)
 
         # conf.d
         Dir.glob(File.join(data_dir, "conf.d", "*")).each do |file|
@@ -44,7 +44,7 @@ module Pkgr
           --provides "#{config.name}" \
           --deb-user "#{config.user}" \
           --deb-group "#{config.group}" \
-          #{dependencies.map{|d| "-d '#{d}'"}.join(" ")}
+          #{dependencies.map{|d| "-d '#{d}'"}.join(" ")} \
           .
         }
       end

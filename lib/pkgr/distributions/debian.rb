@@ -44,6 +44,7 @@ module Pkgr
           --provides "#{config.name}" \
           --deb-user "#{config.user}" \
           --deb-group "#{config.group}" \
+          #{dependencies.map{|d| "-d '#{d}'"}.join(" ")}
           .
         }
       end

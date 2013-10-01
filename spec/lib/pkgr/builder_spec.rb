@@ -123,7 +123,8 @@ describe Pkgr::Builder do
     end
 
     it "builds the proper fpm command" do
-      builder.fpm_command.strip.squeeze(" ").should == "fpm -t deb -s dir --verbose --debug --force -C \"#{builder.build_dir}\" -n \"my-app\" --version \"0.0.1\" --iteration \"#{config.iteration}\" --provides \"my-app\" ."
+      command = builder.fpm_command.strip.squeeze(" ")
+      expect(command).to include("fpm -t deb -s dir --verbose --debug --force -C \"#{builder.build_dir}\" -n \"my-app\" --version \"0.0.1\" --iteration \"#{config.iteration}\" --provides \"my-app\"")
     end
 
     it "launches fpm on build dir" do

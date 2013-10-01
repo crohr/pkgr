@@ -1,0 +1,24 @@
+default:
+  - upstart
+  - libmysqlclient-dev
+  - mysql-common
+  - libpq-dev
+  - libpq5
+  - libsqlite3-0
+  - libevent-1.4-2
+  - libevent-core-1.4-2
+  - libevent-dev
+  - libevent-extra-1.4-2
+  - libssl-dev
+  - libssl0.9.8
+  - openssl
+  - libxml2
+  - libxml2-dev
+  - libxslt1-dev
+  - libxslt1.1
+squeeze:
+  - libmysqlclient16
+  - libreadline5-dev
+wheezy:
+  - libmysqlclient18
+  - libreadline6-dev

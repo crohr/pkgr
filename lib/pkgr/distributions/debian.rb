@@ -1,4 +1,5 @@
 require 'pkgr/buildpack'
+require 'yaml'
 
 module Pkgr
   module Distributions
@@ -22,6 +23,8 @@ module Pkgr
 
         # default
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", File.new(File.join(data_dir, "default.erb")))
+        # executable
+        list.push Templates::FileTemplate.new("usr/local/bin/#{app_name}", File.new(File.join(data_dir, "runner.erb")))
 
         # conf.d
         Dir.glob(File.join(data_dir, "conf.d", "*")).each do |file|
@@ -71,6 +74,11 @@ module Pkgr
           libssl0.9.8
           curl
         }
+      end
+
+      def dependencies
+        deps = YAML.load_file(File.join(data_dir, "dependencies.yml"))
+        deps["default"] | deps[version]
       end
 
       def data_dir

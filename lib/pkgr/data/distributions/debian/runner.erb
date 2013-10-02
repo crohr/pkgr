@@ -2,14 +2,23 @@
 
 set -e
 
+EXECUTABLE=$(basename $0)
+
 function usage {
   echo "Usage:"
-  echo "  $0 run COMMAND [options]"
-  echo "  $0 scale TYPE=NUM"
+  echo "  $EXECUTABLE run COMMAND [options]"
+  echo "  $EXECUTABLE scale TYPE=NUM"
+  echo "  $EXECUTABLE config:get VAR"
+  echo "  $EXECUTABLE config:set VAR=VALUE"
   exit 1
 }
 
-DEFAULT_FILE=/etc/default/gitlabhq #<%= name %>
+if [ ! 0 -eq ${EUID} ]; then
+  echo "You must be executing with root privileges to launch commands. Either log in as root, use sudo, or add sudo privileges for running ${EXECUTABLE} with your user."
+  exit 1
+fi
+
+DEFAULT_FILE=/etc/default/<%= name %>
 
 . ${DEFAULT_FILE}
 
@@ -20,17 +29,7 @@ while : ; do
       COMMAND="$2"
       shift 2
 
-      cd "${HOME}"
-
-      if [ $(id ${APP_USER} -u) -eq ${EUID} ]; then
-        exec "vendor/pkgr/processes/${COMMAND}" "$@"
-      elif [ 0 -eq ${EUID} ]; then
-        exec su -m - "${APP_USER}" -c ". ${DEFAULT_FILE} && vendor/pkgr/processes/${COMMAND} $@"
-      else
-        echo "You should be either executing as '${APP_USER}' user or with root privileges to launch commands."
-        exit 1
-      fi
-
+      exec su -m - "${APP_USER}" -c ". ${DEFAULT_FILE} && cd ${HOME} && vendor/pkgr/processes/${COMMAND} $@"
       break ;;
 
     scale)
@@ -39,11 +38,6 @@ while : ; do
         case "$1" in
           *)
             [ "$1" = "" ] && usage
-
-            if [ ! 0 -eq ${EUID} ]; then
-              echo 'You must be root to scale processes up and down. Re-run the command with `sudo` or under the `root` user.'
-              exit 1
-            fi
 
             PROCESS=(${1//=/ })
 
@@ -96,6 +90,28 @@ while : ; do
         esac
       done
       break ;;
+
+    config:set)
+      [ $# -lt 2 ] && usage
+
+      CONFIG=(${2//=/ })
+
+      VAR=${CONFIG[0]:?"Invalid variable name"}
+      VALUE=${CONFIG[1]:?"Invalid value"}
+
+      DEFAULT_CONF_FILE="/etc/${APP_NAME}/conf.d/other"
+
+      sed -i -r "s/^.*${VAR}.*$//g" /etc/${APP_NAME}/conf.d/*
+
+      echo "export ${VAR}=${VALUE}" >> "${DEFAULT_CONF_FILE}"
+
+      break;;
+
+    config:get)
+      [ $# -lt 2 ] && usage
+      result=$(grep --no-filename "${2}" ${DEFAULT_FILE} /etc/${APP_NAME}/conf.d/*)
+      echo "${result}" | sed -r "s/^export\s+${2}=//g"
+      break;;
 
     *)
       usage

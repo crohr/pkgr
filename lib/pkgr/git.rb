@@ -18,7 +18,7 @@ module Pkgr
     end
 
     def valid?
-      File.directory?(File.join(path, ".git"))
+      File.file?(File.join(path, ".git", "index"))
     end
   end
 end

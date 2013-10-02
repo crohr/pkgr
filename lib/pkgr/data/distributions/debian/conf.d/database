@@ -1,2 +1,0 @@
-# Database URL. E.g. : mysql2://root:pass@127.0.0.1/my-app-db
-export DATABASE_URL=db_adapter://db_user:db_password@db_host/db_name

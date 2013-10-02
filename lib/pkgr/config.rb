@@ -22,6 +22,10 @@ module Pkgr
       @table[:architecture] || "x86_64"
     end
 
+    def homepage
+      @table[:homepage] || "http://example.com/no-uri-given"
+    end
+
     def valid?
       @errors = []
       @errors.push("name can't be blank") if name.nil? || name.empty?

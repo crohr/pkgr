@@ -30,7 +30,11 @@ module Pkgr
       raise Errors::ConfigurationInvalid, config.errors.join("; ") unless config.valid?
 
       distribution.requirements.each do |package|
-        system("dpkg -l '#{package}' >/dev/null") || Pkgr.debug("Can't find package `#{package}`. Further steps may fail.")
+        system("dpkg -l '#{package}' >/dev/null") || Pkgr.warn("Can't find package `#{package}`. Further steps may fail.")
+      end
+
+      (config.build_dependencies || []).each do |package|
+        system("dpkg -l '#{package}' >/dev/null") || Pkgr.warn("Can't find package `#{package}`, which is a build dependency. Further steps may fail. Install with `apt-get install #{package}`.")
       end
     end
 
@@ -66,6 +70,7 @@ module Pkgr
         FileUtils.mkdir_p(compile_cache_dir)
 
         Pkgr.info "Found buildpack: #{buildpack_for_app}"
+        run_hook config.before_precompile
         buildpack_for_app.compile(source_dir, compile_cache_dir)
         buildpack_for_app.release(source_dir, compile_cache_dir)
       else
@@ -194,6 +199,16 @@ module Pkgr
 
     def fpm_command
       distribution.fpm_command(build_dir, config)
+    end
+
+    protected
+    def run_hook(file)
+      return true if file.nil?
+      Dir.chdir(source_dir) do
+        app_package = Mixlib::ShellOut.new("bash '#{file}'")
+        app_package.run_command
+        app_package.error!
+      end
     end
   end
 end

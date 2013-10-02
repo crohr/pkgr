@@ -1,26 +1,27 @@
 require "thor"
 require 'pkgr'
-require 'pkgr/git'
 
 module Pkgr
   class CLI < Thor
     class_option :verbose,    :type => :boolean, :default => false, :desc => "Run verbosely"
-    class_option :name,       :type => :string, :default => File.basename(Dir.pwd), :desc => "Application name"
+    class_option :name,       :type => :string, :desc => "Application name (if directory given, it will default to the directory name)"
 
 
     desc "package TARBALL", "Package the given tarball or directory"
 
-    method_option :target,            :type => :string, :default => "deb", :desc => "Target package to build (only 'deb' supported for now)"
-    method_option :changelog,         :type => :string, :desc => "Changelog"
-    method_option :architecture,      :type => :string, :default => "x86_64", :desc => "Target architecture for the package"
-    method_option :codename,          :type => :string, :default => "lucid", :desc => "Target distribution"
-    # method_option :sign_key,        :type => :string, :desc => "Key to be used to sign the generated package [default=#{DEFAULT_SIGN_KEY}]"
-    method_option :homepage,          :type => :string, :desc => "Project homepage"
-    method_option :version,           :type => :string, :default => Git.new(Dir.pwd).latest_tag, :desc => "Package version (uses your latest git tag if available)"
-    method_option :iteration,         :type => :string, :default => Time.now.strftime("%Y%m%d%H%M%S"), :desc => "Package iteration (you should keep the default here)"
-    method_option :user,              :type => :string, :desc => "User to run the app under (defaults to your app name)"
-    method_option :group,             :type => :string, :desc => "Group to run the app under (defaults to your app name)"
-    method_option :compile_cache_dir, :type => :string, :default => File.expand_path(".git/cache"), :desc => "Where to store the files cached between packaging runs"
+    method_option :target,              :type => :string, :default => "deb", :desc => "Target package to build (only 'deb' supported for now)"
+    method_option :changelog,           :type => :string, :desc => "Changelog"
+    method_option :architecture,        :type => :string, :default => "x86_64", :desc => "Target architecture for the package"
+    # method_option :sign_key,          :type => :string, :desc => "Key to be used to sign the generated package [default=#{DEFAULT_SIGN_KEY}]"
+    method_option :homepage,            :type => :string, :desc => "Project homepage"
+    method_option :version,             :type => :string, :desc => "Package version (if git directory given, it will use the latest git tag available)"
+    method_option :iteration,           :type => :string, :default => Time.now.strftime("%Y%m%d%H%M%S"), :desc => "Package iteration (you should keep the default here)"
+    method_option :user,                :type => :string, :desc => "User to run the app under (defaults to your app name)"
+    method_option :group,               :type => :string, :desc => "Group to run the app under (defaults to your app name)"
+    method_option :compile_cache_dir,   :type => :string, :desc => "Where to store the files cached between packaging runs"
+    method_option :dependencies,        :type => :array,  :default => [], :desc => "Specific system dependencies that you want to install with the package"
+    method_option :build_dependencies,  :type => :array,  :default => [], :desc => "Specific system dependencies that must be present before building"
+    method_option :before_precompile,   :type => :string, :desc => "Provide a script to run just before the buildpack compilation"
 
     def package(tarball)
       packager = Dispatcher.new(tarball, options)
@@ -30,6 +31,5 @@ module Pkgr
       puts "* ERROR: #{e.message}"
       exit 1
     end
-
   end
 end

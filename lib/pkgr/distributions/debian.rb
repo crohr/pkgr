@@ -34,10 +34,8 @@ module Pkgr
         # logrotate
         list.push Templates::FileTemplate.new("etc/logrotate.d/#{app_name}", File.new(File.join(data_dir, "logrotate.erb")))
 
-        # conf.d
-        Dir.glob(File.join(data_dir, "conf.d", "*")).each do |file|
-          list.push Templates::FileTemplate.new("etc/#{app_name}/conf.d/#{File.basename(file, ".erb")}", File.new(file))
-        end
+        # NOTE: conf.d files are no longer installed here, since we don't want to overwrite any pre-existing config.
+        # They're now installed in the postinstall script.
 
         list
       end
@@ -59,6 +57,7 @@ module Pkgr
           -n "#{config.name}" \
           --version "#{config.version}" \
           --iteration "#{config.iteration}" \
+          --url "#{config.homepage}" \
           --provides "#{config.name}" \
           --deb-user "root" \
           --deb-group "root" \

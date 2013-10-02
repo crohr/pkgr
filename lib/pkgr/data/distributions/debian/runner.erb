@@ -9,21 +9,23 @@ function usage {
   exit 1
 }
 
-. /etc/default/<%= name %>
+DEFAULT_FILE=/etc/default/gitlabhq #<%= name %>
+
+. ${DEFAULT_FILE}
 
 while : ; do
   case "$1" in
     run)
-      shift
-      COMMAND="$1"
-      shift
-      [ "${COMMAND}" = "" ] && usage
+      [ $# -lt 2 ] && usage
+      COMMAND="$2"
+      shift 2
+
       cd "${HOME}"
 
       if [ $(id ${APP_USER} -u) -eq ${EUID} ]; then
         exec "vendor/pkgr/processes/${COMMAND}" "$@"
       elif [ 0 -eq ${EUID} ]; then
-        exec su -p "${APP_USER}" -c "'vendor/pkgr/processes/${COMMAND}' $@"
+        exec su -m - "${APP_USER}" -c ". ${DEFAULT_FILE} && vendor/pkgr/processes/${COMMAND} $@"
       else
         echo "You should be either executing as '${APP_USER}' user or with root privileges to launch commands."
         exit 1
@@ -67,22 +69,24 @@ while : ; do
               echo "Scaling up..."
               cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}.conf" /etc/init/
               for i in $(seq ${SCALE_DELTA}); do
+                PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${i}"
                 i=$(expr ${i} + ${CURRENT_SCALE})
-                cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM.conf" "/etc/init/${APP_NAME}-${PROCESS_NAME}-${i}.conf"
-                sed -i "s/PROCESS_NUM/${i}/g" "/etc/init/${APP_NAME}-${PROCESS_NAME}-${i}.conf"
+                cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM.conf" "/etc/init/${PROCESS_ID}.conf"
+                sed -i "s/PROCESS_NUM/${i}/g" "/etc/init/${PROCESS_ID}.conf"
                 if [ "${PROCESS_NAME}" = "web" ]; then
                   port=$(expr ${PORT} + ${i} - 1)
-                  sed -i "s/PORT_NUM/${port}/g" "/etc/init/${APP_NAME}-${PROCESS_NAME}-${i}.conf"
+                  sed -i "s/PORT_NUM/${port}/g" "/etc/init/${PROCESS_ID}.conf"
                 fi
-                service "${APP_NAME}-${PROCESS_NAME}-${i}" start
+                service "${PROCESS_ID}" start
               done
               echo "--> done."
             elif [ $SCALE_DELTA -lt 0 ]; then
               echo "Scaling down..."
               for i in $(seq $(expr $SCALE_DELTA \* -1)); do
+                PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${i}"
                 i=$(expr ${i} + ${NEW_SCALE})
-                service "${APP_NAME}-${PROCESS_NAME}-${i}" stop || true
-                rm -f "/etc/init/${APP_NAME}-${PROCESS_NAME}-${i}.conf"
+                service "${PROCESS_ID}" stop || true
+                rm -f "/etc/init/${PROCESS_ID}.conf"
               done
               echo "--> done."
             else

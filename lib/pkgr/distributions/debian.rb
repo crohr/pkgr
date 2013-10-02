@@ -50,7 +50,7 @@ module Pkgr
           --deb-group "#{config.group}" \
           --before-install #{preinstall_file} \
           --after-install #{postinstall_file} \
-          #{dependencies.map{|d| "-d '#{d}'"}.join(" ")} \
+          #{dependencies(config.dependencies).map{|d| "-d '#{d}'"}.join(" ")} \
           .
         }
       end
@@ -91,9 +91,10 @@ module Pkgr
         File.join(data_dir, "hooks", "postinstall.sh")
       end
 
-      def dependencies
+      def dependencies(other_dependencies = nil)
+        other_dependencies ||= []
         deps = YAML.load_file(File.join(data_dir, "dependencies.yml"))
-        deps["default"] | deps[version]
+        deps["default"] | deps[version] | other_dependencies
       end
 
       def data_dir

@@ -2,8 +2,8 @@
 
 set -e
 
-USER="<%= name %>"
+APP_USER="<%= user %>"
 
-if ! getent passwd ${USER} > /dev/null; then
-  adduser ${USER} --disabled-login --system --quiet --shell /bin/bash
+if ! getent passwd ${APP_USER} > /dev/null; then
+  adduser ${APP_USER} --disabled-login --group --system --quiet --shell /bin/bash
 fi

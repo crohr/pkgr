@@ -110,10 +110,12 @@ describe Pkgr::Builder do
     end
   end
 
-  describe "#write_env" do
+  describe "#write_env and #write_init" do
     let(:builder) { Pkgr::Builder.new(fixture("my-app.tar.gz"), config) }
+    let(:distribution) { Pkgr::Distributions::Debian.new("wheezy") }
 
     before do
+      builder.stub(:distribution => distribution)
       builder.setup
       FileUtils.cp fixture(".release"), builder.source_dir
       FileUtils.cp fixture("Procfile"), builder.source_dir
@@ -125,8 +127,28 @@ describe Pkgr::Builder do
 
     it "should write the expected process stubs" do
       expect{ builder.write_env }.to_not raise_error
-      expect(Dir.glob(File.join(builder.proc_dir, "*")).map{|file| File.basename(file)}.sort).to eq(["console", "rake", "redis", "web", "worker"])
+      expect(Dir.glob(File.join(builder.proc_dir, "*")).map{|file| File.basename(file)}.sort).to eq([
+        "console",
+        "rake",
+        "redis",
+        "web",
+        "worker"
+      ])
       expect(File.read(File.join(builder.proc_dir, "web"))).to eq("bundle exec unicorn $@")
+    end
+
+    it "should write the expected init files" do
+      expect{ builder.write_init }.to_not raise_error
+      expect(Dir.glob(File.join(builder.build_dir, "etc/init", "*")).map{|file| File.basename(file)}.sort).to eq([
+        "my-app.conf"
+      ])
+
+      expect(Dir.glob(File.join(builder.scaling_dir, "*")).map{|file| File.basename(file)}.sort).to eq([
+        "my-app-web-PROCESS_NUM.conf",
+        "my-app-web.conf",
+        "my-app-worker-PROCESS_NUM.conf",
+        "my-app-worker.conf",
+      ])
     end
   end
 

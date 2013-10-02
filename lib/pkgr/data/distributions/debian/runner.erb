@@ -1,25 +1,96 @@
 #!/bin/bash
 
+set -e
+
 function usage {
-  echo "Usage: $0 run COMMAND [options]"
+  echo "Usage:"
+  echo "  $0 run COMMAND [options]"
+  echo "  $0 scale TYPE=NUM"
   exit 1
 }
 
-COMMAND_TYPE=""
-COMMAND=""
+. /etc/default/<%= name %>
 
 while : ; do
   case "$1" in
     run)
-      COMMAND_TYPE="$1"
       shift
       COMMAND="$1"
-      shift ;;
-    *)
-      [ "${COMMAND_TYPE}" = "run" ] || usage
+      shift
       [ "${COMMAND}" = "" ] && usage
-      . /etc/default/<%= name %>
-      cd $HOME && exec "vendor/pkgr/processes/${COMMAND}" "$@"
+      cd "${HOME}"
+
+      if [ $(id ${APP_USER} -u) -eq ${EUID} ]; then
+        exec "vendor/pkgr/processes/${COMMAND}" "$@"
+      elif [ 0 -eq ${EUID} ]; then
+        exec su -p "${APP_USER}" -c "'vendor/pkgr/processes/${COMMAND}' $@"
+      else
+        echo "You should be either executing as '${APP_USER}' user or with root privileges to launch commands."
+        exit 1
+      fi
+
+      break ;;
+
+    scale)
+      shift
+      while : ; do
+        case "$1" in
+          *)
+            [ "$1" = "" ] && usage
+
+            if [ ! 0 -eq ${EUID} ]; then
+              echo 'You must be root to scale processes up and down. Re-run the command with `sudo` or under the `root` user.'
+              exit 1
+            fi
+
+            PROCESS=(${1//=/ })
+
+            PROCESS_NAME=${PROCESS[0]}
+            NEW_SCALE=${PROCESS[1]}
+            CURRENT_SCALE=$(ls -rv1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)\.conf/\1/g')
+            CURRENT_SCALE=${CURRENT_SCALE:="0"}
+            SCALE_DELTA=$(expr ${NEW_SCALE} - ${CURRENT_SCALE})
+
+            if [ $NEW_SCALE -eq 0 ]; then
+              echo "Stopping all ${PROCESS_NAME} processes... "
+              service "${APP_NAME}-${PROCESS_NAME}" stop || true
+              rm /etc/init/${APP_NAME}-${PROCESS_NAME}*.conf
+              echo "--> done."
+              exit 0
+            fi
+
+            if [ $SCALE_DELTA -gt 0 ]; then
+              echo "Scaling up..."
+              cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}.conf" /etc/init/
+              for i in $(seq ${SCALE_DELTA}); do
+                i=$(expr ${i} + ${CURRENT_SCALE})
+                cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM.conf" "/etc/init/${APP_NAME}-${PROCESS_NAME}-${i}.conf"
+                sed -i "s/PROCESS_NUM/${i}/g" "/etc/init/${APP_NAME}-${PROCESS_NAME}-${i}.conf"
+                if [ "${PROCESS_NAME}" = "web" ]; then
+                  port=$(expr ${PORT} + ${i} - 1)
+                  sed -i "s/PORT_NUM/${port}/g" "/etc/init/${APP_NAME}-${PROCESS_NAME}-${i}.conf"
+                fi
+                service "${APP_NAME}-${PROCESS_NAME}-${i}" start
+              done
+              echo "--> done."
+            elif [ $SCALE_DELTA -lt 0 ]; then
+              echo "Scaling down..."
+              for i in $(seq $(expr $SCALE_DELTA \* -1)); do
+                i=$(expr ${i} + ${NEW_SCALE})
+                service "${APP_NAME}-${PROCESS_NAME}-${i}" stop || true
+                rm -f "/etc/init/${APP_NAME}-${PROCESS_NAME}-${i}.conf"
+              done
+              echo "--> done."
+            else
+              echo "Nothing to do."
+            fi
+            break ;;
+        esac
+      done
+      break ;;
+
+    *)
+      usage
       break ;;
   esac
 done

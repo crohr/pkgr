@@ -2,6 +2,7 @@ require 'tempfile'
 require 'fileutils'
 require 'pkgr/config'
 require 'pkgr/distributions'
+require 'pkgr/process'
 
 module Pkgr
   class Builder
@@ -20,6 +21,7 @@ module Pkgr
       extract
       compile
       write_env
+      write_init
       package
     end
 
@@ -75,28 +77,30 @@ module Pkgr
     # Then merges those with the ones from the app's Procfile (if any).
     # Finally, generates a binstub in vendor/pkgr/processes/ so that these commands can be called using the app's executable.
     def write_env
-      procfile_entries = if File.exist?(procfile)
-        File.read(procfile).gsub("\r\n","\n").split("\n").map do |line|
-          if line =~ /^([A-Za-z0-9_]+):\s*(.+)$/
-            [$1, $2]
-          end
-        end.compact
-      else
-        []
-      end
-
       FileUtils.mkdir_p proc_dir
 
-      default_process_types = YAML.load_file(release_file)["default_process_types"]
-      default_process_types.merge(Hash[procfile_entries]).each do |process_name, command|
-        process_file = File.join(proc_dir, process_name)
+      procfile_entries.each do |process|
+        process_file = File.join(proc_dir, process.name)
 
         File.open(process_file, "w+") do |f|
-          f << command
+          f << process.command
           f << " $@"
         end
 
         FileUtils.chmod 0755, process_file
+      end
+    end
+
+    # Write startup scripts.
+    def write_init
+      FileUtils.mkdir_p scaling_dir
+      Dir.chdir(scaling_dir) do
+        distribution.initializers_for(config.name, procfile_entries).each do |(process, file)|
+          process_config = config.dup
+          process_config.process_name = process.name
+          process_config.process_command = process.command
+          file.install(process_config.sesame)
+        end
       end
     end
 
@@ -111,6 +115,24 @@ module Pkgr
     # Make sure to get rid of the build directory
     def teardown
       FileUtils.rm_rf(build_dir)
+    end
+
+    def procfile_entries
+      @procfile_entries ||= begin
+        default_process_types = YAML.load_file(release_file)["default_process_types"]
+
+        entries = if File.exist?(procfile)
+          File.read(procfile).gsub("\r\n","\n").split("\n").map do |line|
+            if line =~ /^([A-Za-z0-9_]+):\s*(.+)$/
+              [$1, $2]
+            end
+          end.compact
+        else
+          []
+        end
+
+        default_process_types.merge(Hash[entries]).map{|name, command| Process.new(name, command)}
+      end
     end
 
     # Path to the release file generated after the buildpack compilation.
@@ -128,9 +150,17 @@ module Pkgr
       @build_dir ||= Dir.mktmpdir
     end
 
+    def vendor_dir
+      File.join(source_dir, "vendor", "pkgr")
+    end
+
     # Directory where binstubs will be created for the corresponding Procfile commands.
     def proc_dir
-      File.join(source_dir, "vendor", "pkgr", "processes")
+      File.join(vendor_dir, "processes")
+    end
+
+    def scaling_dir
+      File.join(vendor_dir, "scaling")
     end
 
     # Returns the path to the app's (supposedly present) Procfile.
@@ -140,7 +170,7 @@ module Pkgr
 
     # Directory where the buildpacks can store stuff.
     def compile_cache_dir
-      File.join(source_dir, ".git/cache")
+      config.compile_cache_dir || File.join(source_dir, ".git/cache")
     end
 
     # Returns the current distribution we're packaging for.

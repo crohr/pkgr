@@ -1,56 +1,8 @@
 #!/usr/bin/env ruby
 
-require 'optparse'
-require 'pkgr/cli'
+require "pkgr/cli"
 
-OPTIONS = {:dir => "./", :ref => "master", :reuse => false}
+STDERR.sync = true
+STDOUT.sync = true
 
-option_parser = OptionParser.new do |opts|
-  opts.banner = <<BANNER
-* Description
-  pkgr #{Pkgr::VERSION} - Package Rails apps effortlessly.
-* Usage
-  pkgr --uri GIT_REPOSITORY --config database.yml:http://path/to/database.yml --config ...
-BANNER
-
-  opts.separator ""
-  opts.separator "* Common options"
-  opts.on("--uri=", "Sets the Git repository URI (FILE, HTTP, SSH, GIT, etc.) [required]") do |v|
-    OPTIONS[:uri] = v
-  end
-  opts.on("-c=", "--config=", "Download a configuration file into the config/ folder of the app (HTTP or FILE URIs)") do |v|
-    OPTIONS[:config_files] ||= []
-    OPTIONS[:config_files] << v
-  end
-  opts.on("-b=", "--bump=", "Sets the app version [required]") do |v|
-    OPTIONS[:version] = v
-  end
-  opts.on("-n=", "--name=", "Sets the app name [optional]") do |v|
-    OPTIONS[:name] = v
-  end
-  opts.on("--ref=", "Sets the git reference to checkout [default=#{OPTIONS[:ref]}]") do |v|
-    OPTIONS[:ref] = v
-  end
-  opts.on("--host=", "Sets the build machine hostname. If none, the process will stop just before building the package.") do |v|
-    OPTIONS[:host] = v
-  end
-
-  opts.separator ""
-  opts.separator "* Other"
-  opts.on_tail("-h", "--help", "Show this message") do
-    puts opts
-    exit
-  end
-  opts.on_tail("--version", "Show version") do
-    puts Pkgr::VERSION
-    exit
-  end
-end.parse!
-
-begin
-  cli = Pkgr::CLI.new(OPTIONS)
-  cli.run
-rescue Pkgr::CLI::Error, StandardError => e
-  puts e.message
-  puts e.backtrace if $DEBUG
-end
+Pkgr::CLI.start

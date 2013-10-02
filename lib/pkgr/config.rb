@@ -11,11 +11,15 @@ module Pkgr
     end
 
     def user
-      @table[:user] || "root"
+      @table[:user] || name
     end
 
     def group
       @table[:group] || user
+    end
+
+    def architecture
+      @table[:architecture] || "x86_64"
     end
 
     def valid?

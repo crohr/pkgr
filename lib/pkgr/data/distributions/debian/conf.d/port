@@ -1,1 +1,1 @@
-export PORT=6000
+export PORT=${PORT:=6000}

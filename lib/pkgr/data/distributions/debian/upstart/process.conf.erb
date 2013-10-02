@@ -1,5 +1,7 @@
-start on starting <%= app %>-<%= name %>
-stop on stopping <%= app %>-<%= name %>
+start on starting <%= name %>-<%= process_name %>
+stop on stopping <%= name %>-<%= process_name %>
 respawn
 
-exec su - <%= user %> -c 'cd <%= engine.root %>; source /etc/default/<%= app %>; <% engine.env.each_pair do |var,env| %> export <%= var.upcase %>=<%= shell_quote(env) %>; <% end %> <%= process.command %> >> <%= log %>/<%=name%>-<%=num%>.log 2>&1'
+env PORT=PORT_NUM
+
+exec su -m - <%= user %> -c '<%= name %> run <%= process_name %> >> /var/log/<%= name %>/<%= process_name %>-PROCESS_NUM.log 2>&1'

@@ -1,9 +1,12 @@
 HOME="<%= home %>"
+APP_NAME="<%= name %>"
+APP_GROUP="<%= group %>"
+APP_USER="<%= user %>"
 
-for file in /etc/<%= name %>/conf.d/*; do
+for file in /etc/${APP_NAME}/conf.d/*; do
   if [ -f $file ]; then . $file; fi
 done
 
-for file in <%= home %>/.profile.d/*.sh; do
+for file in ${HOME}/.profile.d/*.sh; do
   if [ -f $file ]; then . $file; fi
 done

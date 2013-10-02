@@ -1,4 +1,5 @@
 require 'pkgr/buildpack'
+require 'pkgr/process'
 require 'yaml'
 
 module Pkgr
@@ -19,11 +20,14 @@ module Pkgr
           "opt/#{app_name}",
           "etc/#{app_name}/conf.d",
           "etc/default",
+          "etc/init",
           "var/log/#{app_name}"
         ].each{|dir| list.push Templates::DirTemplate.new(dir) }
 
         # default
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", File.new(File.join(data_dir, "default.erb")))
+        # upstart master
+        list.push Templates::FileTemplate.new("etc/init/#{app_name}.conf", data_file("upstart/master.conf.erb"))
         # executable
         list.push Templates::FileTemplate.new("usr/local/bin/#{app_name}", File.new(File.join(data_dir, "runner.erb")), mode: 0755)
         # logrotate
@@ -37,6 +41,16 @@ module Pkgr
         list
       end
 
+      def initializers_for(app_name, procfile_entries)
+        list = []
+        procfile_entries.select(&:daemon?).each do |process|
+          Pkgr.debug "Adding #{process.inspect} to initialization scripts"
+          list.push [process, Templates::FileTemplate.new("#{app_name}-#{process.name}.conf", data_file("upstart/process_master.conf.erb"))]
+          list.push [process, Templates::FileTemplate.new("#{app_name}-#{process.name}-PROCESS_NUM.conf", data_file("upstart/process.conf.erb"))]
+        end
+        list
+      end
+
       def fpm_command(build_dir, config)
         %{
           fpm -t deb -s dir  --verbose --debug --force \
@@ -45,11 +59,12 @@ module Pkgr
           --version "#{config.version}" \
           --iteration "#{config.iteration}" \
           --provides "#{config.name}" \
-          --deb-user "#{config.user}" \
+          --deb-user "root" \
+          --deb-group "root" \
+          -a "#{config.architecture}" \
           --template-scripts \
-          --deb-group "#{config.group}" \
-          --before-install #{preinstall_file} \
-          --after-install #{postinstall_file} \
+          --before-install #{preinstall_file(config)} \
+          --after-install #{postinstall_file(config)} \
           #{dependencies(config.dependencies).map{|d| "-d '#{d}'"}.join(" ")} \
           .
         }
@@ -83,18 +98,34 @@ module Pkgr
         }
       end
 
-      def preinstall_file
-        File.join(data_dir, "hooks", "preinstall.sh")
+      def preinstall_file(config)
+        @preinstall_file ||= begin
+          source = File.join(data_dir, "hooks", "preinstall.sh")
+          file = Tempfile.new("preinstall")
+          file.write ERB.new(File.read(source)).result(config.sesame)
+          file.rewind
+          file.path
+        end
       end
 
-      def postinstall_file
-        File.join(data_dir, "hooks", "postinstall.sh")
+      def postinstall_file(config)
+        @postinstall_file ||= begin
+          source = File.join(data_dir, "hooks", "postinstall.sh")
+          file = Tempfile.new("postinstall")
+          file.write ERB.new(File.read(source)).result(config.sesame)
+          file.rewind
+          file.path
+        end
       end
 
       def dependencies(other_dependencies = nil)
         other_dependencies ||= []
         deps = YAML.load_file(File.join(data_dir, "dependencies.yml"))
         deps["default"] | deps[version] | other_dependencies
+      end
+
+      def data_file(name)
+        File.new(File.join(data_dir, name))
       end
 
       def data_dir

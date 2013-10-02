@@ -1,10 +1,25 @@
 #!/bin/bash
 
-COMMAND=$1
-COMMAND=${COMMAND:?"must be specified"}
+function usage {
+  echo "Usage: $0 run COMMAND [options]"
+  exit 1
+}
 
-shift
+COMMAND_TYPE=""
+COMMAND=""
 
-. /etc/default/<%= name %>
-
-cd $HOME && exec "vendor/pkgr/processes/${COMMAND}" $@
+while : ; do
+  case "$1" in
+    run)
+      COMMAND_TYPE="$1"
+      shift
+      COMMAND="$1"
+      shift ;;
+    *)
+      [ "${COMMAND_TYPE}" = "run" ] || usage
+      [ "${COMMAND}" = "" ] && usage
+      . /etc/default/<%= name %>
+      cd $HOME && exec "vendor/pkgr/processes/${COMMAND}" "$@"
+      break ;;
+  esac
+done

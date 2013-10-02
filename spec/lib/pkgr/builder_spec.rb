@@ -87,7 +87,7 @@ describe Pkgr::Builder do
     end
 
     it "raises an error if something occurs during buildpack compilation" do
-      buildpack = double(Pkgr::Buildpack)
+      buildpack = double(Pkgr::Buildpack, :banner => "Ruby/Rails")
       builder.stub(:buildpack_for_app => buildpack)
       buildpack.should_receive(:compile).with(builder.source_dir, builder.compile_cache_dir).and_raise(Pkgr::Errors::Base)
 
@@ -95,7 +95,7 @@ describe Pkgr::Builder do
     end
 
     it "raises an error if something occurs during buildpack release" do
-      buildpack = double(Pkgr::Buildpack, :compile => true)
+      buildpack = double(Pkgr::Buildpack, :banner => "Ruby/Rails", :compile => true)
       builder.stub(:buildpack_for_app => buildpack)
       buildpack.should_receive(:release).with(builder.source_dir, builder.compile_cache_dir).and_raise(Pkgr::Errors::Base)
 
@@ -103,10 +103,30 @@ describe Pkgr::Builder do
     end
 
     it "succeeds if everything went well" do
-      buildpack = double(Pkgr::Buildpack, :compile => true, :release => true)
+      buildpack = double(Pkgr::Buildpack, :banner => "Ruby/Rails", :compile => true, :release => true)
       builder.stub(:buildpack_for_app => buildpack)
 
       expect{ builder.compile }.to_not raise_error
+    end
+  end
+
+  describe "#write_env" do
+    let(:builder) { Pkgr::Builder.new(fixture("my-app.tar.gz"), config) }
+
+    before do
+      builder.setup
+      FileUtils.cp fixture(".release"), builder.source_dir
+      FileUtils.cp fixture("Procfile"), builder.source_dir
+    end
+
+    after do
+      builder.teardown
+    end
+
+    it "should write the expected process stubs" do
+      expect{ builder.write_env }.to_not raise_error
+      expect(Dir.glob(File.join(builder.proc_dir, "*")).map{|file| File.basename(file)}.sort).to eq(["console", "rake", "redis", "web", "worker"])
+      expect(File.read(File.join(builder.proc_dir, "web"))).to eq("bundle exec unicorn $@")
     end
   end
 

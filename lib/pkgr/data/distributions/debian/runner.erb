@@ -1,5 +1,10 @@
 #!/bin/bash
 
+COMMAND=$1
+COMMAND=${COMMAND:?"must be specified"}
+
+shift
+
 . /etc/default/<%= name %>
 
-cd $HOME && exec $@
+cd $HOME && exec "vendor/pkgr/processes/${COMMAND}" $@

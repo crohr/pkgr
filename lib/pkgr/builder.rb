@@ -7,19 +7,23 @@ module Pkgr
   class Builder
     attr_reader :tarball, :config
 
+    # Accepts a path to a tarball (gzipped or not), or you can pass '-' to read from stdin.
     def initialize(tarball, config)
       @tarball = tarball
       @config = config
     end
 
+    # Launch the full packaging procedure
     def call
       check
       setup
       extract
       compile
+      write_env
       package
     end
 
+    # Check configuration, and verifies that the current distribution's requirements are satisfied
     def check
       raise Errors::ConfigurationInvalid, config.errors.join("; ") unless config.valid?
 
@@ -67,6 +71,36 @@ module Pkgr
       end
     end
 
+    # Parses the output of buildpack/bin/release executable to find out its default Procfile commands.
+    # Then merges those with the ones from the app's Procfile (if any).
+    # Finally, generates a binstub in vendor/pkgr/processes/ so that these commands can be called using the app's executable.
+    def write_env
+      procfile_entries = if File.exist?(procfile)
+        File.read(procfile).gsub("\r\n","\n").split("\n").map do |line|
+          if line =~ /^([A-Za-z0-9_]+):\s*(.+)$/
+            [$1, $2]
+          end
+        end.compact
+      else
+        []
+      end
+
+      FileUtils.mkdir_p proc_dir
+
+      default_process_types = YAML.load_file(release_file)["default_process_types"]
+      default_process_types.merge(Hash[procfile_entries]).each do |process_name, command|
+        process_file = File.join(proc_dir, process_name)
+
+        File.open(process_file, "w+") do |f|
+          f << command
+          f << " $@"
+        end
+
+        FileUtils.chmod 0755, process_file
+      end
+    end
+
+    # Launch the FPM command that will generate the package.
     def package
       Pkgr.info "Running command: #{fpm_command}"
       app_package = Mixlib::ShellOut.new(fpm_command)
@@ -74,36 +108,52 @@ module Pkgr
       app_package.error!
     end
 
+    # Make sure to get rid of the build directory
     def teardown
       FileUtils.rm_rf(build_dir)
     end
 
-    # Path to the source directory containing the main app files
+    # Path to the release file generated after the buildpack compilation.
+    def release_file
+      File.join(source_dir, ".release")
+    end
+
+    # Path to the directory containing the main app files.
     def source_dir
       File.join(build_dir, "opt/#{config.name}")
     end
 
-    # Build directory. Will be used by fpm to make the package
+    # Build directory. Will be used by fpm to make the package.
     def build_dir
       @build_dir ||= Dir.mktmpdir
     end
 
-    # Directory where the buildpacks can store stuff
+    # Directory where binstubs will be created for the corresponding Procfile commands.
+    def proc_dir
+      File.join(source_dir, "vendor", "pkgr", "processes")
+    end
+
+    # Returns the path to the app's (supposedly present) Procfile.
+    def procfile
+      File.join(source_dir, "Procfile")
+    end
+
+    # Directory where the buildpacks can store stuff.
     def compile_cache_dir
       File.join(source_dir, ".git/cache")
     end
 
-    # Current distribution we're packaging for
+    # Returns the current distribution we're packaging for.
     def distribution
       @distribution ||= Distributions.current
     end
 
-    # List of available buildpacks for the current distribution
+    # List of available buildpacks for the current distribution.
     def buildpacks
       distribution.buildpacks
     end
 
-    # Buildpack detected for the app, if any
+    # Buildpack detected for the app, if any.
     def buildpack_for_app
       raise "#{source_dir} does not exist" unless File.directory?(source_dir)
       @buildpack_for_app ||= buildpacks.find do |buildpack|

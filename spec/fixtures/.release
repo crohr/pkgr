@@ -1,0 +1,8 @@
+---
+addons:
+- heroku-postgresql:dev
+default_process_types:
+  rake: bundle exec rake
+  console: bundle exec rails console
+  web: bundle exec thin start -R config.ru -e $RAILS_ENV -p $PORT
+  worker: bundle exec rake jobs:work

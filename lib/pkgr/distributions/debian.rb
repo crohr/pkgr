@@ -1,6 +1,7 @@
 require 'pkgr/buildpack'
 require 'pkgr/process'
 require 'yaml'
+require 'erb'
 
 module Pkgr
   module Distributions

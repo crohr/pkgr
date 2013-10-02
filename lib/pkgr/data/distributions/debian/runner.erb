@@ -53,8 +53,12 @@ while : ; do
 
             if [ $NEW_SCALE -eq 0 ]; then
               echo "Stopping all ${PROCESS_NAME} processes... "
-              service "${APP_NAME}-${PROCESS_NAME}" stop || true
-              rm /etc/init/${APP_NAME}-${PROCESS_NAME}*.conf
+              for file in `ls -1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf`; do
+                service "$(basename ${file} .conf)" stop || true
+                rm "${file}"
+              done
+              # Finally, remove master process
+              rm "/etc/init/${APP_NAME}-${PROCESS_NAME}.conf"
               echo "--> done."
               exit 0
             fi

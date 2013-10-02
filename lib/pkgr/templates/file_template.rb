@@ -1,3 +1,5 @@
+require 'erb'
+
 module Pkgr
   module Templates
     class FileTemplate

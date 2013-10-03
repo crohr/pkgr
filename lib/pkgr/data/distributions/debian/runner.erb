@@ -70,6 +70,8 @@ while : ; do
                 if [ "${PROCESS_NAME}" = "web" ]; then
                   port=$(expr ${PORT} + ${i} - 1)
                   sed -i "s/PORT_NUM/${port}/g" "/etc/init/${PROCESS_ID}.conf"
+                else
+                  sed -i "s/^env .*PORT_NUM.*$//g" "/etc/init/${PROCESS_ID}.conf"
                 fi
                 service "${PROCESS_ID}" start
               done

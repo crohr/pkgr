@@ -34,11 +34,6 @@ module Pkgr
         IO.popen(%{ env -i PATH="$PATH" #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" }) do |io|
           until io.eof?
             data = io.gets
-            data.gsub!(/^-----> /, "  + ")
-            data.gsub!(/^       /, "      ")
-            data.gsub!(/^\s+\!\s+$/, "")
-            data.gsub!(/^\s+\!\s+/, "  ! ")
-            data.gsub!(/^\s+$/, "")
             print data
           end
         end

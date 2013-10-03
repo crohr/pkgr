@@ -16,9 +16,9 @@ default:
   - libxml2-dev
   - libxslt1-dev
   - libxslt1.1
+  - libreadline6
+  - libreadline-dev
 squeeze:
   - libmysqlclient16
-  - libreadline5-dev
 wheezy:
   - libmysqlclient18
-  - libreadline6-dev

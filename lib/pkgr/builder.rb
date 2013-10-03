@@ -65,7 +65,7 @@ module Pkgr
     # Pass the app through the buildpack
     def compile
       if buildpack_for_app
-        puts "App detected: #{buildpack_for_app.banner}"
+        puts "-----> #{buildpack_for_app.banner} app"
 
         FileUtils.mkdir_p(compile_cache_dir)
 

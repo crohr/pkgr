@@ -4,4 +4,4 @@ respawn
 
 env PORT=PORT_NUM
 
-exec su -m - <%= user %> -c '<%= name %> run <%= process_name %> >> /var/log/<%= name %>/<%= process_name %>-PROCESS_NUM.log 2>&1'
+exec <%= name %> run <%= process_name %> >> /var/log/<%= name %>/<%= process_name %>-PROCESS_NUM.log 2>&1

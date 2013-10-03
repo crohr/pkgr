@@ -15,6 +15,15 @@ module Pkgr
     def call
       tarify if File.directory?(path)
       if remote?
+        # attempt to install pkgr if not found
+        # which pkgr || ( sudo apt-get update && sudo apt-get install ruby1.9.1-full && sudo gem install pkgr --version #{Pkgr::VERSION} )
+        IO.popen(%{ ( cat "#{path}" | ssh #{host} pkgr - #{config.to_args} ) && rsync #{host}:~/*.deb .}) do |io|
+          until io.eof?
+            data = io.gets
+            print data
+          end
+        end
+        raise "package failed" unless $?.exitstatus.zero?
       else
         Builder.new(path, config).call
       end

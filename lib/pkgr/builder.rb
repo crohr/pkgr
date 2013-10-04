@@ -28,14 +28,7 @@ module Pkgr
     # Check configuration, and verifies that the current distribution's requirements are satisfied
     def check
       raise Errors::ConfigurationInvalid, config.errors.join("; ") unless config.valid?
-
-      distribution.requirements.each do |package|
-        system("dpkg -l '#{package}' >/dev/null") || Pkgr.warn("Can't find package `#{package}`. Further steps may fail.")
-      end
-
-      (config.build_dependencies || []).each do |package|
-        system("dpkg -l '#{package}' >/dev/null") || Pkgr.warn("Can't find package `#{package}`, which is a build dependency. Further steps may fail. Install with `apt-get install #{package}`.")
-      end
+      distribution.check(config)
     end
 
     # Setup the build directory structure

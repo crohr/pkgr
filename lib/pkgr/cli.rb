@@ -4,8 +4,8 @@ require 'pkgr'
 module Pkgr
   class CLI < Thor
     class_option :verbose,    :type => :boolean, :default => false, :desc => "Run verbosely"
+    class_option :debug,      :type => :boolean, :default => false, :desc => "Run very verbosely"
     class_option :name,       :type => :string, :desc => "Application name (if directory given, it will default to the directory name)"
-
 
     desc "package TARBALL", "Package the given tarball or directory"
 
@@ -22,8 +22,13 @@ module Pkgr
     method_option :dependencies,        :type => :array,  :default => [], :desc => "Specific system dependencies that you want to install with the package"
     method_option :build_dependencies,  :type => :array,  :default => [], :desc => "Specific system dependencies that must be present before building"
     method_option :before_precompile,   :type => :string, :desc => "Provide a script to run just before the buildpack compilation"
+    method_option :host,                :type => :string, :desc => "Remote host to build on (default: local machine)"
+    method_option :auto,                :type => :boolean, :default => false, :desc => "Automatically attempt to install missing dependencies"
 
     def package(tarball)
+      Pkgr.level = Logger::INFO if options[:verbose]
+      Pkgr.level = Logger::DEBUG if options[:debug]
+
       packager = Dispatcher.new(tarball, options)
       packager.call
     rescue Pkgr::Errors::Base => e

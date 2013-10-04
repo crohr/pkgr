@@ -65,6 +65,7 @@ module Pkgr
       Dir.chdir(dir) do
         buildpack_refresh = Mixlib::ShellOut.new("git fetch origin && git reset --hard origin/master")
         buildpack_refresh.run_command
+        buildpack_refresh.error!
       end
     end
 
@@ -72,6 +73,7 @@ module Pkgr
       Dir.chdir(buildpack_cache_dir) do
         buildpack_install = Mixlib::ShellOut.new("git clone \"#{url}\"")
         buildpack_install.run_command
+        buildpack_install.error!
       end
     end
   end

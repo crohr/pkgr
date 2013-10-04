@@ -50,6 +50,24 @@ module Pkgr
         list
       end
 
+      def check(config)
+        missing_packages = (build_dependencies(config.build_dependencies) || []).select do |package|
+          ! system("dpkg -s '#{package}' 2&>/dev/null")
+        end
+
+        unless missing_packages.empty?
+          package_install_command = "sudo apt-get install -y #{missing_packages.map{|package| "\"#{package}\""}.join(" ")}"
+          if config.auto
+            Pkgr.debug "Running command: #{package_install_command}"
+            package_install = Mixlib::ShellOut.new(package_install_command)
+            package_install.run_command
+            package_install.error!
+          else
+            Pkgr.warn("Missing build dependencies detected. Run the following to fix: #{package_install_command}")
+          end
+        end
+      end
+
       def fpm_command(build_dir, config)
         %{
           fpm -t deb -s dir  --verbose --debug --force \
@@ -91,13 +109,6 @@ module Pkgr
         end
       end
 
-      def requirements
-        %w{
-          libssl0.9.8
-          curl
-        }
-      end
-
       def preinstall_file(config)
         @preinstall_file ||= begin
           source = File.join(data_dir, "hooks", "preinstall.sh")
@@ -119,9 +130,13 @@ module Pkgr
       end
 
       def dependencies(other_dependencies = nil)
-        other_dependencies ||= []
         deps = YAML.load_file(File.join(data_dir, "dependencies.yml"))
-        deps["default"] | deps[version] | other_dependencies
+        (deps["default"] || []) | (deps[version] || []) | (other_dependencies || [])
+      end
+
+      def build_dependencies(other_dependencies = nil)
+        deps = YAML.load_file(File.join(data_dir, "build_dependencies.yml"))
+        (deps["default"] || []) | (deps[version] || []) | (other_dependencies || [])
       end
 
       def data_file(name)

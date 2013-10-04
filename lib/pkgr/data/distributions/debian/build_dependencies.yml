@@ -1,0 +1,14 @@
+default:
+  - curl
+  - libssl0.9.8
+  - libmysqlclient-dev
+  - libpq-dev
+  - libsqlite3-0
+  - libevent-dev
+  - libssl-dev
+  - libxml2-dev
+  - libxslt1-dev
+  - libreadline-dev
+  - build-essential
+squeeze:
+wheezy:

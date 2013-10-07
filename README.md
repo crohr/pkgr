@@ -2,31 +2,57 @@
 
 ## Goal
 
-Make debian packages out of your Ruby and Rails apps.
+Make debian packages out of any app that can run on Heroku.
 
 ## Examples
 
-* Gitlab packages for debian wheezy and squeeze:
-http://feedback.gitlab.com/forums/176466-general/suggestions/3649927-create-official-debian-packages
+* Gitlab package for debian wheezy: <http://deb.pkgr.io/crohr/gitlabhq/>.
 
-* Redmine
+## Installation
 
-## How
+Install `pkgr` on a Debian/Ubuntu machine (only `wheezy` flavour for now):
 
-Add `pkgr` to your Gemfile:
+    sudo apt-get install ruby1.9.1-full
+    sudo gem install pkgr
 
-    gem 'pkgr'
+## Usage
 
-Run bundler:
+To package your app, you can either execute `pkgr` locally if your app repository is on the same machine:
 
-    bundle install
+    pkgr path/to/app/repo
 
-Get a machine running your linux distribution of choice (only `wheezy` and `squeeze` for now). Use vagrant or AWS or anything else. Let's assume you can access it by doing `ssh pkgr-build-machine` (we recommend adding an entry in your `~/.ssh/config` file for this):
+Or, assuming your build machine is accessible via SSH by doing `ssh pkgr-build-machine` (set this in your `~/.ssh/config` file), you can do as follows:
 
-    cd your/ruby/project
-    bundle exec pkgr . --host=debian-host --output .
-    # on host: get omnibus package with pkgr, ruby, etc.
-    # run pkgr on directory, switch buildpack version based on /proc/version
+    pkgr path/to/app/repo --host pkgr-build-machine
+
+Full command line options are given below:
+
+    $ pkgr help package
+    Usage:
+      pkgr package TARBALL
+
+    Options:
+      [--target=TARGET]                        # Target package to build (only 'deb' supported for now)
+                                               # Default: deb
+      [--changelog=CHANGELOG]                  # Changelog
+      [--architecture=ARCHITECTURE]            # Target architecture for the package
+                                               # Default: x86_64
+      [--homepage=HOMEPAGE]                    # Project homepage
+      [--description=DESCRIPTION]              # Project description
+      [--version=VERSION]                      # Package version (if git directory given, it will use the latest git tag available)
+      [--iteration=ITERATION]                  # Package iteration (you should keep the default here)
+                                               # Default: 20131007132226
+      [--user=USER]                            # User to run the app under (defaults to your app name)
+      [--group=GROUP]                          # Group to run the app under (defaults to your app name)
+      [--compile-cache-dir=COMPILE_CACHE_DIR]  # Where to store the files cached between packaging runs
+      [--dependencies=one two three]           # Specific system dependencies that you want to install with the package
+      [--build-dependencies=one two three]     # Specific system dependencies that must be present before building
+      [--before-precompile=BEFORE_PRECOMPILE]  # Provide a script to run just before the buildpack compilation
+      [--host=HOST]                            # Remote host to build on (default: local machine)
+      [--auto]                                 # Automatically attempt to install missing dependencies
+      [--verbose]                              # Run verbosely
+      [--debug]                                # Run very verbosely
+      [--name=NAME]                            # Application name (if directory given, it will default to the directory name)
 
 ## Why?
 
@@ -37,54 +63,37 @@ you're already using automation tools such as
 [Puppet](http://www.puppetlabs.com/) to configure your servers, you have to
 run two different processes to configure your infrastructure.
 
-Another issue with Capistrano is that the hook system is not that powerful.
-Compare that with the pre/post-install/upgrade/uninstall steps that you can
-define in a RPM or DEB package, and you'll quickly see the advantage of
-letting a robust package manager such as `apt` or `yum` handle all those
-things for you in a reliable manner.
-
-Last thing, once you built your RPM or DEB package and you tested that it
+Also, once you built your DEB package and you tested that it
 works once, you can deploy it on any number of servers at any time and you're
 sure that it will install the required package dependencies, run the hooks,
 and put the files in the directories you specified, creating them as needed.
 Then, you can downgrade or uninstall the whole application in one command.
 
-## What you'll end up with
+## What this does
 
-* an `init.d` script, based on your Procfile `web` entry, to easily start/stop/restart your app, and make it load when the server boots;
+* Uses Heroku buildpacks to embed all your dependencies within the debian package. That way, no need to mess with stale system dependencies, and no need to install anything by hand. Also, we get for free all the hard work done by Heroku developers to make sure your app runs fine in an isolated way.
 
-* an executable to manually start the server, your rake tasks, or access the console;
+* Gives you a nice executable, which closely replicates the Heroku toolbelt utility. For instance, assuming you're packaging an app called `my-app`, you can do the following:
 
-* your configuration files will be available in `/etc/app-name/*.yml`;
+        my-app config:set VAR=value
+        my-app config:get VAR
+        my-app run [procfile process]
+        my-app scale web=1 worker=1
+        ...
 
-* defaults for your app (host, port, etc.) can be setup in `/etc/default/app-name`;
+* You app will reside in `/opt/app-name`.
 
-* a proper `logrotate` file will be created for you, so that your log files
-  don't eat all the disk space of your server;
+* You'll also get a upstart based initialization script that you can use directly.
 
-The default target installation directory for all the other app files will be
-`/opt/local/app-name`. This can be configured.
+* Logs will be stored in `/var/log/app-name/`, with a proper logrotate config automatically added.
+
+* Config files can be added in `/etc/app-name/`
 
 ## Requirements
 
-* You must have a Procfile (TODO: ref to heroku doc).
+* You must have a Procfile.
 
-* Your application must be checked into a **Git** repository. Your name and
-  email is taken from the git configuration, and the changelog is populated
-  based on the git log between two versions.
-
-## Development
-
-Install pkgr dependencies:
-
-    bundle install
-    bundle exec rake
-
-Generate pkgr native packages with:
-
-    cd omnibus-pkgr/
-    vagrant up ubuntu-12.04 && vagrant up ubuntu-10.04
-    ls -al pkgr/
+* Your application must be Heroku compatible, meaning you should be able to set your main app's configuration via environment variables.
 
 ## Authors
 

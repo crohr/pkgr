@@ -60,18 +60,18 @@ Full command line options are given below:
 
 ## Why?
 
-[Capistrano](http://capify.org/) is great for deploying Rails/Ruby
+Tools such as [Capistrano](http://capify.org/) are great for deploying
 applications, but the deployment recipe can quickly become a mess, and scaling
 the deployment to more than a few servers can prove to be difficult. Plus, if
 you're already using automation tools such as
 [Puppet](http://www.puppetlabs.com/) to configure your servers, you have to
 run two different processes to configure your infrastructure.
 
-Also, once you built your DEB package and you tested that it
-works once, you can deploy it on any number of servers at any time and you're
-sure that it will install the required package dependencies, run the hooks,
-and put the files in the directories you specified, creating them as needed.
-Then, you can downgrade or uninstall the whole application in one command.
+`pkgr` builds on top of the Heroku tools to provide you with an easy way to package you app as a debian package. The great advantage is that once you've built it and you tested that it
+works once, you can deploy on any number of servers at any time and you're
+sure that it will just work. Then, you can upgrade/downgrade or uninstall the whole application in one command.
+
+Finally, it's a great way to share your open source software with your users and clients. Much easier than asking them to install all the dependencies manually! I'm in the process of making sure `pkgr` is feature complete by trying to package as many successful open-source projects as I can. Don't hesitate to test it on your app and report your findings!
 
 ## What this does
 
@@ -81,7 +81,7 @@ Then, you can downgrade or uninstall the whole application in one command.
 
         my-app config:set VAR=value
         my-app config:get VAR
-        my-app run [procfile process]
+        my-app run [procfile process] # e.g. my-app run rake db:migrate, my-app run console, etc.
         my-app scale web=1 worker=1
         ...
 

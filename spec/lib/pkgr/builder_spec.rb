@@ -17,8 +17,8 @@ describe Pkgr::Builder do
     let(:distribution) { double("distribution", :requirements => ["doesnotexist"]) }
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config).tap{|b| b.stub(:distribution => distribution)} }
 
-    it "displays warnings if one of the current distribution's required packages can't be found" do
-      Pkgr.should_receive(:debug).with("Can't find package `doesnotexist`. Further steps may fail.")
+    it "asks the distribution to check for missing dependencies" do
+      distribution.should_receive(:check).with(builder.config)
       expect{ builder.check }.to_not raise_error
     end
   end
@@ -166,7 +166,7 @@ describe Pkgr::Builder do
 
     it "builds the proper fpm command" do
       command = builder.fpm_command.strip.squeeze(" ")
-      expect(command).to include("fpm -t deb -s dir --verbose --debug --force -C \"#{builder.build_dir}\" -n \"my-app\" --version \"0.0.1\" --iteration \"#{config.iteration}\" --provides \"my-app\"")
+      expect(command).to include("fpm -t deb -s dir --verbose --force -C \"#{builder.build_dir}\" -n \"my-app\" --version \"0.0.1\" --iteration \"#{config.iteration}\" --url \"#{config.homepage}\" --provides \"my-app\"")
     end
 
     it "launches fpm on build dir" do

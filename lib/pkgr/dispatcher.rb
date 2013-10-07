@@ -12,8 +12,13 @@ module Pkgr
       @config = Config.new(opts)
     end
 
-    def call
+    def setup
       tarify if File.directory?(path)
+    end
+
+    def call
+      setup
+
       if remote?
         command = %{ ( cat "#{path}" | ssh "#{host}" pkgr package - #{config.to_args} ) && rsync "#{host}":~/*.deb .}
         Pkgr.debug command

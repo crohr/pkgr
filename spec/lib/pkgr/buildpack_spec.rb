@@ -24,10 +24,5 @@ describe Pkgr::Buildpack do
     it "can detect a ruby app" do
       buildpack.detect(path).should be_true
     end
-
-    it "can compile a ruby app" do
-      cache_dir = FileUtils.mkdir_p(File.join(path, ".git/cache"))
-      buildpack.compile(path, cache_dir).should be_true
-    end
   end
 end

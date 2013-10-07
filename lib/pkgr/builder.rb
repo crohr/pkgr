@@ -12,6 +12,7 @@ module Pkgr
     def initialize(tarball, config)
       @tarball = tarball
       @config = config
+      Pkgr.debug "Initializing builder with the following config: #{config.inspect}"
     end
 
     # Launch the full packaging procedure
@@ -62,7 +63,6 @@ module Pkgr
 
         FileUtils.mkdir_p(compile_cache_dir)
 
-        Pkgr.info "Found buildpack: #{buildpack_for_app}"
         run_hook config.before_precompile
         buildpack_for_app.compile(source_dir, compile_cache_dir)
         buildpack_for_app.release(source_dir, compile_cache_dir)

@@ -52,7 +52,9 @@ module Pkgr
 
       def check(config)
         missing_packages = (build_dependencies(config.build_dependencies) || []).select do |package|
-          ! system("dpkg -s '#{package}' 2&>/dev/null")
+          test_command = "dpkg -s '#{package}' > /dev/null 2>&1"
+          Pkgr.debug "Running #{test_command}"
+          ! system(test_command)
         end
 
         unless missing_packages.empty?
@@ -70,7 +72,7 @@ module Pkgr
 
       def fpm_command(build_dir, config)
         %{
-          fpm -t deb -s dir  --verbose --debug --force \
+          fpm -t deb -s dir  --verbose --force \
           -C "#{build_dir}" \
           -n "#{config.name}" \
           --version "#{config.version}" \
@@ -115,8 +117,10 @@ module Pkgr
           file = Tempfile.new("preinstall")
           file.write ERB.new(File.read(source)).result(config.sesame)
           file.rewind
-          file.path
+          file
         end
+
+        @preinstall_file.path
       end
 
       def postinstall_file(config)
@@ -125,8 +129,10 @@ module Pkgr
           file = Tempfile.new("postinstall")
           file.write ERB.new(File.read(source)).result(config.sesame)
           file.rewind
-          file.path
+          file
         end
+
+        @postinstall_file.path
       end
 
       def dependencies(other_dependencies = nil)

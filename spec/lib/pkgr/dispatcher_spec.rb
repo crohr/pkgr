@@ -20,26 +20,23 @@ describe Pkgr::Dispatcher do
   describe "#initialize" do
     it "takes a path to the directory to package, and accepts options" do
       dispatcher = Pkgr::Dispatcher.new("path/to/dir", {opt1: "value1"})
-      dispatcher.path.should == File.expand_path("path/to/dir")
+      dispatcher.path.should == "path/to/dir"
     end
   end
 
   describe "configuration" do
     it "should default to the given version option if any" do
       dispatcher = Pkgr::Dispatcher.new("path/to/dir", {version: "1.0.0"})
-      dispatcher.app_version.should == "1.0.0"
+      dispatcher.setup
+      dispatcher.config.version.should == "1.0.0"
     end
 
     it "should find the current version based on git-describe" do
       within_git_repo do |dir|
         dispatcher = Pkgr::Dispatcher.new(dir)
-        dispatcher.app_version.should == "0.0.1"
+        dispatcher.setup
+        dispatcher.config.version.should == "0.0.1"
       end
-    end
-
-    it "should default to version 0.0.0 if no git tag found, and no version given" do
-      dispatcher = Pkgr::Dispatcher.new("path/to/dir")
-      dispatcher.app_version.should == Pkgr::Dispatcher::DEFAULT_APP_VERSION
     end
   end
 
@@ -47,11 +44,12 @@ describe Pkgr::Dispatcher do
     let(:dispatcher) { Pkgr::Dispatcher.new("path/to/dir") }
 
     it "launches the builder if local execution" do
-      pending
+      builder = double(Pkgr::Builder)
       dispatcher.stub(:remote? => false)
-      builder = dispatcher.call
-      builder.should be_a(Pkgr::Builder)
-      builder.tarball.should == dispatcher.app_tarball
+      dispatcher.should_receive(:setup)
+      Pkgr::Builder.should_receive(:new).with(dispatcher.path, dispatcher.config).and_return(builder)
+      builder.should_receive(:call)
+      dispatcher.call
     end
   end
 

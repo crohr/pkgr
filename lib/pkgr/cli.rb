@@ -13,6 +13,7 @@ module Pkgr
     method_option :changelog,           :type => :string, :desc => "Changelog"
     method_option :architecture,        :type => :string, :default => "x86_64", :desc => "Target architecture for the package"
     method_option :homepage,            :type => :string, :desc => "Project homepage"
+    method_option :description,         :type => :string, :desc => "Project description"
     method_option :version,             :type => :string, :desc => "Package version (if git directory given, it will use the latest git tag available)"
     method_option :iteration,           :type => :string, :default => Time.now.strftime("%Y%m%d%H%M%S"), :desc => "Package iteration (you should keep the default here)"
     method_option :user,                :type => :string, :desc => "User to run the app under (defaults to your app name)"

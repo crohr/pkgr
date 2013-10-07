@@ -49,7 +49,8 @@ module Pkgr
         "--iteration \"#{iteration}\"",
         "--homepage \"#{homepage}\"",
         "--architecture \"#{architecture}\"",
-        "--target \"#{target}\""
+        "--target \"#{target}\"",
+        "--description \"#{description}\"",
       ]
       args.push "--dependencies #{dependencies.map{|d| "\"#{d}\""}.join("")}" unless dependencies.nil? || dependencies.empty?
       args.push "--build-dependencies #{build_dependencies.map{|d| "\"#{d}\""}.join("")}" unless build_dependencies.nil? || build_dependencies.empty?
@@ -58,7 +59,7 @@ module Pkgr
       args.push "--auto" if auto
       args.push "--verbose" if verbose
       args.push "--debug" if debug
-      args.join(" ")
+      args
     end
   end
 end

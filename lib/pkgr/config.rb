@@ -26,6 +26,10 @@ module Pkgr
       @table[:homepage] || "http://example.com/no-uri-given"
     end
 
+    def description
+      @table[:description] || "No description given"
+    end
+
     def valid?
       @errors = []
       @errors.push("name can't be blank") if name.nil? || name.empty?

@@ -34,61 +34,57 @@ while : ; do
 
     scale)
       shift
-      while : ; do
-        case "$1" in
-          *)
-            [ "$1" = "" ] && usage
+      for arg in "$@"; do
+        [ "$arg" = "" ] && usage
 
-            PROCESS=(${1//=/ })
+        PROCESS=(${arg//=/ })
 
-            set +e
-            PROCESS_NAME=${PROCESS[0]}
-            NEW_SCALE=${PROCESS[1]}
-            CURRENT_SCALE=$(ls -rv1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)\.conf/\1/g')
-            CURRENT_SCALE=${CURRENT_SCALE:="0"}
-            SCALE_DELTA=$(expr ${NEW_SCALE} - ${CURRENT_SCALE})
-            set -e
+        set +e
+        PROCESS_NAME=${PROCESS[0]}
+        NEW_SCALE=${PROCESS[1]}
+        CURRENT_SCALE=$(ls -rv1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)\.conf/\1/g')
+        CURRENT_SCALE=${CURRENT_SCALE:="0"}
+        SCALE_DELTA=$(expr ${NEW_SCALE} - ${CURRENT_SCALE})
+        set -e
 
-            if [ $NEW_SCALE -eq 0 ]; then
-              echo "Stopping all ${PROCESS_NAME} processes... "
-              for file in `ls -1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null`; do
-                service "$(basename ${file} .conf)" stop || true
-                rm "${file}"
-              done
-              # Finally, remove master process
-              rm -f "/etc/init/${APP_NAME}-${PROCESS_NAME}.conf"
-              echo "--> done."
-            elif [ $SCALE_DELTA -gt 0 ]; then
-              echo "Scaling up..."
-              cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}.conf" /etc/init/
-              for i in $(seq ${SCALE_DELTA}); do
-                PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${i}"
-                i=$(expr ${i} + ${CURRENT_SCALE})
-                cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM.conf" "/etc/init/${PROCESS_ID}.conf"
-                sed -i "s/PROCESS_NUM/${i}/g" "/etc/init/${PROCESS_ID}.conf"
-                if [ "${PROCESS_NAME}" = "web" ]; then
-                  port=$(expr ${PORT} + ${i} - 1)
-                  sed -i "s/PORT_NUM/${port}/g" "/etc/init/${PROCESS_ID}.conf"
-                else
-                  sed -i "s/^env .*PORT_NUM.*$//g" "/etc/init/${PROCESS_ID}.conf"
-                fi
-                service "${PROCESS_ID}" start
-              done
-              echo "--> done."
-            elif [ $SCALE_DELTA -lt 0 ]; then
-              echo "Scaling down..."
-              for i in $(seq $(expr $SCALE_DELTA \* -1)); do
-                PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${i}"
-                i=$(expr ${i} + ${NEW_SCALE})
-                service "${PROCESS_ID}" stop || true
-                rm -f "/etc/init/${PROCESS_ID}.conf"
-              done
-              echo "--> done."
+        if [ $NEW_SCALE -eq 0 ]; then
+          echo "Stopping all ${PROCESS_NAME} processes... "
+          for file in `ls -1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null`; do
+            service "$(basename ${file} .conf)" stop || true
+            rm "${file}"
+          done
+          # Finally, remove master process
+          rm -f "/etc/init/${APP_NAME}-${PROCESS_NAME}.conf"
+          echo "--> done."
+        elif [ $SCALE_DELTA -gt 0 ]; then
+          echo "Scaling up..."
+          cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}.conf" /etc/init/
+          for i in $(seq ${SCALE_DELTA}); do
+            PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${i}"
+            i=$(expr ${i} + ${CURRENT_SCALE})
+            cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM.conf" "/etc/init/${PROCESS_ID}.conf"
+            sed -i "s/PROCESS_NUM/${i}/g" "/etc/init/${PROCESS_ID}.conf"
+            if [ "${PROCESS_NAME}" = "web" ]; then
+              port=$(expr ${PORT} + ${i} - 1)
+              sed -i "s/PORT_NUM/${port}/g" "/etc/init/${PROCESS_ID}.conf"
             else
-              echo "Nothing to do."
+              sed -i "s/^env .*PORT_NUM.*$//g" "/etc/init/${PROCESS_ID}.conf"
             fi
-            break ;;
-        esac
+            service "${PROCESS_ID}" start
+          done
+          echo "--> done."
+        elif [ $SCALE_DELTA -lt 0 ]; then
+          echo "Scaling down..."
+          for i in $(seq $(expr $SCALE_DELTA \* -1)); do
+            PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${i}"
+            i=$(expr ${i} + ${NEW_SCALE})
+            service "${PROCESS_ID}" stop || true
+            rm -f "/etc/init/${PROCESS_ID}.conf"
+          done
+          echo "--> done."
+        else
+          echo "Nothing to do."
+        fi
       done
       break ;;
 

@@ -15,7 +15,7 @@ Note: the new version of pkgr using buildpacks is only available as a pre-releas
 Install `pkgr` on a Debian/Ubuntu machine (only `wheezy` flavour for now):
 
     sudo apt-get install ruby1.9.1-full
-    sudo gem install pkgr --version "1.0.1.pre"
+    sudo gem install pkgr
 
 ## Usage
 

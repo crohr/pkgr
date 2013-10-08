@@ -41,25 +41,24 @@ while : ; do
 
             PROCESS=(${1//=/ })
 
+            set +e
             PROCESS_NAME=${PROCESS[0]}
             NEW_SCALE=${PROCESS[1]}
             CURRENT_SCALE=$(ls -rv1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)\.conf/\1/g')
             CURRENT_SCALE=${CURRENT_SCALE:="0"}
             SCALE_DELTA=$(expr ${NEW_SCALE} - ${CURRENT_SCALE})
+            set -e
 
             if [ $NEW_SCALE -eq 0 ]; then
               echo "Stopping all ${PROCESS_NAME} processes... "
-              for file in `ls -1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf`; do
+              for file in `ls -1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null`; do
                 service "$(basename ${file} .conf)" stop || true
                 rm "${file}"
               done
               # Finally, remove master process
-              rm "/etc/init/${APP_NAME}-${PROCESS_NAME}.conf"
+              rm -f "/etc/init/${APP_NAME}-${PROCESS_NAME}.conf"
               echo "--> done."
-              exit 0
-            fi
-
-            if [ $SCALE_DELTA -gt 0 ]; then
+            elif [ $SCALE_DELTA -gt 0 ]; then
               echo "Scaling up..."
               cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}.conf" /etc/init/
               for i in $(seq ${SCALE_DELTA}); do

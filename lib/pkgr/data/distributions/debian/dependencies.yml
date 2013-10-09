@@ -10,6 +10,7 @@ default:
   - openssl
   - libxml2
   - libxslt1.1
+  - libreadline5
   - libreadline6
 squeeze:
   - libmysqlclient16

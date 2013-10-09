@@ -29,9 +29,7 @@ while : ; do
       COMMAND="$2"
       shift 2
 
-      exec su -m - "${APP_USER}" <<EOF
-. ${DEFAULT_FILE} && cd ${HOME} && vendor/pkgr/processes/${COMMAND} "$@"
-EOF
+      exec su -m - "${APP_USER}" -c ". ${DEFAULT_FILE} && cd ${HOME} && vendor/pkgr/processes/${COMMAND} ${*}"
       break ;;
 
     scale)

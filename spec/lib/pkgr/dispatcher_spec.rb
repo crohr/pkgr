@@ -40,6 +40,30 @@ describe Pkgr::Dispatcher do
     end
   end
 
+  describe "setup" do
+    let(:dir) { Dir.mktmpdir }
+
+    it "generates a tarball if input is a directory" do
+      dispatcher = Pkgr::Dispatcher.new(dir)
+      dispatcher.should_receive(:tarify)
+      dispatcher.setup
+    end
+
+    it "does not generate a tarball if input is a tarball" do
+      dispatcher = Pkgr::Dispatcher.new(fixture("my-app.tar.gz"))
+      dispatcher.should_not_receive(:tarify)
+      dispatcher.setup
+    end
+
+    it "expands the path of options accepting file paths" do
+      dispatcher = Pkgr::Dispatcher.new(dir, :compile_cache_dir => "path/to/cache", :before_precompile => "path/to/precompile_file")
+      dispatcher.stub(:tarify)
+      dispatcher.setup
+      dispatcher.config.compile_cache_dir.should == File.expand_path("path/to/cache")
+      dispatcher.config.before_precompile.should == File.expand_path("path/to/precompile_file")
+    end
+  end
+
   describe "#call" do
     let(:dispatcher) { Pkgr::Dispatcher.new("path/to/dir") }
 

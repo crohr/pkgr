@@ -14,6 +14,8 @@ module Pkgr
 
     def setup
       tarify if File.directory?(path)
+      config.before_precompile = File.expand_path(config.before_precompile) if config.before_precompile
+      config.compile_cache_dir = File.expand_path(config.compile_cache_dir) if config.compile_cache_dir
     end
 
     def call

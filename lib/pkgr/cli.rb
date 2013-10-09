@@ -24,6 +24,7 @@ module Pkgr
     method_option :before_precompile,   :type => :string, :desc => "Provide a script to run just before the buildpack compilation"
     method_option :host,                :type => :string, :desc => "Remote host to build on (default: local machine)"
     method_option :auto,                :type => :boolean, :default => false, :desc => "Automatically attempt to install missing dependencies"
+    method_option :clean,               :type => :boolean, :default => true, :desc => "Automatically clean up temporary dirs"
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

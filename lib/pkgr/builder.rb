@@ -24,6 +24,8 @@ module Pkgr
       write_env
       write_init
       package
+    ensure
+      teardown if config.clean
     end
 
     # Check configuration, and verifies that the current distribution's requirements are satisfied

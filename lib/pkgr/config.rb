@@ -63,6 +63,7 @@ module Pkgr
       args.push "--auto" if auto
       args.push "--verbose" if verbose
       args.push "--debug" if debug
+      args.push "--clean" if clean
       args
     end
   end

@@ -14,7 +14,7 @@ describe Pkgr::Buildpack do
 
     before do
       buildpack.stub(:replace_app_with_app_home => true)
-      buildpack.setup("/home/my-app")
+      buildpack.setup(true, "/home/my-app")
       system("tar xzf #{fixture("my-app.tar.gz")} -C #{path}")
     end
 

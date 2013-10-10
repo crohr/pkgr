@@ -180,14 +180,14 @@ module Pkgr
 
     # List of available buildpacks for the current distribution.
     def buildpacks
-      distribution.buildpacks
+      distribution.buildpacks(config.buildpack)
     end
 
     # Buildpack detected for the app, if any.
     def buildpack_for_app
       raise "#{source_dir} does not exist" unless File.directory?(source_dir)
       @buildpack_for_app ||= buildpacks.find do |buildpack|
-        buildpack.setup(config.home)
+        buildpack.setup(config.edge, config.home)
         buildpack.detect(source_dir)
       end
     end

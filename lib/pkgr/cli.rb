@@ -25,6 +25,8 @@ module Pkgr
     method_option :host,                :type => :string, :desc => "Remote host to build on (default: local machine)"
     method_option :auto,                :type => :boolean, :default => false, :desc => "Automatically attempt to install missing dependencies"
     method_option :clean,               :type => :boolean, :default => true, :desc => "Automatically clean up temporary dirs"
+    method_option :buildpack,           :type => :string, :desc => "Custom buildpack to use"
+    method_option :edge,                :type => :boolean, :default => true, :desc => "Always use the latest version of the buildpack if already installed"
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

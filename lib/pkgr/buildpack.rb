@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'digest/sha1'
 
 module Pkgr
   class Buildpack
@@ -12,14 +13,17 @@ module Pkgr
       end
     end
 
-    attr_reader :url, :banner
+    attr_reader :url, :banner, :type, :uuid, :branch
 
-    def initialize(url)
-      @url = url
+    def initialize(url, type = :builtin)
+      @uuid = Digest::SHA1.hexdigest(url)
+      @url, @branch = url.split("#")
+      @branch ||= "master"
+      @type = type
     end
 
     def buildpack_cache_dir
-      self.class.buildpack_cache_dir
+      File.join(self.class.buildpack_cache_dir, type.to_s, uuid)
     end
 
     def detect(path)
@@ -57,20 +61,22 @@ module Pkgr
       File.directory?(dir)
     end
 
-    def setup(app_home)
-      exists? ? refresh : install
+    def setup(edge, app_home)
+      exists? ? refresh(edge) : install
       replace_app_with_app_home(app_home)
     end
 
-    def refresh
+    def refresh(edge = true)
+      return if !edge
       Dir.chdir(dir) do
-        buildpack_refresh = Mixlib::ShellOut.new("git fetch origin && git reset --hard origin/master")
+        buildpack_refresh = Mixlib::ShellOut.new("git fetch origin && git reset --hard origin/#{branch}")
         buildpack_refresh.run_command
         buildpack_refresh.error!
       end
     end
 
     def install
+      FileUtils.mkdir_p(buildpack_cache_dir)
       Dir.chdir(buildpack_cache_dir) do
         buildpack_install = Mixlib::ShellOut.new("git clone \"#{url}\"")
         buildpack_install.run_command

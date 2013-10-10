@@ -60,10 +60,12 @@ module Pkgr
       args.push "--build-dependencies #{build_dependencies.map{|d| "\"#{d}\""}.join("")}" unless build_dependencies.nil? || build_dependencies.empty?
       args.push "--compile-cache-dir \"#{compile_cache_dir}\"" unless compile_cache_dir.nil? || compile_cache_dir.empty?
       args.push "--before-precompile \"#{before_precompile}\"" unless compile_cache_dir.nil? || compile_cache_dir.empty?
+      args.push "--buildpack \"#{buildpack}\"" unless buildpack.nil? || buildpack.empty?
       args.push "--auto" if auto
       args.push "--verbose" if verbose
       args.push "--debug" if debug
-      args.push "--clean" if clean
+      args.push "--no-clean" if !clean
+      args.push "--no-edge" if !edge
       args
     end
   end

@@ -57,8 +57,9 @@ module Pkgr
       File.directory?(dir)
     end
 
-    def setup
+    def setup(app_home)
       exists? ? refresh : install
+      replace_app_with_app_home(app_home)
     end
 
     def refresh
@@ -74,6 +75,14 @@ module Pkgr
         buildpack_install = Mixlib::ShellOut.new("git clone \"#{url}\"")
         buildpack_install.run_command
         buildpack_install.error!
+      end
+    end
+
+    def replace_app_with_app_home(app_home)
+      Dir.chdir(dir) do
+        buildpack_replace = Mixlib::ShellOut.new("find . -type f -print0 | xargs -0 sed -i 's/\\/app/#{app_home.gsub("/", "\\/")}/g'")
+        buildpack_replace.run_command
+        buildpack_replace.error!
       end
     end
   end

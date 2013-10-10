@@ -187,7 +187,7 @@ module Pkgr
     def buildpack_for_app
       raise "#{source_dir} does not exist" unless File.directory?(source_dir)
       @buildpack_for_app ||= buildpacks.find do |buildpack|
-        buildpack.setup
+        buildpack.setup(config.home)
         buildpack.detect(source_dir)
       end
     end

@@ -121,6 +121,8 @@ module Pkgr
       @procfile_entries ||= begin
         default_process_types = YAML.load_file(release_file)["default_process_types"]
 
+        default_process_types = {} unless default_process_types
+
         entries = if File.exist?(procfile)
           File.read(procfile).gsub("\r\n","\n").split("\n").map do |line|
             if line =~ /^([A-Za-z0-9_]+):\s*(.+)$/

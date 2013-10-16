@@ -6,7 +6,7 @@ Make debian packages out of any app that can run on Heroku.
 
 ## Examples
 
-* Gitlab package for debian wheezy: <http://deb.pkgr.io/crohr/gitlabhq/>.
+* See <http://deb.pkgr.io/> for examples of apps packaged with `pkgr` (e.g. Gitlab, Discourse).
 
 ## Installation
 
@@ -45,7 +45,7 @@ Full command line options are given below:
       [--description=DESCRIPTION]              # Project description
       [--version=VERSION]                      # Package version (if git directory given, it will use the latest git tag available)
       [--iteration=ITERATION]                  # Package iteration (you should keep the default here)
-                                               # Default: 20131007132226
+                                               # Default: 20131016164652
       [--user=USER]                            # User to run the app under (defaults to your app name)
       [--group=GROUP]                          # Group to run the app under (defaults to your app name)
       [--compile-cache-dir=COMPILE_CACHE_DIR]  # Where to store the files cached between packaging runs
@@ -54,6 +54,11 @@ Full command line options are given below:
       [--before-precompile=BEFORE_PRECOMPILE]  # Provide a script to run just before the buildpack compilation
       [--host=HOST]                            # Remote host to build on (default: local machine)
       [--auto]                                 # Automatically attempt to install missing dependencies
+      [--clean]                                # Automatically clean up temporary dirs
+                                               # Default: true
+      [--buildpack=BUILDPACK]                  # Custom buildpack to use
+      [--edge]                                 # Always use the latest version of the buildpack if already installed
+                                               # Default: true
       [--verbose]                              # Run verbosely
       [--debug]                                # Run very verbosely
       [--name=NAME]                            # Application name (if directory given, it will default to the directory name)

@@ -10,8 +10,6 @@ Make debian packages out of any app that can run on Heroku.
 
 ## Installation
 
-Note: the new version of pkgr using buildpacks is only available as a pre-release.
-
 Install `pkgr` on a Debian/Ubuntu machine (only `wheezy` flavour for now):
 
     sudo apt-get install ruby1.9.1-full

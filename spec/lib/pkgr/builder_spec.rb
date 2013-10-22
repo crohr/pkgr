@@ -74,7 +74,7 @@ describe Pkgr::Builder do
 
   describe "#compile" do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
-    let(:distribution) { Pkgr::Distributions::Debian.new("wheezy") }
+    let(:distribution) { Pkgr::Distributions::Debian.new("ubuntu-precise") }
 
     it "has a list of buildpacks" do
       builder.stub(:distribution => distribution)

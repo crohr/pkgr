@@ -97,7 +97,7 @@ module Pkgr
           [Buildpack.new(custom_buildpack_uri, :custom)]
         else
           case version
-          when "wheezy"
+          when "ubuntu-precise", "debian-wheezy", "ubuntu-lucid", "debian-squeeze"
             %w{
               https://github.com/heroku/heroku-buildpack-ruby.git
               https://github.com/heroku/heroku-buildpack-nodejs.git

@@ -9,6 +9,7 @@ module Pkgr
   module Errors
     class Base < StandardError; end
     class UnknownAppType < Base; end
+    class UnknownDistribution < Base; end
     class ConfigurationInvalid < Base; end
   end
 

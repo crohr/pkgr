@@ -1,5 +1,6 @@
 require "thor"
 require 'pkgr'
+require 'pkgr/buildpack'
 
 module Pkgr
   class CLI < Thor
@@ -30,10 +31,10 @@ module Pkgr
     method_option :iteration,           :type => :string, :default => Time.now.strftime("%Y%m%d%H%M%S"), :desc => "Package iteration (you should keep the default here)"
     method_option :user,                :type => :string, :desc => "User to run the app under (defaults to your app name)"
     method_option :group,               :type => :string, :desc => "Group to run the app under (defaults to your app name)"
-    method_option :compile_cache_dir,   :type => :string, :desc => "Where to store the files cached between packaging runs"
+    method_option :compile_cache_dir,   :type => :string, :desc => "Where to store the files cached between packaging runs. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
+    method_option :before_precompile,   :type => :string, :desc => "Provide a script to run just before the buildpack compilation. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
     method_option :dependencies,        :type => :array,  :default => [], :desc => "Specific system dependencies that you want to install with the package"
     method_option :build_dependencies,  :type => :array,  :default => [], :desc => "Specific system dependencies that must be present before building"
-    method_option :before_precompile,   :type => :string, :desc => "Provide a script to run just before the buildpack compilation"
     method_option :host,                :type => :string, :desc => "Remote host to build on (default: local machine)"
     method_option :auto,                :type => :boolean, :default => false, :desc => "Automatically attempt to install missing dependencies"
     method_option :clean,               :type => :boolean, :default => true, :desc => "Automatically clean up temporary dirs"

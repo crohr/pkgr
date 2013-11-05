@@ -24,4 +24,27 @@ describe Pkgr::Config do
     expect(config.to_args).to include("--architecture \"x86_64\"")
     expect(config.to_args).to include("--homepage \"http://somewhere\"")
   end
+
+  it "can read from a config file" do
+    config = Pkgr::Config.load_file(fixture("pkgr.yml"), "squeeze")
+    expect(config.name).to eq("some-awesome-app")
+    expect(config.description).to eq("An awesome description here!")
+    expect(config.user).to eq("git")
+    expect(config.group).to eq("git")
+    expect(config.homepage).to eq("http://example.org")
+    expect(config.dependencies).to eq(["mysql-server", "git-core"])
+    expect(config.build_dependencies).to eq(["libmagickcore-dev", "libmagickwand-dev"])
+  end
+
+  it "can merge two config objects together" do
+    config.dependencies = ["dep1", "dep2"]
+    config2 = Pkgr::Config.load_file(fixture("pkgr.yml"), "squeeze")
+    new_config = config.merge(config2)
+
+    expect(new_config.name).to eq("some-awesome-app")
+    expect(new_config.home).to eq("/opt/some-awesome-app")
+    expect(new_config.version).to eq("0.0.1")
+    expect(new_config.user).to eq("git")
+    expect(new_config.dependencies).to eq(["mysql-server", "git-core"])
+  end
 end

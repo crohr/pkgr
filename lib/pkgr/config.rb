@@ -1,9 +1,37 @@
 require 'ostruct'
+require 'yaml'
 
 module Pkgr
   class Config < OpenStruct
+    class << self
+      def load_file(path, distribution)
+        config = YAML.load_file(path)
+
+        targets = config.delete("targets") || {}
+        (targets[distribution.to_s] || {}).each do |k,v|
+          config[k] = v
+        end
+
+        self.new(config)
+      end
+    end
+
     def sesame
       binding
+    end
+
+    def merge(other)
+      new_config = self.class.new
+      self.each{|k,v| new_config.send("#{k}=".to_sym, v)}
+      other.each{|k,v| new_config.send("#{k}=".to_sym, v)}
+      new_config
+    end
+
+    def each
+      @table.each do |k,v|
+        next if v.nil? || v.empty?
+        yield k, v
+      end
     end
 
     def home

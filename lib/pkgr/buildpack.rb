@@ -4,10 +4,10 @@ require 'digest/sha1'
 module Pkgr
   class Buildpack
     class << self
-      attr_writer :buildpack_cache_dir
+      attr_writer :buildpacks_cache_dir
 
-      def buildpack_cache_dir
-        @buildpack_cache_dir ||= File.expand_path("~/.pkgr/buildpacks").tap do |dir|
+      def buildpacks_cache_dir
+        @buildpacks_cache_dir ||= File.expand_path("~/.pkgr/buildpacks").tap do |dir|
           FileUtils.mkdir_p(dir)
         end
       end
@@ -23,7 +23,7 @@ module Pkgr
     end
 
     def buildpack_cache_dir
-      File.join(self.class.buildpack_cache_dir, type.to_s, uuid)
+      File.join(self.class.buildpacks_cache_dir, type.to_s, uuid)
     end
 
     def detect(path)

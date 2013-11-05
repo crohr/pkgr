@@ -8,6 +8,23 @@ describe Pkgr::Buildpack do
   end
 
 
+  describe ".buildpacks_cache_dir" do
+    after do
+      Pkgr::Buildpack.buildpacks_cache_dir = nil
+    end
+
+    it "should have a default buildpacks cache directory" do
+      expect(Pkgr::Buildpack.buildpacks_cache_dir).to eq(File.expand_path("~/.pkgr/buildpacks"))
+      expect(File.directory?(Pkgr::Buildpack.buildpacks_cache_dir)).to be_true
+    end
+
+    it "should overwrite the default buildpacks cache directory" do
+      dir = Dir.mktmpdir
+      Pkgr::Buildpack.buildpacks_cache_dir = dir
+      expect(Pkgr::Buildpack.buildpacks_cache_dir).to eq(dir)
+    end
+  end
+
   describe "with ruby buildpack" do
     let(:buildpack) { Pkgr::Buildpack.new("https://github.com/heroku/heroku-buildpack-ruby.git") }
     let(:path) { Dir.mktmpdir }

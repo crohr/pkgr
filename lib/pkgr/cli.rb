@@ -3,9 +3,21 @@ require 'pkgr'
 
 module Pkgr
   class CLI < Thor
-    class_option :verbose,    :type => :boolean, :default => false, :desc => "Run verbosely"
-    class_option :debug,      :type => :boolean, :default => false, :desc => "Run very verbosely"
-    class_option :name,       :type => :string, :desc => "Application name (if directory given, it will default to the directory name)"
+    class_option :verbose,
+      :type => :boolean,
+      :default => false,
+      :desc => "Run verbosely"
+    class_option :debug,
+      :type => :boolean,
+      :default => false,
+      :desc => "Run very verbosely"
+    class_option :name,
+      :type => :string,
+      :desc => "Application name (if directory given, it will default to the directory name)"
+    class_option :buildpacks_cache_dir,
+      :type => :string,
+      :desc => "Directory where to store the buildpacks",
+      :default => Pkgr::Buildpack.buildpacks_cache_dir
 
     desc "package TARBALL", "Package the given tarball or directory"
 
@@ -31,6 +43,8 @@ module Pkgr
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]
       Pkgr.level = Logger::DEBUG if options[:debug]
+
+      Pkgr::Buildpack.buildpacks_cache_dir = options[:buildpacks_cache_dir] if options[:buildpacks_cache_dir]
 
       packager = Dispatcher.new(tarball, options)
       packager.call

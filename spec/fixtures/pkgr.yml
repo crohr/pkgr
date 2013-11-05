@@ -1,0 +1,17 @@
+name: some-awesome-app
+description: "An awesome description here!"
+homepage: "http://example.org"
+user: git
+group: git
+before_precompile: ./packaging/debian/setup.sh
+targets:
+  debian-squeeze:
+    build_dependencies:
+      - libmagickcore-dev
+      - libmagickwand-dev
+    dependencies:
+      - mysql-server
+      - git-core
+  debian-wheezy:
+    dependencies:
+      - git-core

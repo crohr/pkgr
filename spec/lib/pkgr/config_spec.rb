@@ -26,7 +26,7 @@ describe Pkgr::Config do
   end
 
   it "can read from a config file" do
-    config = Pkgr::Config.load_file(fixture("pkgr.yml"), "squeeze")
+    config = Pkgr::Config.load_file(fixture("pkgr.yml"), "debian-squeeze")
     expect(config.name).to eq("some-awesome-app")
     expect(config.description).to eq("An awesome description here!")
     expect(config.user).to eq("git")
@@ -38,7 +38,7 @@ describe Pkgr::Config do
 
   it "can merge two config objects together" do
     config.dependencies = ["dep1", "dep2"]
-    config2 = Pkgr::Config.load_file(fixture("pkgr.yml"), "squeeze")
+    config2 = Pkgr::Config.load_file(fixture("pkgr.yml"), "debian-squeeze")
     new_config = config.merge(config2)
 
     expect(new_config.name).to eq("some-awesome-app")

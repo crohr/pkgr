@@ -17,9 +17,10 @@ module Pkgr
 
     # Launch the full packaging procedure
     def call
+      extract
+      update_config
       check
       setup
-      extract
       compile
       write_env
       write_init
@@ -45,7 +46,7 @@ module Pkgr
 
     # Extract the given tarball to the target directory
     def extract
-      raise "#{source_dir} does not exist" unless File.directory?(source_dir)
+      FileUtils.mkdir_p source_dir
 
       opts = {}
       if tarball == "-"
@@ -56,6 +57,13 @@ module Pkgr
       tarball_extract = Mixlib::ShellOut.new("tar xzf #{tarball} -C #{source_dir}", opts)
       tarball_extract.run_command
       tarball_extract.error!
+    end
+
+    # Update existing config with the one from .pkgr.yml file, if any
+    def update_config
+      if File.exist?(config_file)
+        @config = Config.load_file(config_file, distribution.version).merge(config)
+      end
     end
 
     # Pass the app through the buildpack
@@ -140,6 +148,10 @@ module Pkgr
     # Path to the release file generated after the buildpack compilation.
     def release_file
       File.join(source_dir, ".release")
+    end
+
+    def config_file
+      File.join(source_dir, ".pkgr.yml")
     end
 
     # Path to the directory containing the main app files.

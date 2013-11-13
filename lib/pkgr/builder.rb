@@ -63,6 +63,7 @@ module Pkgr
     def update_config
       if File.exist?(config_file)
         @config = Config.load_file(config_file, distribution.version).merge(config)
+        Pkgr.debug "Found .pkgr.yml file. Updated config is now: #{config.inspect}"
       end
     end
 

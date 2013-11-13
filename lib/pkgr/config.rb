@@ -29,7 +29,7 @@ module Pkgr
 
     def each
       @table.each do |k,v|
-        next if v.nil? || v.empty?
+        next if v.nil?
         yield k, v
       end
     end

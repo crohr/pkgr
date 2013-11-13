@@ -113,6 +113,8 @@ module Pkgr
               https://github.com/rhy-jot/buildpack-nginx.git
               https://github.com/Kloadut/heroku-buildpack-static-apache.git
             }.map{|url| Buildpack.new(url)}
+          else
+            []
           end
         end
       end

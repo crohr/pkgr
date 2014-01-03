@@ -1,6 +1,7 @@
 require "thor"
 require 'pkgr'
 require 'pkgr/buildpack'
+require 'pkgr/env'
 
 module Pkgr
   class CLI < Thor
@@ -40,6 +41,7 @@ module Pkgr
     method_option :clean,               :type => :boolean, :default => true, :desc => "Automatically clean up temporary dirs"
     method_option :buildpack,           :type => :string, :desc => "Custom buildpack to use"
     method_option :edge,                :type => :boolean, :default => true, :desc => "Always use the latest version of the buildpack if already installed"
+    method_option :env,                 :type => :string, default: '', :description => 'Specify environment variables for buildpacks (--env="CURL_TIMEOUT=2,BUNDLE_WITHOUT=development test")'
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

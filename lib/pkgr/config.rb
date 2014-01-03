@@ -58,6 +58,10 @@ module Pkgr
       @table[:description] || "No description given"
     end
 
+    def env
+      Pkgr::Env.new(@table[:env])
+    end
+
     def valid?
       @errors = []
       @errors.push("name can't be blank") if name.nil? || name.empty?
@@ -89,6 +93,7 @@ module Pkgr
       args.push "--compile-cache-dir \"#{compile_cache_dir}\"" unless compile_cache_dir.nil? || compile_cache_dir.empty?
       args.push "--before-precompile \"#{before_precompile}\"" unless compile_cache_dir.nil? || compile_cache_dir.empty?
       args.push "--buildpack \"#{buildpack}\"" unless buildpack.nil? || buildpack.empty?
+      args.push "--env \"#{env}\"" if env.present?
       args.push "--auto" if auto
       args.push "--verbose" if verbose
       args.push "--debug" if debug

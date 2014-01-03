@@ -91,10 +91,11 @@ module Pkgr
         }
       end
 
-      def buildpacks(custom_buildpack_uri = nil)
+      def buildpacks(config)
+        custom_buildpack_uri = config.buildpack
         if custom_buildpack_uri
           uuid = Digest::SHA1.hexdigest(custom_buildpack_uri)
-          [Buildpack.new(custom_buildpack_uri, :custom)]
+          [Buildpack.new(custom_buildpack_uri, :custom, config.env)]
         else
           case version
           when "ubuntu-precise", "debian-wheezy", "ubuntu-lucid", "debian-squeeze"
@@ -112,7 +113,7 @@ module Pkgr
               https://github.com/igrigorik/heroku-buildpack-dart.git
               https://github.com/rhy-jot/buildpack-nginx.git
               https://github.com/Kloadut/heroku-buildpack-static-apache.git
-            }.map{|url| Buildpack.new(url)}
+            }.map{|url| Buildpack.new(url, :builtin, config.env)}
           else
             []
           end

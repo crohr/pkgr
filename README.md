@@ -25,9 +25,9 @@ Or, assuming your build machine is accessible via SSH by doing `ssh pkgr-build-m
 
     pkgr package path/to/app/repo --host pkgr-build-machine
 
-Or, usign vagrant
+Or, using vagrant
 
-    pkgr package path/to/app/repo --host vagrant@localhost --port 2222
+    pkgr package path/to/app/repo --host vagrant@localhost --port 2222 --env "CURL_TIMEOUT=2400" --compile-cache-dir "~/.git"
 
 The resulting .deb package will be in your current working directory.
 

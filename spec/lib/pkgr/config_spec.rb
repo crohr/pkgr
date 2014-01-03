@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe Pkgr::Config do
-  let(:config) { Pkgr::Config.new(:version => "0.0.1", :name => "my-app", :iteration => "1234") }
+  let(:config) { Pkgr::Config.new(:version => "0.0.1", :name => "my-app", :iteration => "1234", :env => ["RACK_ENV=staging", "CURL_TIMEOUT=250"]) }
 
   it "is valid" do
     expect(config).to be_valid
@@ -23,6 +23,7 @@ describe Pkgr::Config do
     expect(config.to_args).to include("--group \"my-app\"")
     expect(config.to_args).to include("--architecture \"x86_64\"")
     expect(config.to_args).to include("--homepage \"http://somewhere\"")
+    expect(config.to_args).to include("--env \"RACK_ENV=staging\" \"CURL_TIMEOUT=250\"")
   end
 
   it "can read from a config file" do

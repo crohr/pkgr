@@ -3,7 +3,7 @@ module Pkgr
     attr_reader :env
 
     def initialize(env)
-      @env = env || ""
+      @env = env || []
     end
 
     def present?
@@ -17,9 +17,9 @@ module Pkgr
     private
 
     def create_env_hash_from_string
-      return {} if env == ""
+      return {} if env == []
 
-      env.split(',').inject({}) do |h, var|
+      env.inject({}) do |h, var|
         name, value = var.split('=')
         h[name.strip] = value.strip
         h

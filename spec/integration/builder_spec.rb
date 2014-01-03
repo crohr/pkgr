@@ -7,7 +7,7 @@ describe "Builder" do
       :name => "my-app",
       :version => "0.0.1",
       :iteration => "1234",
-      :env => "CURL_TIMEOUT=250",
+      :env => ["CURL_TIMEOUT=250"],
       :auto => true,
       :compile_cache_dir => "/tmp/cache-for-ruby-app-integration-test")
 

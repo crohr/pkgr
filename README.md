@@ -60,6 +60,7 @@ Full command line options are given below:
       [--verbose]                              # Run verbosely
       [--debug]                                # Run very verbosely
       [--name=NAME]                            # Application name (if directory given, it will default to the directory name)
+      [--env="RACK_ENV=staging" ]              # Specify environment variables for buildpack
 
 ## Why?
 

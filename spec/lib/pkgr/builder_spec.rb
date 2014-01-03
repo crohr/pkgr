@@ -58,18 +58,6 @@ describe Pkgr::Builder do
 
       expect(Dir.glob(File.join(builder.source_dir, "*")).map{|dir| File.basename(dir)}.sort).to eq(expected_app_files)
     end
-
-    it "should extract the given stdin to the source directory" do
-      cmd = "cat #{fixture("my-app.tar.gz")}"
-      IO.popen(cmd) {|f|
-        $stdin = f
-        builder = Pkgr::Builder.new("-", config)
-        FileUtils.mkdir_p(builder.source_dir)
-
-        builder.extract
-        expect(Dir.glob(File.join(builder.source_dir, "*")).map{|dir| File.basename(dir)}.sort).to eq(expected_app_files)
-      }
-    end
   end
 
   describe "#update_config" do

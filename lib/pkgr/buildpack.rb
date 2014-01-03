@@ -35,8 +35,7 @@ module Pkgr
     end
 
     def compile(path, compile_cache_dir)
-      variables = "#{env.variables.map {|k, v| " #{k}=#{v}" }.join}"
-      cmd = %{env -i PATH="$PATH"#{variables} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" }
+      cmd = %{env -i PATH="$PATH"#{env} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" }
 
       Dir.chdir(path) do
         IO.popen(cmd) do |io|

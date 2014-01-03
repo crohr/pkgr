@@ -3,12 +3,15 @@ require 'pkgr/git'
 
 module Pkgr
   class Dispatcher
-    attr_reader :path, :host, :config
+    attr_reader :path, :host, :port, :config
 
     def initialize(path, opts = {})
       opts = opts.dup
       @path = path
+
       @host = opts.delete(:host)
+      @port = opts.delete(:port)
+
       @config = Config.new(opts)
     end
 
@@ -20,7 +23,16 @@ module Pkgr
       setup
 
       if remote?
-        command = %{ ( cat "#{path}" | ssh "#{host}" pkgr package - #{config.to_args.join(" ")} ) && rsync "#{host}":~/*.deb .}
+        tarball = "/tmp/app.tar"
+
+        command = %{set -e && \
+          rm -rf #{tarball} && \
+          scp -P #{port} #{path} #{host}:#{tarball} && \
+          ssh #{host} -p #{port} "/bin/bash --login -c 'pkgr package #{tarball} #{config.to_args.join(" ")}'" && \
+          rsync --rsh='ssh -p#{port}' "#{host}":~/*.deb .
+        }
+
+        p command
         Pkgr.debug command
         IO.popen(command) do |io|
           until io.eof?

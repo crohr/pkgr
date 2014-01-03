@@ -19,11 +19,15 @@ Install `pkgr` on a Debian/Ubuntu machine (only `wheezy` flavour for now):
 
 To package your app, you can either execute `pkgr` locally if your app repository is on the same machine:
 
-    pkgr path/to/app/repo
+    pkgr package path/to/app/repo
 
 Or, assuming your build machine is accessible via SSH by doing `ssh pkgr-build-machine` (set this in your `~/.ssh/config` file), you can do as follows:
 
-    pkgr path/to/app/repo --host pkgr-build-machine
+    pkgr package path/to/app/repo --host pkgr-build-machine
+
+Or, usign vagrant
+
+    pkgr package path/to/app/repo --host vagrant@localhost --port 2222
 
 The resulting .deb package will be in your current working directory.
 

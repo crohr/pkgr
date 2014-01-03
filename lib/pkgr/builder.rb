@@ -48,13 +48,7 @@ module Pkgr
     def extract
       FileUtils.mkdir_p source_dir
 
-      opts = {}
-      if tarball == "-"
-        # FIXME: not really happy with reading everything in memory
-        opts[:input] = $stdin.read
-      end
-
-      tarball_extract = Mixlib::ShellOut.new("tar xzf #{tarball} -C #{source_dir}", opts)
+      tarball_extract = Mixlib::ShellOut.new("tar xzf #{tarball} -C #{source_dir}")
       tarball_extract.run_command
       tarball_extract.error!
     end

@@ -36,12 +36,14 @@ module Pkgr
     method_option :before_precompile,   :type => :string, :desc => "Provide a script to run just before the buildpack compilation. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
     method_option :dependencies,        :type => :array,  :default => [], :desc => "Specific system dependencies that you want to install with the package"
     method_option :build_dependencies,  :type => :array,  :default => [], :desc => "Specific system dependencies that must be present before building"
-    method_option :host,                :type => :string, :desc => "Remote host to build on (default: local machine)"
     method_option :auto,                :type => :boolean, :default => false, :desc => "Automatically attempt to install missing dependencies"
     method_option :clean,               :type => :boolean, :default => true, :desc => "Automatically clean up temporary dirs"
     method_option :buildpack,           :type => :string, :desc => "Custom buildpack to use"
     method_option :edge,                :type => :boolean, :default => true, :desc => "Always use the latest version of the buildpack if already installed"
     method_option :env,                 :type => :array, default: [], :description => 'Specify environment variables for buildpack (--env "CURL_TIMEOUT=2" "BUNDLE_WITHOUT=development test")'
+
+    method_option :host,                :type => :string, :desc => "Remote host to build on (default: local machine)"
+    method_option :port,                :type => :string, :default => "22", :desc => "Port for remote host (2222 for Vagrant)"
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

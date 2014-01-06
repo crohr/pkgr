@@ -91,7 +91,7 @@ module Pkgr
       args.push "--dependencies #{dependencies.map{|d| "\"#{d}\""}.join}" unless dependencies.nil? || dependencies.empty?
       args.push "--build-dependencies #{build_dependencies.map{|d| "\"#{d}\""}.join}" unless build_dependencies.nil? || build_dependencies.empty?
       args.push "--compile-cache-dir \"#{compile_cache_dir}\"" unless compile_cache_dir.nil? || compile_cache_dir.empty?
-      args.push "--before-precompile \"#{before_precompile}\"" unless compile_cache_dir.nil? || compile_cache_dir.empty?
+      args.push "--before-precompile \"#{before_precompile}\"" unless before_precompile.nil? || before_precompile.empty?
       args.push "--buildpack \"#{buildpack}\"" unless buildpack.nil? || buildpack.empty?
       args.push "--env #{env.variables.map{|v| "\"#{v}\""}.join(" ")}" if env.present?
       args.push "--auto" if auto

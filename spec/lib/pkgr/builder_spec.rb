@@ -73,6 +73,8 @@ describe Pkgr::Builder do
   end
 
   describe "#update_config" do
+    let(:distribution) { Pkgr::Distributions::Debian.new("ubuntu-precise") }
+
     it "does not change the config if no .pkgr.yml found at the root of the source directory" do
       builder = Pkgr::Builder.new(fixture("my-app.tar.gz"), config)
       config = builder.config
@@ -86,7 +88,7 @@ describe Pkgr::Builder do
       FileUtils.cp fixture("pkgr.yml"), File.join(dir, ".pkgr.yml")
 
       builder = Pkgr::Builder.new("path/to/tarball.tgz", config)
-      builder.stub(:source_dir => dir)
+      builder.stub(:source_dir => dir, :distribution => distribution)
 
       config = builder.config
       builder.update_config

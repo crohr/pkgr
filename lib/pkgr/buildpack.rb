@@ -13,13 +13,14 @@ module Pkgr
       end
     end
 
-    attr_reader :url, :banner, :type, :uuid, :branch
+    attr_reader :url, :banner, :type, :uuid, :branch, :env
 
-    def initialize(url, type = :builtin)
+    def initialize(url, type = :builtin, env = nil)
       @uuid = Digest::SHA1.hexdigest(url)
       @url, @branch = url.split("#")
       @branch ||= "master"
       @type = type
+      @env = env
     end
 
     def buildpack_cache_dir
@@ -34,8 +35,10 @@ module Pkgr
     end
 
     def compile(path, compile_cache_dir)
+      cmd = %{env -i PATH="$PATH"#{env} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" }
+
       Dir.chdir(path) do
-        IO.popen(%{ env -i PATH="$PATH" #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" }) do |io|
+        IO.popen(cmd) do |io|
           until io.eof?
             data = io.gets
             print data

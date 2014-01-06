@@ -195,7 +195,7 @@ module Pkgr
 
     # List of available buildpacks for the current distribution.
     def buildpacks
-      distribution.buildpacks(config.buildpack)
+      distribution.buildpacks(config)
     end
 
     # Buildpack detected for the app, if any.

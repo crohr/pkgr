@@ -1,6 +1,5 @@
 default:
   - curl
-  - libssl0.9.8
   - libmysqlclient-dev
   - libpq-dev
   - libsqlite3-0
@@ -10,5 +9,11 @@ default:
   - libxslt1-dev
   - libreadline-dev
   - build-essential
-squeeze:
-wheezy:
+debian-squeeze:
+  - libssl0.9.8
+ubuntu-lucid:
+  - libssl0.9.8
+debian-wheezy:
+  - libssl1.0.0
+ubuntu-precise:
+  - libssl1.0.0

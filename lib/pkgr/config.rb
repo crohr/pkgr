@@ -66,6 +66,7 @@ module Pkgr
       @errors = []
       @errors.push("name can't be blank") if name.nil? || name.empty?
       @errors.push("version can't be blank") if version.nil? || version.empty?
+      @errors.push("version must start with a digit") if !version.empty? && version !~ /^\d/
       @errors.push("iteration can't be blank") if iteration.nil? || iteration.empty?
       @errors.push("user can't be blank") if user.nil? || user.empty?
       @errors.push("group can't be blank") if group.nil? || group.empty?

@@ -13,6 +13,12 @@ describe Pkgr::Config do
     expect(config.errors).to include("name can't be blank")
   end
 
+  it "is not valid if invalid version number" do
+    config.version = "abcd"
+    expect(config).to_not be_valid
+    expect(config.errors).to include("version must start with a digit")
+  end
+
   it "exports to cli arguments" do
     config.homepage = "http://somewhere"
     config.description = "some description"

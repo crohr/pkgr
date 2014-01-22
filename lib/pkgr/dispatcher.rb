@@ -38,7 +38,11 @@ module Pkgr
       tmpfile = Tempfile.new(["pkgr-tarball", ".tar.gz"])
       system("tar czf #{tmpfile.path} --exclude .git --exclude .svn -C \"#{path}\" .") || raise(Pkgr::Errors::Base, "Can't compress input directory")
       # Remove any non-digit characters that may be before the version number
-      config.version ||= (Git.new(path).latest_tag || "").gsub(/^[^\d](\d.*)/, '\1')
+      config.version ||= begin
+        v = (Git.new(path).latest_tag || "").gsub(/^[^\d]+(\d.*)/, '\1')
+        v = "0.0.0" if v !~ /^\d/
+        v
+      end
       config.compile_cache_dir ||= File.join(path, ".git", "cache")
       config.name ||= File.basename(path)
       @path = tmpfile.path

@@ -4,13 +4,18 @@
 
 Make debian packages out of any app that can run on Heroku.
 
+## Supported distributions (64bits only)
+
+* Debian wheezy / Ubuntu precise
+* Debian squeeze / Ubuntu lucid
+
 ## Examples
 
 * See <http://deb.pkgr.io/> for examples of apps packaged with `pkgr` (e.g. Gitlab, Discourse).
 
 ## Installation
 
-Install `pkgr` on a Debian/Ubuntu machine (only `wheezy` flavour for now):
+Install `pkgr` on a debian based build machine:
 
     sudo apt-get install ruby1.9.1-full
     sudo gem install pkgr

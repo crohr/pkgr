@@ -6,8 +6,10 @@ Make debian packages out of any app that can run on Heroku.
 
 ## Supported distributions (64bits only)
 
-* Debian wheezy / Ubuntu precise
+* Ubuntu precise
 * Debian squeeze / Ubuntu lucid
+
+Note: packages can work on Debian wheezy, provided that libssl0.9.8 is installed. It has to be done manually though, as they're no longer provided in the default repositories.
 
 ## Examples
 

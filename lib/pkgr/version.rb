@@ -1,3 +1,3 @@
 module Pkgr
-  VERSION = "1.1.4pre1"
+  VERSION = "1.1.4pre2"
 end

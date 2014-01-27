@@ -3,28 +3,31 @@ default:
   - mysql-common
   - libpq5
   - libsqlite3-0
-  - libssl0.9.8
   - openssl
   - libxml2
   - libxslt1.1
   - libreadline5
   - libreadline6
 debian-squeeze:
+  - libssl0.9.8
   - libmysqlclient16
   - libevent-1.4-2
   - libevent-core-1.4-2
   - libevent-extra-1.4-2
 ubuntu-lucid:
+  - libssl0.9.8
   - libmysqlclient16
   - libevent-1.4-2
   - libevent-core-1.4-2
   - libevent-extra-1.4-2
 debian-wheezy:
+  - libssl1.0.0
   - libmysqlclient18
   - libevent-2.0-5
   - libevent-core-2.0-5
   - libevent-extra-2.0-5
 ubuntu-precise:
+  - libssl1.0.0
   - libmysqlclient18
   - libevent-2.0-5
   - libevent-core-2.0-5

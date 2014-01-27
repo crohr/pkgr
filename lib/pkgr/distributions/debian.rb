@@ -98,21 +98,23 @@ module Pkgr
           [Buildpack.new(custom_buildpack_uri, :custom, config.env)]
         else
           case version
-          when "ubuntu-precise", "debian-wheezy", "ubuntu-lucid", "debian-squeeze"
+          when "ubuntu-precise", "debian-wheezy"
+            %w{
+              https://github.com/pkgr/heroku-buildpack-ruby.git#precise
+              https://github.com/heroku/heroku-buildpack-nodejs.git
+              https://github.com/heroku/heroku-buildpack-java.git
+              https://github.com/heroku/heroku-buildpack-play.git
+              https://github.com/heroku/heroku-buildpack-python.git
+              https://github.com/heroku/heroku-buildpack-clojure.git
+            }.map{|url| Buildpack.new(url, :builtin, config.env)}
+          when "ubuntu-lucid", "debian-squeeze"
             %w{
               https://github.com/heroku/heroku-buildpack-ruby.git
               https://github.com/heroku/heroku-buildpack-nodejs.git
               https://github.com/heroku/heroku-buildpack-java.git
               https://github.com/heroku/heroku-buildpack-play.git
               https://github.com/heroku/heroku-buildpack-python.git
-              https://github.com/heroku/heroku-buildpack-php.git
               https://github.com/heroku/heroku-buildpack-clojure.git
-              https://github.com/kr/heroku-buildpack-go.git
-              https://github.com/miyagawa/heroku-buildpack-perl.git
-              https://github.com/heroku/heroku-buildpack-scala
-              https://github.com/igrigorik/heroku-buildpack-dart.git
-              https://github.com/rhy-jot/buildpack-nginx.git
-              https://github.com/Kloadut/heroku-buildpack-static-apache.git
             }.map{|url| Buildpack.new(url, :builtin, config.env)}
           else
             []

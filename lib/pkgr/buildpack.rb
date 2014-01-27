@@ -29,6 +29,7 @@ module Pkgr
 
     def detect(path)
       buildpack_detect = Mixlib::ShellOut.new("#{dir}/bin/detect \"#{path}\"")
+      buildpack_detect.logger = Pkgr.logger
       buildpack_detect.run_command
       @banner = buildpack_detect.stdout.chomp
       buildpack_detect.exitstatus == 0
@@ -52,6 +53,7 @@ module Pkgr
 
     def release(path, compile_cache_dir)
       buildpack_release = Mixlib::ShellOut.new("#{dir}/bin/release \"#{path}\" \"#{compile_cache_dir}\" > #{path}/.release")
+      buildpack_release.logger = Pkgr.logger
       buildpack_release.run_command
       buildpack_release.exitstatus == 0
     end
@@ -72,7 +74,8 @@ module Pkgr
     def refresh(edge = true)
       return if !edge
       Dir.chdir(dir) do
-        buildpack_refresh = Mixlib::ShellOut.new("git fetch origin && git reset --hard origin/#{branch}")
+        buildpack_refresh = Mixlib::ShellOut.new("git fetch origin && git reset --hard $(git describe 'origin/#{branch}' || git describe '#{branch}')")
+        buildpack_refresh.logger = Pkgr.logger
         buildpack_refresh.run_command
         buildpack_refresh.error!
       end
@@ -82,14 +85,17 @@ module Pkgr
       FileUtils.mkdir_p(buildpack_cache_dir)
       Dir.chdir(buildpack_cache_dir) do
         buildpack_install = Mixlib::ShellOut.new("git clone \"#{url}\"")
+        buildpack_install.logger = Pkgr.logger
         buildpack_install.run_command
         buildpack_install.error!
       end
+      refresh(true)
     end
 
     def replace_app_with_app_home(app_home)
       Dir.chdir(dir) do
         buildpack_replace = Mixlib::ShellOut.new("find . -type f -print0 | xargs -0 perl -pi -e s,/app,#{app_home},g")
+        buildpack_replace.logger = Pkgr.logger
         buildpack_replace.run_command
         buildpack_replace.error!
       end

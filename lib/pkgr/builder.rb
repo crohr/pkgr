@@ -55,6 +55,7 @@ module Pkgr
       end
 
       tarball_extract = Mixlib::ShellOut.new("tar xzf #{tarball} -C #{source_dir}", opts)
+      tarball_extract.logger = Pkgr.logger
       tarball_extract.run_command
       tarball_extract.error!
     end
@@ -115,8 +116,8 @@ module Pkgr
 
     # Launch the FPM command that will generate the package.
     def package
-      Pkgr.info "Running command: #{fpm_command}"
       app_package = Mixlib::ShellOut.new(fpm_command)
+      app_package.logger = Pkgr.logger
       app_package.run_command
       app_package.error!
     end
@@ -216,6 +217,7 @@ module Pkgr
       return true if file.nil?
       Dir.chdir(source_dir) do
         app_package = Mixlib::ShellOut.new("bash '#{file}'")
+        app_package.logger = Pkgr.logger
         app_package.run_command
         app_package.error!
       end

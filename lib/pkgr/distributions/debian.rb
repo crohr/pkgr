@@ -53,15 +53,15 @@ module Pkgr
       def check(config)
         missing_packages = (build_dependencies(config.build_dependencies) || []).select do |package|
           test_command = "dpkg -s '#{package}' > /dev/null 2>&1"
-          Pkgr.debug "Running #{test_command}"
+          Pkgr.debug "sh(#{test_command})"
           ! system(test_command)
         end
 
         unless missing_packages.empty?
           package_install_command = "sudo apt-get install -y #{missing_packages.map{|package| "\"#{package}\""}.join(" ")}"
           if config.auto
-            Pkgr.debug "Running command: #{package_install_command}"
             package_install = Mixlib::ShellOut.new(package_install_command)
+            package_install.logger = Pkgr.logger
             package_install.run_command
             package_install.error!
           else

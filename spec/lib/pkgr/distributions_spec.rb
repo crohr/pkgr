@@ -14,4 +14,8 @@ describe Pkgr::Distributions do
     expect(current_distribution).to be_a(Pkgr::Distributions::UbuntuPrecise)
     expect(current_distribution.codename).to eq("wheezy")
   end
+
+  it "forces a specific distribution" do
+    expect(Pkgr::Distributions.current("debian-squeeze")).to be_a(Pkgr::Distributions::DebianSqueeze)
+  end
 end

@@ -5,14 +5,17 @@ require 'facter'
 
 module Pkgr
   module Distributions
-    def current
-      os = Facter.value('operatingsystem').capitalize
-      codename = Facter.value('lsbdistcodename').capitalize
+    def current(force_os = nil)
+      distro = if force_os.nil?
+        [Facter.value('operatingsystem'), Facter.value('lsbdistcodename')]
+      else
+        force_os.split("-")
+      end.map(&:capitalize).join("")
 
-      klass = const_get("#{os}#{codename}")
+      klass = const_get(distro)
       klass.new
     rescue NameError => e
-      raise Errors::UnknownDistribution, "Don't know about the current distribution you're on: #{os}-#{codename}"
+      raise Errors::UnknownDistribution, "Don't know about the current distribution you're on: #{distro}"
     end
     module_function :current
   end

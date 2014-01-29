@@ -94,6 +94,7 @@ module Pkgr
       args.push "--compile-cache-dir \"#{compile_cache_dir}\"" unless compile_cache_dir.nil? || compile_cache_dir.empty?
       args.push "--before-precompile \"#{before_precompile}\"" unless before_precompile.nil? || before_precompile.empty?
       args.push "--buildpack \"#{buildpack}\"" unless buildpack.nil? || buildpack.empty?
+      args.push "--force-os \"#{force_os}\"" unless force_os.nil? || force_os.empty?
       args.push "--env #{env.variables.map{|v| "\"#{v}\""}.join(" ")}" if env.present?
       args.push "--auto" if auto
       args.push "--verbose" if verbose

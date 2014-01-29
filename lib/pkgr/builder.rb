@@ -191,7 +191,7 @@ module Pkgr
 
     # Returns the current distribution we're packaging for.
     def distribution
-      @distribution ||= Distributions.current
+      @distribution ||= Distributions.current(config.force_os)
     end
 
     # List of available buildpacks for the current distribution.

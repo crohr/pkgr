@@ -7,9 +7,9 @@ module Pkgr
   module Distributions
     class Debian
 
-      attr_reader :version
-      def initialize(version)
-        @version = version
+      # Must be subclassed.
+      def codename
+        raise NotImplementedError, "codename must be set"
       end
 
       def templates(app_name)
@@ -97,29 +97,13 @@ module Pkgr
           uuid = Digest::SHA1.hexdigest(custom_buildpack_uri)
           [Buildpack.new(custom_buildpack_uri, :custom, config.env)]
         else
-          case version
-          when "ubuntu-precise", "debian-wheezy"
-            %w{
-              https://github.com/pkgr/heroku-buildpack-ruby.git#precise
-              https://github.com/heroku/heroku-buildpack-nodejs.git
-              https://github.com/heroku/heroku-buildpack-java.git
-              https://github.com/heroku/heroku-buildpack-play.git
-              https://github.com/heroku/heroku-buildpack-python.git
-              https://github.com/heroku/heroku-buildpack-clojure.git
-            }.map{|url| Buildpack.new(url, :builtin, config.env)}
-          when "ubuntu-lucid", "debian-squeeze"
-            %w{
-              https://github.com/heroku/heroku-buildpack-ruby.git
-              https://github.com/heroku/heroku-buildpack-nodejs.git
-              https://github.com/heroku/heroku-buildpack-java.git
-              https://github.com/heroku/heroku-buildpack-play.git
-              https://github.com/heroku/heroku-buildpack-python.git
-              https://github.com/heroku/heroku-buildpack-clojure.git
-            }.map{|url| Buildpack.new(url, :builtin, config.env)}
-          else
-            []
-          end
+          default_buildpacks.map{|url| Buildpack.new(url, :builtin, config.env)}
         end
+      end
+
+      # Return the default buildpacks. Must be subclassed.
+      def default_buildpacks
+        []
       end
 
       def preinstall_file(config)
@@ -148,12 +132,12 @@ module Pkgr
 
       def dependencies(other_dependencies = nil)
         deps = YAML.load_file(File.join(data_dir, "dependencies.yml"))
-        (deps["default"] || []) | (deps[version] || []) | (other_dependencies || [])
+        (deps["default"] || []) | (deps[codename] || []) | (other_dependencies || [])
       end
 
       def build_dependencies(other_dependencies = nil)
         deps = YAML.load_file(File.join(data_dir, "build_dependencies.yml"))
-        (deps["default"] || []) | (deps[version] || []) | (other_dependencies || [])
+        (deps["default"] || []) | (deps[codename] || []) | (other_dependencies || [])
       end
 
       def data_file(name)
@@ -165,4 +149,8 @@ module Pkgr
       end
     end
   end
+end
+
+%w{debian_squeeze debian_wheezy ubuntu_lucid ubuntu_precise}.each do |distro|
+  require "pkgr/distributions/#{distro}"
 end

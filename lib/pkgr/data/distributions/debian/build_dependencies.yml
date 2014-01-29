@@ -9,11 +9,7 @@ default:
   - libxslt1-dev
   - libreadline-dev
   - build-essential
-debian-squeeze:
+squeeze:
   - libssl0.9.8
-ubuntu-lucid:
-  - libssl0.9.8
-debian-wheezy:
-  - libssl1.0.0
-ubuntu-precise:
+wheezy:
   - libssl1.0.0

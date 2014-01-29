@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../../../spec_helper'
 
 describe Pkgr::Distributions::Debian do
-  let(:distribution) { Pkgr::Distributions::Debian.new("ubuntu-precise") }
+  let(:distribution) { Pkgr::Distributions::DebianWheezy.new }
 
   it "has file and dir templates" do
     expect(distribution.templates("my-app")).to_not be_empty

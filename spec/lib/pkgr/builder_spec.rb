@@ -73,7 +73,7 @@ describe Pkgr::Builder do
   end
 
   describe "#update_config" do
-    let(:distribution) { Pkgr::Distributions::Debian.new("ubuntu-precise") }
+    let(:distribution) { Pkgr::Distributions::DebianWheezy.new }
 
     it "does not change the config if no .pkgr.yml found at the root of the source directory" do
       builder = Pkgr::Builder.new(fixture("my-app.tar.gz"), config)
@@ -101,7 +101,7 @@ describe Pkgr::Builder do
 
   describe "#compile" do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
-    let(:distribution) { Pkgr::Distributions::Debian.new("ubuntu-precise") }
+    let(:distribution) { Pkgr::Distributions::DebianWheezy.new }
 
     it "has a list of buildpacks" do
       builder.stub(:distribution => distribution)
@@ -139,7 +139,7 @@ describe Pkgr::Builder do
 
   describe "#write_env and #write_init" do
     let(:builder) { Pkgr::Builder.new(fixture("my-app.tar.gz"), config) }
-    let(:distribution) { Pkgr::Distributions::Debian.new("wheezy") }
+    let(:distribution) { Pkgr::Distributions::DebianWheezy.new }
 
     before do
       builder.stub(:distribution => distribution)
@@ -183,7 +183,7 @@ describe Pkgr::Builder do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
 
     before do
-      builder.stub(:distribution => Pkgr::Distributions::Debian.new("wheezy"))
+      builder.stub(:distribution => Pkgr::Distributions::DebianWheezy.new)
       builder.setup
     end
 

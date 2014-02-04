@@ -12,7 +12,7 @@ describe Pkgr::Distributions do
     Facter.should_receive(:value).with('lsbdistcodename').ordered.and_return("precise")
     current_distribution = Pkgr::Distributions.current
     expect(current_distribution).to be_a(Pkgr::Distributions::UbuntuPrecise)
-    expect(current_distribution.codename).to eq("wheezy")
+    expect(current_distribution.codename).to eq("precise")
   end
 
   it "forces a specific distribution" do

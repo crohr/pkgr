@@ -58,6 +58,7 @@ describe Pkgr::Config do
     expect(new_config.home).to eq("/opt/some-awesome-app")
     expect(new_config.version).to eq("0.0.1")
     expect(new_config.user).to eq("git")
-    expect(new_config.dependencies).to eq(["mysql-server", "git-core"])
+    expect(new_config.dependencies).to eq(["dep1", "dep2", "mysql-server", "git-core"])
+    expect(new_config.build_dependencies).to eq(["libmagickcore-dev", "libmagickwand-dev"])
   end
 end

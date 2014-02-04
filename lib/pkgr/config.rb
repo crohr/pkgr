@@ -6,6 +6,7 @@ module Pkgr
     class << self
       def load_file(path, distribution)
         config = YAML.load_file(path)
+        Pkgr.debug "Configuration from file: #{config.inspect} - Distribution: #{distribution.inspect}."
 
         targets = config.delete("targets") || {}
         (targets[distribution.to_s] || {}).each do |k,v|
@@ -22,7 +23,15 @@ module Pkgr
 
     def merge(other)
       new_config = self.class.new
-      self.each{|k,v| new_config.send("#{k}=".to_sym, v)}
+      self.each{|k,v|
+        new_value = case v
+        when Array
+          v | (other.delete(k) || [])
+        else
+          v
+        end
+        new_config.send("#{k}=".to_sym, new_value)
+      }
       other.each{|k,v| new_config.send("#{k}=".to_sym, v)}
       new_config
     end
@@ -32,6 +41,10 @@ module Pkgr
         next if v.nil?
         yield k, v
       end
+    end
+
+    def delete(key)
+      @table.delete(key)
     end
 
     def home

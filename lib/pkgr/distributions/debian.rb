@@ -12,6 +12,14 @@ module Pkgr
         raise NotImplementedError, "codename must be set"
       end
 
+      def osfamily
+        "debian"
+      end
+
+      def slug
+        [osfamily, codename].join("-")
+      end
+
       def templates(app_name)
         list = []
 

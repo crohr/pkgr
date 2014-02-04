@@ -43,6 +43,12 @@ describe Pkgr::Config do
     expect(config.build_dependencies).to eq(["libmagickcore-dev", "libmagickwand-dev"])
   end
 
+  it "correctly recognizes yaml references" do
+    config1 = Pkgr::Config.load_file(fixture("pkgr.yml"), "debian-squeeze")
+    config2 = Pkgr::Config.load_file(fixture("pkgr.yml"), "ubuntu-lucid")
+    expect(config1.dependencies).to eq(config2.dependencies)
+  end
+
   it "can merge two config objects together" do
     config.dependencies = ["dep1", "dep2"]
     config2 = Pkgr::Config.load_file(fixture("pkgr.yml"), "debian-squeeze")

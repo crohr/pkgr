@@ -216,11 +216,19 @@ module Pkgr
     protected
     def run_hook(file)
       return true if file.nil?
+
+      cmd = %{env -i PATH="$PATH"#{config.env} bash '#{file}' 2>&1}
+
+      puts "-----> Running hook: #{file.inspect}"
+
       Dir.chdir(source_dir) do
-        app_package = Mixlib::ShellOut.new("bash '#{file}'")
-        app_package.logger = Pkgr.logger
-        app_package.run_command
-        app_package.error!
+        IO.popen(cmd) do |io|
+          until io.eof?
+            data = io.gets
+            print "       #{data}"
+          end
+        end
+        raise "Hook failed" unless $?.exitstatus.zero?
       end
     end
   end

@@ -66,7 +66,7 @@ module Pkgr
         end
 
         unless missing_packages.empty?
-          package_install_command = "sudo apt-get install --force-yes -y #{missing_packages.map{|package| "\"#{package}\""}.join(" ")}"
+          package_install_command = "sudo apt-get update && sudo apt-get install --force-yes -y #{missing_packages.map{|package| "\"#{package}\""}.join(" ")}"
           if config.auto
             package_install = Mixlib::ShellOut.new(package_install_command)
             package_install.logger = Pkgr.logger

@@ -29,7 +29,7 @@ while : ; do
       COMMAND="$2"
       shift 2
 
-      exec su -m - "${APP_USER}" -c ". ${DEFAULT_FILE} && cd ${HOME} && vendor/pkgr/processes/${COMMAND} ${*}"
+      exec su -m - "${APP_USER}" -c ". ${DEFAULT_FILE} && cd ${HOME} && if [ -f vendor/pkgr/processes/${COMMAND} ]; then vendor/pkgr/processes/${COMMAND} ${*}; else ${COMMAND} ${*}; fi"
       break ;;
 
     scale)

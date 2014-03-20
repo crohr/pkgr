@@ -1,7 +1,7 @@
-HOME="<%= home %>"
-APP_NAME="<%= name %>"
-APP_GROUP="<%= group %>"
-APP_USER="<%= user %>"
+export HOME="<%= home %>"
+export APP_NAME="<%= name %>"
+export APP_GROUP="<%= group %>"
+export APP_USER="<%= user %>"
 
 for file in /etc/${APP_NAME}/conf.d/*; do
   if [ -f $file ]; then . $file; fi

@@ -14,8 +14,10 @@ Gem::Specification.new do |s|
   s.email                     = ["cyril.rohr@gmail.com"]
   s.executables               = ["pkgr"]
   s.homepage                  = "http://github.com/crohr/pkgr"
-  s.summary                   = "Package your Ruby & Rails apps as debian packages"
-  s.description               = "Package your Ruby & Rails apps as debian packages"
+  s.summary                   = "Package any app as a debian package"
+  s.description               = "Embeds your app dependencies (e.g. a specific ruby version and you gems in the case of Rails apps) into a debian package, for easy installation. Provides init scripts and more."
+
+  s.license = 'MIT'
 
   s.add_dependency('rake')
   s.add_dependency('thor')

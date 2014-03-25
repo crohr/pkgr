@@ -61,4 +61,32 @@ describe Pkgr::Config do
     expect(new_config.dependencies).to eq(["dep1", "dep2", "mysql-server", "git-core"])
     expect(new_config.build_dependencies).to eq(["libmagickcore-dev", "libmagickwand-dev"])
   end
+
+  describe "#after_hook" do
+    it "returns the content of the after_precompile option if any" do
+      config.after_precompile = "path/to/hook"
+      expect(config.after_hook).to eq("path/to/hook")
+    end
+
+    it "creates a tmpfile with the content of the after configuration option (if any)" do
+      config.after = ["do_something", "do_something_else"]
+      hook = config.after_hook
+      expect(hook).to_not be_empty
+      expect(File.read(hook)).to eq("do_something\ndo_something_else\n")
+    end
+  end
+
+  describe "#before_hook" do
+    it "returns the content of the before_precompile option if any" do
+      config.before_precompile = "path/to/hook"
+      expect(config.before_hook).to eq("path/to/hook")
+    end
+
+    it "creates a tmpfile with the content of the before configuration option (if any)" do
+      config.before = ["do_something", "do_something_else"]
+      hook = config.before_hook
+      expect(hook).to_not be_empty
+      expect(File.read(hook)).to eq("do_something\ndo_something_else\n")
+    end
+  end
 end

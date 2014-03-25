@@ -76,9 +76,10 @@ module Pkgr
 
         FileUtils.mkdir_p(compile_cache_dir)
 
-        run_hook config.before_precompile
+        run_hook config.before_hook
         buildpack_for_app.compile(source_dir, compile_cache_dir)
         buildpack_for_app.release(source_dir, compile_cache_dir)
+        run_hook config.after_hook
       else
         raise Errors::UnknownAppType, "Can't find a buildpack for your app"
       end
@@ -219,6 +220,7 @@ module Pkgr
 
       cmd = %{env -i PATH="$PATH"#{config.env} bash '#{file}' 2>&1}
 
+      Pkgr.logger.debug "Running hook in #{source_dir}: #{file.inspect}"
       puts "-----> Running hook: #{file.inspect}"
 
       Dir.chdir(source_dir) do

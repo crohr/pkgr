@@ -90,6 +90,40 @@ module Pkgr
       @errors ||= []
     end
 
+    def before_hook
+      if before_precompile.nil? || before_precompile.empty?
+        before_steps = self.before || []
+
+        if before_steps.empty?
+          nil
+        else
+          tmpfile = Tempfile.new(["before_hook", ".sh"])
+          before_steps.each{|step| tmpfile.puts step}
+          tmpfile.close
+          tmpfile.path
+        end
+      else
+        before_precompile
+      end
+    end
+
+    def after_hook
+      if after_precompile.nil? || after_precompile.empty?
+        after_steps = self.after || []
+
+        if after_steps.empty?
+          nil
+        else
+          tmpfile = Tempfile.new(["after_hook", ".sh"])
+          after_steps.each{|step| tmpfile.puts step}
+          tmpfile.close
+          tmpfile.path
+        end
+      else
+        after_precompile
+      end
+    end
+
     def to_args
       args = [
         "--name \"#{name}\"",

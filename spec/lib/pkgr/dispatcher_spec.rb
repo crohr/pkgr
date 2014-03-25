@@ -20,7 +20,7 @@ describe Pkgr::Dispatcher do
   describe "#initialize" do
     it "takes a path to the directory to package, and accepts options" do
       dispatcher = Pkgr::Dispatcher.new("path/to/dir", {opt1: "value1"})
-      dispatcher.path.should == "path/to/dir"
+      dispatcher.path.should == File.expand_path("path/to/dir")
     end
   end
 

@@ -24,4 +24,4 @@ export DATABASE_URL=db_adapter://db_user:db_password@db_host/db_name
 export PORT=\${PORT:=6000}
 CONF
 
-chmod -R 0600 /etc/${APP_NAME}
+chmod -R 0600 /etc/${APP_NAME}/conf.d

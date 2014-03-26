@@ -1,3 +1,8 @@
+## 1.1.8 - 20140326
+
+* Fix master init script.
+* Allow after hooks.
+
 ## 1.1.7 - 20140325
 
 * Expand given path when packaging.

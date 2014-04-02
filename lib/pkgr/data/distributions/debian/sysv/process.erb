@@ -13,11 +13,8 @@
 # Description:       <%= process_name %> component of <%= name %> (PROCESS_NUM)
 ### END INIT INFO
 
-PATH=/sbin:/usr/sbin:/bin:/usr/bin
-export PATH
-
-PORT=PORT_NUM
-export PORT
+export PATH=/sbin:/usr/sbin:/bin:/usr/bin
+export PORT=PORT_NUM
 
 name="<%= name %>"
 process_name="<%= process_name %>"

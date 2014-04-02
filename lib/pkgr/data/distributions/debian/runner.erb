@@ -20,7 +20,143 @@ fi
 
 DEFAULT_FILE=/etc/default/<%= name %>
 
+# Source all environment variables for the app
 . ${DEFAULT_FILE}
+
+# Returns the type of process manager supported by the current distribution.
+function process_manager() {
+  version=$(cat /etc/debian_version)
+
+  case "$version" in
+    wheezy*|squeeze*)
+      init_system="upstart"
+      ;;
+    *)
+      init_system="sysv"
+      ;;
+  esac
+
+  echo "${init_system}"
+}
+
+# You can force a specific process manager by setting the PROCESS_MANAGER environment variable
+PROCESS_MANAGER=${PROCESS_MANAGER:=$(process_manager)}
+
+function current_number_of_processes() {
+  PROCESS_NAME="$1"
+  if [ "${PROCESS_MANAGER}" = "upstart" ]; then
+    echo $(ls -rv1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)\.conf/\1/g')
+  else
+    echo $(ls -rv1 /etc/init.d/${APP_NAME}-${PROCESS_NAME}-* 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)/\1/g')
+  fi
+
+  return 0
+}
+
+function update_port() {
+  file="$1"
+  process_name="$2"
+  port="$3"
+  index="$4"
+
+  sed -i "s/PROCESS_NUM/${index}/g" "${file}"
+  if [ "${process_name}" = "web" ]; then
+    sed -i "s/PORT_NUM/${port}/g" "${file}"
+  else
+    sed -i "s/^env .*PORT_NUM.*$//g" "${file}"
+  fi
+}
+
+function scale_up() {
+  PROCESS_NAME="${1}"
+  CURRENT_SCALE=${2}
+  NEW_SCALE=${3}
+  SCALE_DELTA=${4}
+
+  echo "Scaling up..."
+
+  if [ "${PROCESS_MANAGER}" = "upstart" ]; then
+    cp "${HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}.conf" /etc/init/
+    cp "${HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}-${PROCESS_NAME}.conf" /etc/init/
+    for i in $(seq ${SCALE_DELTA}); do
+      index=$((${i} + ${CURRENT_SCALE}))
+      PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
+      cp "${HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM.conf" "/etc/init/${PROCESS_ID}.conf"
+      port=$((${PORT} + ${index} - 1))
+
+      update_port "/etc/init/${PROCESS_ID}.conf" "${PROCESS_NAME}" $port $index
+
+      service "${PROCESS_ID}" start
+    done
+
+    service ${APP_NAME}-${PROCESS_NAME} start || true
+  else
+    cp "${HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}" /etc/init.d/
+    chmod a+x /etc/init.d/${APP_NAME}
+    update-rc.d ${APP_NAME} defaults
+    cp "${HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}-${PROCESS_NAME}" /etc/init.d/
+    chmod a+x /etc/init.d/${APP_NAME}-${PROCESS_NAME}
+    update-rc.d ${APP_NAME}-${PROCESS_NAME} defaults
+    for i in $(seq ${SCALE_DELTA}); do
+      index=$((${i} + ${CURRENT_SCALE}))
+      PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
+      cp "${HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM" "/etc/init.d/${PROCESS_ID}"
+      port=$((${PORT} + ${index} - 1))
+
+      update_port "/etc/init.d/${PROCESS_ID}" "${PROCESS_NAME}" $port $index
+
+      chmod a+x /etc/init.d/${PROCESS_ID}
+      update-rc.d ${PROCESS_ID} defaults
+      /etc/init.d/${PROCESS_ID} start
+    done
+  fi
+  echo "--> done."
+}
+
+function scale_down() {
+  PROCESS_NAME="${1}"
+  CURRENT_SCALE=${2}
+  NEW_SCALE=${3}
+  SCALE_DELTA=${4}
+
+  echo "Scaling down..."
+  for i in $(seq $(($SCALE_DELTA * -1))); do
+    index=$((${i} + ${NEW_SCALE}))
+    PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
+
+    if [ "${PROCESS_MANAGER}" = "upstart" ]; then
+      service "${PROCESS_ID}" stop
+      rm -f "/etc/init/${PROCESS_ID}.conf"
+    else
+      /etc/init.d/${PROCESS_ID} stop
+      update-rc.d -f ${PROCESS_ID} remove
+      rm -f "/etc/init.d/${PROCESS_ID}"
+    fi
+  done
+  echo "--> done."
+}
+
+# Scale processes, using upstart as the process manager
+function scale() {
+  PROCESS_NAME="$1"
+  NEW_SCALE="$2"
+
+  CURRENT_SCALE=$(current_number_of_processes ${PROCESS_NAME})
+  CURRENT_SCALE=${CURRENT_SCALE:="0"}
+  SCALE_DELTA=$((${NEW_SCALE} - ${CURRENT_SCALE}))
+
+  if [ $SCALE_DELTA -gt 0 ]; then
+    scale_up "${PROCESS_NAME}" $CURRENT_SCALE $NEW_SCALE $SCALE_DELTA
+  elif [ $SCALE_DELTA -lt 0 ]; then
+    scale_down "${PROCESS_NAME}" $CURRENT_SCALE $NEW_SCALE $SCALE_DELTA
+  else
+    echo "Nothing to do."
+  fi
+}
+
+function show_env() {
+  ${0} run env | grep -v -e '^\_' -e '^LS_COLORS' -e '^SUDO' | sort
+}
 
 while : ; do
   case "$1" in
@@ -29,7 +165,17 @@ while : ; do
       COMMAND="$2"
       shift 2
 
-      exec su -m - "${APP_USER}" -c ". ${DEFAULT_FILE} && cd ${HOME} && if [ -f vendor/pkgr/processes/${COMMAND} ]; then vendor/pkgr/processes/${COMMAND} ${*}; else ${COMMAND} ${*}; fi"
+      # Do not use su, to avoid creating a new process
+      exec chroot --userspec ${APP_USER}:${APP_GROUP} / sh -c "
+        . ${DEFAULT_FILE}
+        cd ${HOME}
+        if [ -f vendor/pkgr/processes/${COMMAND} ]; then
+          exec \"vendor/pkgr/processes/${COMMAND}\" ${*};
+        else
+          exec \"${COMMAND}\" ${*};
+        fi
+      "
+
       break ;;
 
     scale)
@@ -37,56 +183,17 @@ while : ; do
       for arg in "$@"; do
         [ "$arg" = "" ] && usage
 
-        PROCESS=(${arg//=/ })
+        process=(${arg//=/ })
+        process_name=${process[0]}
+        new_scale=${process[1]}
 
-        set +e
-        PROCESS_NAME=${PROCESS[0]}
-        NEW_SCALE=${PROCESS[1]}
-        CURRENT_SCALE=$(ls -rv1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)\.conf/\1/g')
-        CURRENT_SCALE=${CURRENT_SCALE:="0"}
-        SCALE_DELTA=$(expr ${NEW_SCALE} - ${CURRENT_SCALE})
-        set -e
-
-        if [ $NEW_SCALE -eq 0 ]; then
-          echo "Stopping all ${PROCESS_NAME} processes... "
-          for file in `ls -1 /etc/init/${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null`; do
-            service "$(basename ${file} .conf)" stop || true
-            rm "${file}"
-          done
-          # Finally, remove master process
-          rm -f "/etc/init/${APP_NAME}-${PROCESS_NAME}.conf"
-          echo "--> done."
-        elif [ $SCALE_DELTA -gt 0 ]; then
-          echo "Scaling up..."
-          cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}.conf" /etc/init/
-          for i in $(seq ${SCALE_DELTA}); do
-            PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${i}"
-            i=$(expr ${i} + ${CURRENT_SCALE})
-            cp "${HOME}/vendor/pkgr/scaling/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM.conf" "/etc/init/${PROCESS_ID}.conf"
-            sed -i "s/PROCESS_NUM/${i}/g" "/etc/init/${PROCESS_ID}.conf"
-            if [ "${PROCESS_NAME}" = "web" ]; then
-              port=$(expr ${PORT} + ${i} - 1)
-              sed -i "s/PORT_NUM/${port}/g" "/etc/init/${PROCESS_ID}.conf"
-            else
-              sed -i "s/^env .*PORT_NUM.*$//g" "/etc/init/${PROCESS_ID}.conf"
-            fi
-            service "${PROCESS_ID}" start
-          done
-          echo "--> done."
-        elif [ $SCALE_DELTA -lt 0 ]; then
-          echo "Scaling down..."
-          for i in $(seq $(expr $SCALE_DELTA \* -1)); do
-            PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${i}"
-            i=$(expr ${i} + ${NEW_SCALE})
-            service "${PROCESS_ID}" stop || true
-            rm -f "/etc/init/${PROCESS_ID}.conf"
-          done
-          echo "--> done."
-        else
-          echo "Nothing to do."
-        fi
+        scale "${process_name}" "${new_scale}"
       done
       break ;;
+
+    config)
+      show_env
+      break;;
 
     config:set)
       [ $# -lt 2 ] && usage
@@ -106,8 +213,7 @@ while : ; do
 
     config:get)
       [ $# -lt 2 ] && usage
-      result=$(grep --no-filename "${2}" ${DEFAULT_FILE} /etc/${APP_NAME}/conf.d/*)
-      echo "${result}" | sed -r "s/^export\s+${2}=//g"
+      show_env | grep -e "^${2}=" | sed -r "s/^${2}=//"
       break;;
 
     *)

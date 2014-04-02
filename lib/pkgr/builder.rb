@@ -95,6 +95,8 @@ module Pkgr
         process_file = File.join(proc_dir, process.name)
 
         File.open(process_file, "w+") do |f|
+          f.puts "#!/bin/sh"
+          f << "exec "
           f << process.command
           f << " $@"
         end

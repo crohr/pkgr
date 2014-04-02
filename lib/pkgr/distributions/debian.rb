@@ -35,8 +35,6 @@ module Pkgr
 
         # default
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", File.new(File.join(data_dir, "default.erb")))
-        # upstart master
-        list.push Templates::FileTemplate.new("etc/init/#{app_name}.conf", data_file("upstart/master.conf.erb"))
         # executable
         list.push Templates::FileTemplate.new("usr/local/bin/#{app_name}", File.new(File.join(data_dir, "runner.erb")), mode: 0755)
         # logrotate
@@ -52,8 +50,15 @@ module Pkgr
         list = []
         procfile_entries.select(&:daemon?).each do |process|
           Pkgr.debug "Adding #{process.inspect} to initialization scripts"
-          list.push [process, Templates::FileTemplate.new("#{app_name}-#{process.name}.conf", data_file("upstart/process_master.conf.erb"))]
-          list.push [process, Templates::FileTemplate.new("#{app_name}-#{process.name}-PROCESS_NUM.conf", data_file("upstart/process.conf.erb"))]
+          # sysvinit
+          list.push [process, Templates::FileTemplate.new("sysv/#{app_name}", data_file("sysv/master.erb"))]
+          list.push [process, Templates::FileTemplate.new("sysv/#{app_name}-#{process.name}", data_file("sysv/process_master.erb"))]
+          list.push [process, Templates::FileTemplate.new("sysv/#{app_name}-#{process.name}-PROCESS_NUM", data_file("sysv/process.erb"))]
+          # upstart
+          list.push [process, Templates::FileTemplate.new("upstart/#{app_name}", data_file("upstart/init.d.sh.erb"))]
+          list.push [process, Templates::FileTemplate.new("upstart/#{app_name}.conf", data_file("upstart/master.conf.erb"))]
+          list.push [process, Templates::FileTemplate.new("upstart/#{app_name}-#{process.name}.conf", data_file("upstart/process_master.conf.erb"))]
+          list.push [process, Templates::FileTemplate.new("upstart/#{app_name}-#{process.name}-PROCESS_NUM.conf", data_file("upstart/process.conf.erb"))]
         end
         list
       end

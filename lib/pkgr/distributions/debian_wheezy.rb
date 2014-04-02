@@ -9,7 +9,7 @@ module Pkgr
 
       def default_buildpacks
         %w{
-          https://github.com/pkgr/heroku-buildpack-ruby.git#precise
+          https://github.com/pkgr/heroku-buildpack-ruby.git#wheezy
           https://github.com/heroku/heroku-buildpack-nodejs.git
           https://github.com/heroku/heroku-buildpack-java.git
           https://github.com/heroku/heroku-buildpack-play.git

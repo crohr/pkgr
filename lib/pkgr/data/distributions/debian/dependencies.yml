@@ -1,5 +1,4 @@
 default:
-  - upstart
   - mysql-common
   - libpq5
   - libsqlite3-0

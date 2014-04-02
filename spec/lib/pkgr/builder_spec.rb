@@ -161,20 +161,28 @@ describe Pkgr::Builder do
         "web",
         "worker"
       ])
-      expect(File.read(File.join(builder.proc_dir, "web"))).to eq("bundle exec unicorn $@")
+      expect(File.read(File.join(builder.proc_dir, "web"))).to eq("#!/bin/sh\nexec bundle exec unicorn $@")
     end
 
-    it "should write the expected init files" do
-      expect{ builder.write_init }.to_not raise_error
-      expect(Dir.glob(File.join(builder.build_dir, "etc/init", "*")).map{|file| File.basename(file)}.sort).to eq([
-        "my-app.conf"
-      ])
+    it "should not write any init files to /etc/init" do
+      builder.write_init
+      expect(Dir.glob(File.join(builder.build_dir, "etc/init", "*"))).to eq([])
+    end
 
-      expect(Dir.glob(File.join(builder.scaling_dir, "*")).map{|file| File.basename(file)}.sort).to eq([
-        "my-app-web-PROCESS_NUM.conf",
-        "my-app-web.conf",
-        "my-app-worker-PROCESS_NUM.conf",
-        "my-app-worker.conf",
+    it "should setup the init script templates for sysvinit and upstart" do
+      builder.write_init
+      expect(Dir.glob(File.join(builder.scaling_dir, "*/*")).map{|file| file.gsub(builder.scaling_dir, "")}.sort).to eq([
+        "/sysv/my-app",
+        "/sysv/my-app-web",
+        "/sysv/my-app-web-PROCESS_NUM",
+        "/sysv/my-app-worker",
+        "/sysv/my-app-worker-PROCESS_NUM",
+        "/upstart/my-app",
+        "/upstart/my-app-web-PROCESS_NUM.conf",
+        "/upstart/my-app-web.conf",
+        "/upstart/my-app-worker-PROCESS_NUM.conf",
+        "/upstart/my-app-worker.conf",
+        "/upstart/my-app.conf"
       ])
     end
   end

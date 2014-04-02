@@ -18,7 +18,7 @@ set -e
 name="<%= name %>"
 
 delegate() {
-  for file in $(ls -1 /etc/init.d/${name}-[!0-9]* 2>/dev/null); do
+  for file in $(ls -1 /etc/init.d/${name}-*[!-0-9] 2>/dev/null); do
     ${file} "${1}"
   done
 }

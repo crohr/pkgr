@@ -36,6 +36,9 @@ module Pkgr
     method_option :changelog,
       :type => :string,
       :desc => "Changelog"
+    method_option :maintainer,
+      :type => :string,
+      :desc => "Maintainer"
     method_option :architecture,
       :type => :string,
       :default => "x86_64",

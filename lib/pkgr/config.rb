@@ -71,6 +71,10 @@ module Pkgr
       @table[:description] || "No description given"
     end
 
+    def maintainer
+      @table[:maintainer] || "<someone@pkgr>"
+    end
+
     def env
       Pkgr::Env.new(@table[:env])
     end
@@ -135,6 +139,7 @@ module Pkgr
         "--architecture \"#{architecture}\"",
         "--target \"#{target}\"",
         "--description \"#{description}\"",
+        "--maintainer \"#{maintainer}\""
       ]
       args.push "--dependencies #{dependencies.map{|d| "\"#{d}\""}.join}" unless dependencies.nil? || dependencies.empty?
       args.push "--build-dependencies #{build_dependencies.map{|d| "\"#{d}\""}.join}" unless build_dependencies.nil? || build_dependencies.empty?

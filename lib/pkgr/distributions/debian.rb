@@ -96,6 +96,7 @@ module Pkgr
           --deb-group "root" \
           -a "#{config.architecture}" \
           --description "#{config.description}" \
+          --maintainer "#{config.maintainer}" \
           --template-scripts \
           --before-install #{preinstall_file(config)} \
           --after-install #{postinstall_file(config)} \

@@ -16,4 +16,20 @@ describe Pkgr::Distributions::Debian do
       expect(distribution.dependencies(["dep1", "dep2"])).to include("libmysqlclient18", "dep1", "dep2")
     end
   end
+
+  describe "#buildpacks" do
+    let(:config) { OpenStruct.new }
+
+    it "has a list of default buildpacks" do
+      expect(distribution.buildpacks(config)).to_not be_empty
+    end
+
+    it "can take an external list of default buildpacks" do
+      config.buildpack_list = fixture("buildpack-list")
+      expect(distribution.buildpacks(config)).to eq([
+        "https://github.com/heroku/heroku-buildpack-play.git#v121",
+        "https://github.com/heroku/heroku-buildpack-python.git"
+      ])
+    end
+  end
 end

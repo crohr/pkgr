@@ -109,6 +109,8 @@ module Pkgr
         if custom_buildpack_uri
           uuid = Digest::SHA1.hexdigest(custom_buildpack_uri)
           [Buildpack.new(custom_buildpack_uri, :custom, config.env)]
+        elsif config.buildpack_list
+          File.read(config.buildpack_list).split("\n")
         else
           default_buildpacks.map{|url| Buildpack.new(url, :builtin, config.env)}
         end

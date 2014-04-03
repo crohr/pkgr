@@ -91,6 +91,7 @@ function scale_up() {
     done
 
     service ${APP_NAME}-${PROCESS_NAME} start || true
+    service ${APP_NAME} start || true
   else
     cp "${HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}" /etc/init.d/
     chmod a+x /etc/init.d/${APP_NAME}

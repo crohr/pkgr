@@ -37,6 +37,7 @@ module Pkgr
 
     def compile(path, compile_cache_dir)
       cmd = %{env -i PATH="$PATH"#{env} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" }
+      Pkgr.debug "Running #{cmd.inspect}"
 
       Dir.chdir(path) do
         IO.popen(cmd) do |io|

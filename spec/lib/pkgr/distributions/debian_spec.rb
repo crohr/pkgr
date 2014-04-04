@@ -21,15 +21,27 @@ describe Pkgr::Distributions::Debian do
     let(:config) { OpenStruct.new }
 
     it "has a list of default buildpacks" do
-      expect(distribution.buildpacks(config)).to_not be_empty
+      list = distribution.buildpacks(config)
+      expect(list).to_not be_empty
+      expect(list.all?{|b| b.is_a?(Pkgr::Buildpack)}).to be_true
     end
 
     it "can take an external list of default buildpacks" do
       config.buildpack_list = fixture("buildpack-list")
-      expect(distribution.buildpacks(config)).to eq([
-        "https://github.com/heroku/heroku-buildpack-play.git#v121",
-        "https://github.com/heroku/heroku-buildpack-python.git"
-      ])
+      list = distribution.buildpacks(config)
+      expect(list.length).to eq(2)
+      expect(list.all?{|b| b.is_a?(Pkgr::Buildpack)}).to be_true
+      expect(list.first.env.to_hash).to eq({
+        "VENDOR_URL"=>"https://path/to/vendor", "CURL_TIMEOUT"=>"123"
+      })
+    end
+
+    it "prioritize buildpack specific environment variables over the global ones" do
+      config.env = Pkgr::Env.new(["VENDOR_URL=http://global/path"])
+      config.buildpack_list = fixture("buildpack-list")
+      list = distribution.buildpacks(config)
+      expect(list.first.env.to_hash["VENDOR_URL"]).to eq("https://path/to/vendor")
+      expect(list.last.env.to_hash["VENDOR_URL"]).to eq("http://global/path")
     end
   end
 end

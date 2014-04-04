@@ -1,2 +1,2 @@
-https://github.com/heroku/heroku-buildpack-play.git#v121
+https://github.com/heroku/heroku-buildpack-play.git#v121,VENDOR_URL=https://path/to/vendor,CURL_TIMEOUT=123
 https://github.com/heroku/heroku-buildpack-python.git

@@ -2,7 +2,7 @@ module Pkgr
   class Env
     attr_reader :variables
 
-    def initialize(variables)
+    def initialize(variables = nil)
       @variables = variables || []
     end
 
@@ -16,6 +16,10 @@ module Pkgr
 
     def to_hash
       create_env_hash_from_string
+    end
+
+    def merge(other)
+      self.class.new(self.variables + other.variables)
     end
 
     private

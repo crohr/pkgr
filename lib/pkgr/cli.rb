@@ -107,9 +107,10 @@ module Pkgr
 
       packager = Dispatcher.new(tarball, options)
       packager.call
-    rescue Pkgr::Errors::Base => e
-      Pkgr.error "#{e.class.name} : #{e.message}"
-      puts "* ERROR: #{e.message}"
+    rescue => e
+      Pkgr.debug "#{e.class.name} : #{e.message}"
+      e.backtrace.each{|line| Pkgr.debug line}
+      puts "  ! ERROR: #{e.message}"
       exit 1
     end
   end

@@ -92,7 +92,6 @@ module Pkgr
         ].each{|dir| list.push Templates::DirTemplate.new(dir) }
 
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", data_file("environment", "default.erb"))
-        list.push Templates::FileTemplate.new("usr/local/bin/#{app_name}", data_file("cli", "cli.erb"), mode: 0755)
         list.push Templates::FileTemplate.new("etc/logrotate.d/#{app_name}", data_file("logrotate", "logrotate.erb"))
 
         # NOTE: conf.d files are no longer installed here, since we don't want to overwrite any pre-existing config.

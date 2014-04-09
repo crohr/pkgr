@@ -15,6 +15,11 @@ module Pkgr
         Runner.new("sysv", "lsb-3.1")
       end
 
+      def templates(app_name)
+        # The default PATH for sudo commands is /sbin:/bin:/usr/sbin:/usr/bin
+        super(app_name) << Templates::FileTemplate.new("usr/bin/#{app_name}", data_file("cli", "cli.erb"), mode: 0755)
+      end
+
       def package_test_command(package)
         "rpm -qa '#{package}' | grep '#{package}' > /dev/null 2>&1"
       end

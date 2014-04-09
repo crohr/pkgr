@@ -44,4 +44,13 @@ describe Pkgr::Distributions::Debian do
       expect(list.last.env.to_hash["VENDOR_URL"]).to eq("http://global/path")
     end
   end
+
+  describe "buildpack list" do
+    ["DebianWheezy", "DebianSqueeze", "UbuntuPrecise", "UbuntuLucid"].each do |distro|
+      it "has a list of default buildpacks" do
+        distribution = Pkgr::Distributions.const_get(distro).new
+        expect(distribution.buildpacks(Pkgr::Config.new)).to_not be_empty
+      end
+    end
+  end
 end

@@ -1,0 +1,2 @@
+https://github.com/pkgr/heroku-buildpack-ruby.git#487c79e8cc3ab038ac13fef82d1e59a9c6ac39e6,BUILDPACK_VENDOR_URL="https://s3-external-1.amazonaws.com/pkgr-buildpack-ruby/20140408175240-debian-7.4",BUILDPACK_NODE_VERSION="0.6.8"
+https://github.com/heroku/heroku-buildpack-nodejs.git#v58

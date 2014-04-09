@@ -110,20 +110,13 @@ module Pkgr
         if custom_buildpack_uri
           uuid = Digest::SHA1.hexdigest(custom_buildpack_uri)
           [Buildpack.new(custom_buildpack_uri, :custom, config.env)]
-        elsif config.buildpack_list
-          File.read(config.buildpack_list).split("\n").map do |line|
-            url, *raw_env = line.split(",")
-            buildpack_env = (config.env || Env.new).merge(Env.new(raw_env))
-            Buildpack.new(url, :builtin, buildpack_env)
-          end
         else
-          default_buildpacks.map{|url| Buildpack.new(url, :builtin, config.env)}
+          load_buildpack_list(config)
         end
       end
 
-      # Return the default buildpacks. Must be subclassed.
-      def default_buildpacks
-        []
+      def default_buildpack_list
+        data_file(File.join("buildpacks", "#{osfamily}_#{codename}"))
       end
 
       def preinstall_file(config)
@@ -166,6 +159,19 @@ module Pkgr
 
       def data_dir
         File.join(Pkgr.data_dir, "distributions", "debian")
+      end
+
+      protected
+
+      def load_buildpack_list(config)
+        file = config.buildpack_list || default_buildpack_list
+        return [] if file.nil?
+
+        File.read(file).split("\n").map do |line|
+          url, *raw_env = line.split(",")
+          buildpack_env = (config.env || Env.new).merge(Env.new(raw_env))
+          Buildpack.new(url, :builtin, buildpack_env)
+        end
       end
     end
   end

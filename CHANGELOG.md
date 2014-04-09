@@ -1,3 +1,14 @@
+## 1.2.0 - 20140409
+
+* Add --buildpack-list option, with support for environment variables to be given to a buildpack.
+* Reduce list of builtin buildpacks to Ruby and NodeJS.
+* Remove upstart dependency.
+* Add sysvinit support for debian distros.
+* Fix PORT_NUM substitution.
+* Allow to set a maintainer for the package.
+* Rescue more errors, for better display.
+* Add debug output when launching buildpack compile command.
+
 ## 1.1.8 - 20140326
 
 * Fix master init script.

@@ -2,18 +2,20 @@
 
 ## Goal
 
-Make debian packages out of any app that can run on Heroku.
+Make debian packages out of any Ruby or NodeJS app that can run on Heroku. Hosted service available at <https://pkgr.io/>.
+
+More languages and target distributions will be added after thorough testing, though nothing prevents you from specifying a specific buildpack (see Usage).
 
 ## Supported distributions (64bits only)
 
-* Ubuntu precise
-* Debian squeeze / Ubuntu lucid
-
-Note: packages can work on Debian wheezy, provided that libssl0.9.8 is installed. It has to be done manually though, as they're no longer provided in the default repositories.
+* Ubuntu 12.04 ("Precise")
+* Debian 7.4 ("Wheezy")
+* Ubuntu 10.04 ("Lucid")
+* Debian 6 ("Squeeze")
 
 ## Examples
 
-* See <http://deb.pkgr.io/> for examples of apps packaged with `pkgr` (e.g. Gitlab, Discourse).
+See <https://pkgr.io/showcase> for examples of apps packaged with `pkgr` (Gitlab, Redmine, Discourse, Ghost, etc.).
 
 ## Installation
 
@@ -86,19 +88,24 @@ Finally, it's a great way to share your open source software with your users and
 
 ## What this does
 
-* Uses Heroku buildpacks to embed all your dependencies within the debian package. That way, no need to mess with stale system dependencies, and no need to install anything by hand. Also, we get for free all the hard work done by Heroku developers to make sure your app runs fine in an isolated way.
+* Uses Heroku buildpacks to embed all the dependencies related to your application runtime within the debian package. For a Rails app for instance, this means that `pkgr` will embed the specific ruby runtime you asked for, along with all the gems specified in your Gemfile. However, all other dependencies you may need must be specified as additional system dependencies (see Usage). This avoids the 'packaging-the-world' approach used by other tools such as omnibus (with the pros and cons that come with it), but it still allows you to use the latest and greatest libraries for your language of choice. See this [blog post][background-pkgr] for more background.
+
+[background-pkgr]: http://blog.pkgr.io/post/81988994454/why-i-made-pkgr-io-digressions-on-software-packaging
 
 * Gives you a nice executable, which closely replicates the Heroku toolbelt utility. For instance, assuming you're packaging an app called `my-app`, you can do the following:
 
         my-app config:set VAR=value
         my-app config:get VAR
-        my-app run [procfile process] # e.g. my-app run rake db:migrate, my-app run console, etc.
+        my-app run [procfile process] # e.g. my-app run rake db:migrate; my-app run console; etc.
+        my-app run [arbitrary process] # e.g. my-app run ruby -v; my-app run bundle install; etc.
         my-app scale web=1 worker=1
         ...
 
 * Your app will reside in `/opt/app-name`.
 
-* You'll also get a upstart based initialization script that you can use directly.
+* You'll also get upstart (or sysvinit) initialization scripts that you can use directly:
+
+        service my-app start/stop/restart/status
 
 * Logs will be stored in `/var/log/app-name/`, with a proper logrotate config automatically added.
 

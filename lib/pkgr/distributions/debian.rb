@@ -1,23 +1,15 @@
 require 'pkgr/buildpack'
 require 'pkgr/process'
+require 'pkgr/distributions/base'
 require 'yaml'
 require 'erb'
 
 module Pkgr
   module Distributions
-    class Debian
-
-      # Must be subclassed.
-      def codename
-        raise NotImplementedError, "codename must be set"
-      end
+    class Debian < Base
 
       def osfamily
         "debian"
-      end
-
-      def slug
-        [osfamily, codename].join("-")
       end
 
       def templates(app_name)
@@ -105,16 +97,6 @@ module Pkgr
         }
       end
 
-      def buildpacks(config)
-        custom_buildpack_uri = config.buildpack
-        if custom_buildpack_uri
-          uuid = Digest::SHA1.hexdigest(custom_buildpack_uri)
-          [Buildpack.new(custom_buildpack_uri, :custom, config.env)]
-        else
-          load_buildpack_list(config)
-        end
-      end
-
       def default_buildpack_list
         data_file(File.join("buildpacks", "#{osfamily}_#{codename}"))
       end
@@ -143,35 +125,12 @@ module Pkgr
         @postinstall_file.path
       end
 
-      def dependencies(other_dependencies = nil)
-        deps = YAML.load_file(File.join(data_dir, "dependencies.yml"))
-        (deps["default"] || []) | (deps[codename] || []) | (other_dependencies || [])
-      end
-
-      def build_dependencies(other_dependencies = nil)
-        deps = YAML.load_file(File.join(data_dir, "build_dependencies.yml"))
-        (deps["default"] || []) | (deps[codename] || []) | (other_dependencies || [])
-      end
-
       def data_file(name)
         File.new(File.join(data_dir, name))
       end
 
       def data_dir
         File.join(Pkgr.data_dir, "distributions", "debian")
-      end
-
-      protected
-
-      def load_buildpack_list(config)
-        file = config.buildpack_list || default_buildpack_list
-        return [] if file.nil?
-
-        File.read(file).split("\n").map do |line|
-          url, *raw_env = line.split(",")
-          buildpack_env = (config.env || Env.new).merge(Env.new(raw_env))
-          Buildpack.new(url, :builtin, buildpack_env)
-        end
       end
     end
   end

@@ -1,6 +1,6 @@
 require 'pkgr/templates/file_template'
 require 'pkgr/templates/dir_template'
-require 'pkgr/distributions/debian'
+require 'pkgr/distributions/base'
 require 'facter'
 
 module Pkgr

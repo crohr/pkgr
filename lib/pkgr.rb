@@ -14,7 +14,7 @@ module Pkgr
   end
 
   def data_dir
-    File.expand_path("../pkgr/data", __FILE__)
+    File.expand_path("../../data", __FILE__)
   end
   module_function :data_dir
 end

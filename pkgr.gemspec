@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.add_dependency('mixlib-shellout')
   s.add_development_dependency('rspec', '~> 2')
 
-  s.files = Dir.glob("{lib}/**/*") + %w(LICENSE README.md)
+  s.files = Dir.glob("{lib,data}/**/*") + %w(LICENSE README.md)
 
   s.rdoc_options = ["--charset=UTF-8"]
   s.extra_rdoc_files = [

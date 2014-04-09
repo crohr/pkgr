@@ -9,7 +9,7 @@ default:
   - libxslt1-dev
   - libreadline-dev
   - build-essential
-squeeze:
+ubuntu-10.04:
   - libssl0.9.8
-wheezy:
+ubuntu-12.04:
   - libssl1.0.0

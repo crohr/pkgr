@@ -137,7 +137,6 @@ module Pkgr
         "--iteration \"#{iteration}\"",
         "--homepage \"#{homepage}\"",
         "--architecture \"#{architecture}\"",
-        "--target \"#{target}\"",
         "--description \"#{description}\"",
         "--maintainer \"#{maintainer}\""
       ]

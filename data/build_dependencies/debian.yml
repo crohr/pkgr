@@ -1,0 +1,15 @@
+default:
+  - curl
+  - libmysqlclient-dev
+  - libpq-dev
+  - libsqlite3-0
+  - libevent-dev
+  - libssl-dev
+  - libxml2-dev
+  - libxslt1-dev
+  - libreadline-dev
+  - build-essential
+debian-6.0:
+  - libssl0.9.8
+debian-7.4:
+  - libssl1.0.0

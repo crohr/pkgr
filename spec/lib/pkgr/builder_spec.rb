@@ -73,7 +73,7 @@ describe Pkgr::Builder do
   end
 
   describe "#update_config" do
-    let(:distribution) { Pkgr::Distributions::DebianWheezy.new }
+    let(:distribution) { Pkgr::Distributions::Ubuntu.new("12.04") }
 
     it "does not change the config if no .pkgr.yml found at the root of the source directory" do
       builder = Pkgr::Builder.new(fixture("my-app.tar.gz"), config)
@@ -101,7 +101,7 @@ describe Pkgr::Builder do
 
   describe "#compile" do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
-    let(:distribution) { Pkgr::Distributions::DebianWheezy.new }
+    let(:distribution) { Pkgr::Distributions::Ubuntu.new("12.04") }
 
     it "has a list of buildpacks" do
       builder.stub(:distribution => distribution)
@@ -139,7 +139,7 @@ describe Pkgr::Builder do
 
   describe "#write_env and #write_init" do
     let(:builder) { Pkgr::Builder.new(fixture("my-app.tar.gz"), config) }
-    let(:distribution) { Pkgr::Distributions::DebianWheezy.new }
+    let(:distribution) { Pkgr::Distributions::Ubuntu.new("12.04") }
 
     before do
       builder.stub(:distribution => distribution)
@@ -169,14 +169,9 @@ describe Pkgr::Builder do
       expect(Dir.glob(File.join(builder.build_dir, "etc/init", "*"))).to eq([])
     end
 
-    it "should setup the init script templates for sysvinit and upstart" do
+    it "should setup the init script templates for upstart" do
       builder.write_init
       expect(Dir.glob(File.join(builder.scaling_dir, "*/*")).map{|file| file.gsub(builder.scaling_dir, "")}.sort).to eq([
-        "/sysv/my-app",
-        "/sysv/my-app-web",
-        "/sysv/my-app-web-PROCESS_NUM",
-        "/sysv/my-app-worker",
-        "/sysv/my-app-worker-PROCESS_NUM",
         "/upstart/my-app",
         "/upstart/my-app-web-PROCESS_NUM.conf",
         "/upstart/my-app-web.conf",
@@ -191,7 +186,7 @@ describe Pkgr::Builder do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
 
     before do
-      builder.stub(:distribution => Pkgr::Distributions::DebianWheezy.new)
+      builder.stub(:distribution => Pkgr::Distributions::Ubuntu.new("12.04"))
       builder.setup
     end
 

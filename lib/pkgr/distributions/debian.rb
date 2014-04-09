@@ -48,3 +48,4 @@ module Pkgr
   end
 end
 
+require 'pkgr/distributions/ubuntu'

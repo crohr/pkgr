@@ -1,0 +1,9 @@
+default:
+  - openssl
+  - readline
+  - libxml2
+  - libxslt
+  - libevent
+  - postgresql-libs
+  - mysql-libs
+  - sqlite

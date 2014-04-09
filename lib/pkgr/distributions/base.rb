@@ -15,7 +15,7 @@ module Pkgr
 
       def os
         self.class.name.split("::")[-1].downcase
-      end # def osfamily
+      end # def os
 
       # e.g. ubuntu-12.04
       def slug
@@ -153,4 +153,4 @@ module Pkgr
 end # module Pkgr
 
 require 'pkgr/distributions/debian'
-require 'pkgr/distributions/ubuntu'
+require 'pkgr/distributions/redhat'

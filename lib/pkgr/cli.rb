@@ -32,7 +32,7 @@ module Pkgr
     method_option :target,
       :type => :string,
       :default => "deb",
-      :desc => "Target package to build (only 'deb' supported for now)"
+      :desc => "Target package to build (deb or rpm)"
     method_option :changelog,
       :type => :string,
       :desc => "Changelog"

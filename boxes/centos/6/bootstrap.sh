@@ -41,3 +41,6 @@ install_rubygems() {
 ( bundle -v | grep "${BUNDLER_VERSION}" ) || ( gem install bundler --no-ri --no-rdoc --version "${BUNDLER_VERSION}" )
 # default to /vagrant when logging in
 ( grep "cd /vagrant" /home/vagrant/.bash_profile ) || ( echo "cd /vagrant" >> /home/vagrant/.bash_profile )
+
+echo "nameserver 8.8.8.8
+nameserver 4.4.4.4" > /etc/resolv.conf

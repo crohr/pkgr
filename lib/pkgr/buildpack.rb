@@ -85,6 +85,7 @@ module Pkgr
     def install
       FileUtils.mkdir_p(buildpack_cache_dir)
       Dir.chdir(buildpack_cache_dir) do
+        puts "-----> Fetching buildpack #{url} at #{branch}"
         buildpack_install = Mixlib::ShellOut.new("git clone \"#{url}\"")
         buildpack_install.logger = Pkgr.logger
         buildpack_install.run_command

@@ -7,6 +7,8 @@ RUBY_VERSION="1.9.3-p545"
 RUBYGEMS_VERSION="2.2.1"
 BUNDLER_VERSION="1.6.1"
 
+yum check-update
+
 yum -y install \
   git \
   vim \

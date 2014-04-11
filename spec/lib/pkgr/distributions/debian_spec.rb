@@ -4,7 +4,7 @@ describe Pkgr::Distributions::Debian do
   let(:distribution) { Pkgr::Distributions::Debian.new("7.4") }
 
   it "has file and dir templates" do
-    expect(distribution.templates("my-app")).to_not be_empty
+    expect(distribution.templates(double(:config, name: "my-app", home: "/opt/my-app"))).to_not be_empty
   end
 
   describe "#dependencies" do

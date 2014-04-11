@@ -78,13 +78,14 @@ module Pkgr
       end # def build_dependencies
 
       # Returns a list of file and directory templates.
-      def templates(app_name)
+      def templates(config)
+        app_name = config.name
         list = []
 
         # directories
         [
-          "usr/local/bin",
-          "opt/#{app_name}",
+          "usr/bin",
+          config.home.gsub(/^\//, ""),
           "etc/#{app_name}/conf.d",
           "etc/default",
           "etc/init",
@@ -94,9 +95,11 @@ module Pkgr
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", data_file("environment", "default.erb"))
         list.push Templates::FileTemplate.new("etc/logrotate.d/#{app_name}", data_file("logrotate", "logrotate.erb"))
 
-        # NOTE: conf.d files are no longer installed here, since we don't want to overwrite any pre-existing config.
-        # They're now installed in the postinstall script.
+        # Put cli in /usr/bin, as redhat based distros don't have /usr/local/bin in their sudo PATH.
+        list.push Templates::FileTemplate.new("usr/bin/#{app_name}", data_file("cli", "cli.sh.erb"), mode: 0755)
 
+        # NOTE: /etc/appname/conf.d/* files are no longer installed here, since we don't want to overwrite any pre-existing config.
+        # They're now installed in the postinstall script.
         list
       end
 

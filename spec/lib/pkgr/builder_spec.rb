@@ -28,8 +28,8 @@ describe Pkgr::Builder do
 
     it "creates the build hierarchy" do
       builder.stub(:distribution => double(:distribution, :templates => [
-        Pkgr::Templates::DirTemplate.new("opt/my-app"),
-        Pkgr::Templates::FileTemplate.new("usr/local/bin/my-app", StringIO.new("some content")),
+        Pkgr::Templates::DirTemplate.new("opt/my-app/app"),
+        Pkgr::Templates::FileTemplate.new("usr/bin/my-app", StringIO.new("some content")),
         Pkgr::Templates::FileTemplate.new("etc/default/my-app", File.new(fixture("default.erb")))
       ]))
 

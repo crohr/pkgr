@@ -15,10 +15,6 @@ module Pkgr
         Runner.new("sysv", "lsb-3.1")
       end
 
-      def templates(app_name)
-        super(app_name) << Templates::FileTemplate.new("usr/local/bin/#{app_name}", data_file("cli", "cli.erb"), mode: 0755)
-      end
-
       def package_test_command(package)
         "dpkg -s '#{package}' > /dev/null 2>&1"
       end

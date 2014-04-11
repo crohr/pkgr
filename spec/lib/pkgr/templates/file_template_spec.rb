@@ -10,7 +10,7 @@ describe Pkgr::Templates::FileTemplate do
   end
 
   let(:template) { Pkgr::Templates::FileTemplate.new(@tmpfile.path, File.new(fixture("default.erb"))) }
-  let(:config) { Pkgr::Config.new(:home => "/opt/my-app", :name => "my-app") }
+  let(:config) { Pkgr::Config.new(:name => "my-app") }
 
   it "writes the expected result to the target file" do
     template.install(config.sesame)

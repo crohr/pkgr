@@ -5,7 +5,7 @@ set -e
 APP_NAME="<%= name %>"
 APP_USER="<%= user %>"
 APP_GROUP="<%= group %>"
-HOME="/opt/${APP_NAME}"
+HOME="<%= home %>"
 HOME_LOGS="${HOME}/log"
 LOGS="/var/log/${APP_NAME}"
 

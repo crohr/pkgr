@@ -38,7 +38,7 @@ module Pkgr
     # Setup the build directory structure
     def setup
       Dir.chdir(build_dir) do
-        distribution.templates(config.name).each do |template|
+        distribution.templates(config).each do |template|
           template.install(config.sesame)
         end
       end
@@ -162,7 +162,7 @@ module Pkgr
 
     # Path to the directory containing the main app files.
     def source_dir
-      File.join(build_dir, "opt/#{config.name}")
+      File.join(build_dir, config.home)
     end
 
     # Build directory. Will be used by fpm to make the package.

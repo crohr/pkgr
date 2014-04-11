@@ -100,7 +100,7 @@ module Pkgr
       :desc => 'Specify environment variables for buildpack (--env "CURL_TIMEOUT=2" "BUNDLE_WITHOUT=development test")'
     method_option :force_os,
       :type => :string,
-      :desc => 'Force a specific distribution to build for (e.g. --force-os "debian-wheezy")'
+      :desc => 'Force a specific distribution to build for (e.g. --force-os "ubuntu-12.04"). This may result in a broken package.'
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

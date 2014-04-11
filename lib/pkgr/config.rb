@@ -128,6 +128,7 @@ module Pkgr
       end
     end
 
+    # TODO: DRY this with cli.rb
     def to_args
       args = [
         "--name \"#{name}\"",
@@ -144,6 +145,8 @@ module Pkgr
       args.push "--build-dependencies #{build_dependencies.map{|d| "\"#{d}\""}.join}" unless build_dependencies.nil? || build_dependencies.empty?
       args.push "--compile-cache-dir \"#{compile_cache_dir}\"" unless compile_cache_dir.nil? || compile_cache_dir.empty?
       args.push "--before-precompile \"#{before_precompile}\"" unless before_precompile.nil? || before_precompile.empty?
+      args.push "--after-precompile \"#{after_precompile}\"" unless after_precompile.nil? || after_precompile.empty?
+      args.push "--license \"#{license}\"" unless license.nil? || license.empty?
       args.push "--buildpack \"#{buildpack}\"" unless buildpack.nil? || buildpack.empty?
       args.push "--buildpack_list \"#{buildpack_list}\"" unless buildpack_list.nil? || buildpack_list.empty?
       args.push "--force-os \"#{force_os}\"" unless force_os.nil? || force_os.empty?

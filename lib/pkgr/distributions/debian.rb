@@ -28,25 +28,32 @@ module Pkgr
       end
 
       def fpm_command(build_dir, config)
-        %{
-          fpm -t deb -s dir  --verbose --force \
-          -C "#{build_dir}" \
-          -n "#{config.name}" \
-          --version "#{config.version}" \
-          --iteration "#{config.iteration}" \
-          --url "#{config.homepage}" \
-          --provides "#{config.name}" \
-          --deb-user "root" \
-          --deb-group "root" \
-          -a "#{config.architecture}" \
-          --description "#{config.description}" \
-          --maintainer "#{config.maintainer}" \
-          --template-scripts \
-          --before-install #{preinstall_file(config)} \
-          --after-install #{postinstall_file(config)} \
-          #{dependencies(config.dependencies).map{|d| "-d '#{d}'"}.join(" ")} \
-          .
-        }
+        %{fpm #{fpm_args(build_dir, config).join(" ")} .}
+      end
+
+      def fpm_args(build_dir, config)
+        args = []
+        args << "-t deb"
+        args << "-s dir"
+        args << "--verbose"
+        args << "--force"
+        args << %{-C "#{build_dir}"}
+        args << %{-n "#{config.name}"}
+        args << %{--version "#{config.version}"}
+        args << %{--iteration "#{config.iteration}"}
+        args << %{--url "#{config.homepage}"}
+        args << %{--provides "#{config.name}"}
+        args << %{--deb-user "root"}
+        args << %{--deb-group "root"}
+        args << %{--license "#{config.license}"} unless config.license.nil?
+        args << %{-a "#{config.architecture}"}
+        args << %{--description "#{config.description}"}
+        args << %{--maintainer "#{config.maintainer}"}
+        args << %{--template-scripts}
+        args << %{--before-install #{preinstall_file(config)}}
+        args << %{--after-install #{postinstall_file(config)}}
+        dependencies(config.dependencies).each{|d| args << "-d '#{d}'"}
+        args
       end
     end
   end

@@ -52,6 +52,10 @@ module Pkgr
       :type => :string,
       :default => Time.now.strftime("%Y%m%d%H%M%S"),
       :desc => "Package iteration (you should keep the default here)"
+    method_option :license,
+      :type => :string,
+      :default => nil,
+      :desc => "The license of your package (see <https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#license-short-name>)"
     method_option :user,
       :type => :string,
       :desc => "User to run the app under (defaults to your app name)"
@@ -64,6 +68,9 @@ module Pkgr
     method_option :before_precompile,
       :type => :string,
       :desc => "Provide a script to run just before the buildpack compilation. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
+    method_option :after_precompile,
+      :type => :string,
+      :desc => "Provide a script to run just after the buildpack compilation. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
     method_option :dependencies,
       :type => :array,
       :default => [],

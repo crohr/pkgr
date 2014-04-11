@@ -21,7 +21,7 @@ module Pkgr
       :desc => "Directory where to store the buildpacks",
       :default => Pkgr::Buildpack.buildpacks_cache_dir
 
-    desc "package TARBALL", "Package the given tarball or directory"
+    desc "package TARBALL", "Package the given tarball or directory, as a deb or rpm depending on the build machine"
 
     method_option :buildpack,
       :type => :string,
@@ -29,10 +29,6 @@ module Pkgr
     method_option :buildpack_list,
       :type => :string,
       :desc => "Specify a file containing a list of buildpacks to use (--buildpack takes precedence if given)"
-    method_option :target,
-      :type => :string,
-      :default => "deb",
-      :desc => "Target package to build (only 'deb' supported for now)"
     method_option :changelog,
       :type => :string,
       :desc => "Changelog"
@@ -56,6 +52,10 @@ module Pkgr
       :type => :string,
       :default => Time.now.strftime("%Y%m%d%H%M%S"),
       :desc => "Package iteration (you should keep the default here)"
+    method_option :license,
+      :type => :string,
+      :default => nil,
+      :desc => "The license of your package (see <https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#license-short-name>)"
     method_option :user,
       :type => :string,
       :desc => "User to run the app under (defaults to your app name)"
@@ -68,6 +68,9 @@ module Pkgr
     method_option :before_precompile,
       :type => :string,
       :desc => "Provide a script to run just before the buildpack compilation. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
+    method_option :after_precompile,
+      :type => :string,
+      :desc => "Provide a script to run just after the buildpack compilation. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
     method_option :dependencies,
       :type => :array,
       :default => [],
@@ -97,7 +100,7 @@ module Pkgr
       :desc => 'Specify environment variables for buildpack (--env "CURL_TIMEOUT=2" "BUNDLE_WITHOUT=development test")'
     method_option :force_os,
       :type => :string,
-      :desc => 'Force a specific distribution to build for (e.g. --force-os "debian-wheezy")'
+      :desc => 'Force a specific distribution to build for (e.g. --force-os "ubuntu-12.04"). This may result in a broken package.'
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

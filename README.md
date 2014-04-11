@@ -19,9 +19,10 @@ See <https://pkgr.io/showcase> for examples of apps packaged with `pkgr` (Gitlab
 
 ## Installation
 
-Install `pkgr` on a debian based build machine:
+On a debian based build machine:
 
-    sudo apt-get install ruby1.9.1-full
+    sudo apt-get update
+    sudo apt-get install -y build-essential ruby1.9.1-full rubygems1.9.1
     sudo gem install pkgr
 
 ## Usage
@@ -116,6 +117,19 @@ Finally, it's a great way to share your open source software with your users and
 * You must have a Procfile.
 
 * Your application must be Heroku compatible, meaning you should be able to set your main app's configuration via environment variables.
+
+## Troubleshooting
+
+If you're on older versions of Debian, you may need to append `/var/lib/gems/1.9.1/bin` to your PATH to "see" the `pkgr` command:
+
+    export PATH="$PATH:/var/lib/gems/1.9.1/bin"
+
+If you get the following error `ERROR:  While executing gem ... (ArgumentError) invalid byte sequence in US-ASCII` while trying to install `pkgr`, try setting a proper locale, and then retry:
+
+    sudo locale-gen en_US.UTF-8
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+    sudo gem install pkgr
 
 ## Authors
 

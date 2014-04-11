@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe "Builder" do
   it "builds the full package [Rails app]" do
-    Pkgr.level = Logger::INFO
+    Pkgr.level = Logger.const_get(ENV['DEBUG'] || "DEBUG")
     config = Pkgr::Config.new(
       :name => "my-app",
       :version => "0.0.1",
@@ -16,7 +16,7 @@ describe "Builder" do
   end
 
   it "correctly updates the config" do
-    Pkgr.level = Logger::DEBUG
+    Pkgr.level = Logger.const_get(ENV['DEBUG'] || "DEBUG")
 
     Dir.chdir("/tmp") do
       system "[ -d gitlabhq ] || git clone https://github.com/crohr/gitlabhq"

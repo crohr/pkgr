@@ -5,11 +5,11 @@ set -e
 APP_NAME="<%= name %>"
 APP_USER="<%= user %>"
 APP_GROUP="<%= group %>"
-HOME="<%= home %>"
-HOME_LOGS="${HOME}/log"
+APP_HOME="<%= home %>"
+HOME_LOGS="${APP_HOME}/log"
 LOGS="/var/log/${APP_NAME}"
 
-chown -R ${APP_USER}.${APP_GROUP} ${HOME}
+chown -R ${APP_USER}.${APP_GROUP} ${APP_HOME}
 
 # link app log directory to /var/log/NAME
 rm -rf ${HOME_LOGS}
@@ -24,4 +24,5 @@ export DATABASE_URL=db_adapter://db_user:db_password@db_host/db_name
 export PORT=\${PORT:=6000}
 CONF
 
-chmod -R 0600 /etc/${APP_NAME}/conf.d
+chown -R ${APP_USER}.${APP_GROUP} /etc/${APP_NAME}
+chmod -R 0600 /etc/${APP_NAME}

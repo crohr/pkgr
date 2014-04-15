@@ -26,7 +26,7 @@ pidfile="/var/run/${full_process_name}.pid"
 
 start() {
   # Run the program!
-  /usr/local/bin/${name} run ${process_name} >> /var/log/${name}/${process_name}-PROCESS_NUM.log 2>&1 &
+  /usr/bin/${name} run ${process_name} >> /var/log/${name}/${process_name}-PROCESS_NUM.log 2>&1 &
 
   # Generate the pidfile from here. If we instead made the forked process
   # generate it there will be a race condition between the pidfile writing

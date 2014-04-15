@@ -25,4 +25,6 @@ export PORT=\${PORT:=6000}
 CONF
 
 chown -R ${APP_USER}.${APP_GROUP} /etc/${APP_NAME}
-chmod -R 0600 /etc/${APP_NAME}
+
+chmod 0750 /etc/${APP_NAME} /etc/${APP_NAME}/conf.d
+find /etc/${APP_NAME} -type f -exec chmod 0640 {} +

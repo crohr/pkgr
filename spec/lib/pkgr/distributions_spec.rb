@@ -18,6 +18,6 @@ describe Pkgr::Distributions do
   it "forces a specific distribution" do
     distro = Pkgr::Distributions.current("debian-7.4")
     expect(distro).to be_a(Pkgr::Distributions::Debian)
-    expect(distro.release).to eq("7.4")
+    expect(distro.release).to eq("7")
   end
 end

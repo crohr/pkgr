@@ -3,12 +3,27 @@ require 'yaml'
 
 module Pkgr
   class Config < OpenStruct
+    DISTRO_COMPATIBILITY_MAPPING = {
+      "ubuntu-lucid" => "ubuntu-10.04",
+      "ubuntu-precise" => "ubuntu-12.04",
+      "debian-squeeze" => "debian-6",
+      "debian-wheezy" => "debian-7"
+    }
+
     class << self
       def load_file(path, distribution)
         config = YAML.load_file(path)
         Pkgr.debug "Configuration from file: #{config.inspect} - Distribution: #{distribution.inspect}."
 
         targets = config.delete("targets") || {}
+
+        # backward compatibility
+        DISTRO_COMPATIBILITY_MAPPING.each do |from, to|
+          if targets.has_key?(from)
+            targets[to] = targets.delete(from)
+          end
+        end
+
         (targets[distribution.to_s] || {}).each do |k,v|
           config[k] = v
         end

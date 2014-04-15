@@ -6,9 +6,9 @@ module Pkgr
   module Distributions
     # Contains the various components required to make a packaged app integrate well with a Debian system.
     class Debian < Base
-      # Only keep major and minor digits
+      # Only keep major digits
       def release
-        @release[/^[0-9]+\.[0-9]+/]
+        @release[/^[0-9]+/]
       end
 
       def runner

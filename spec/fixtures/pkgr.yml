@@ -5,14 +5,14 @@ user: git
 group: git
 before_precompile: ./packaging/debian/setup.sh
 targets:
-  debian-squeeze: &squeeze
+  debian-6: &squeeze
     build_dependencies:
       - libmagickcore-dev
       - libmagickwand-dev
     dependencies:
       - mysql-server
       - git-core
-  ubuntu-lucid: *squeeze
-  debian-wheezy:
+  ubuntu-10.04: *squeeze
+  debian-7:
     dependencies:
       - git-core

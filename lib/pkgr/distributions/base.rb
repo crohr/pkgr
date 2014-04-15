@@ -26,7 +26,7 @@ module Pkgr
         raise NotImplementedError, "package_test_command must be implemented"
       end
 
-      def package_install_command(*packages)
+      def package_install_command(packages)
         raise NotImplementedError, "package_install_command must be implemented"
       end
 
@@ -41,7 +41,7 @@ module Pkgr
         unless missing_packages.empty?
           install_command = package_install_command(missing_packages)
           if config.auto
-            package_install = Mixlib::ShellOut.new(package_install_command)
+            package_install = Mixlib::ShellOut.new(install_command)
             package_install.logger = Pkgr.logger
             package_install.run_command
             package_install.error!

@@ -19,7 +19,7 @@ module Pkgr
         "dpkg -s '#{package}' > /dev/null 2>&1"
       end
 
-      def package_install_command(*packages)
+      def package_install_command(packages)
         "sudo apt-get update && sudo apt-get install --force-yes -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
       end
 

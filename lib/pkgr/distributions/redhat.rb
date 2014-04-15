@@ -19,7 +19,7 @@ module Pkgr
         "rpm -qa '#{package}' | grep '#{package}' > /dev/null 2>&1"
       end
 
-      def package_install_command(*packages)
+      def package_install_command(packages)
         "sudo yum check-update && sudo yum install -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
       end
 

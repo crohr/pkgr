@@ -26,7 +26,7 @@ pidfile="/var/run/${full_process_name}.pid"
 
 start() {
   # Run the program!
-  /usr/bin/${name} run ${process_name} >> /var/log/${name}/${process_name}-PROCESS_NUM.log 2>&1 &
+  ${name} run ${process_name} >> /var/log/${name}/${process_name}-PROCESS_NUM.log 2>&1 &
 
   # Generate the pidfile from here. If we instead made the forked process
   # generate it there will be a race condition between the pidfile writing
@@ -37,18 +37,86 @@ start() {
   return 0
 }
 
+subpids() {
+  local parent=$1
+  ps -o pid --ppid ${parent} --noheaders
+}
+
+process_kill() {
+  local pid=$1
+  local sig=$2
+  process_status $pid && kill -${sig} ${pid}
+}
+
+process_status() {
+  local pid=$1
+  if kill -0 $pid > /dev/null 2> /dev/null ; then
+    return 0
+  else
+    return 2
+  fi
+}
+
+stop_childs() {
+  local pids=$1
+
+  if [ ! "$pids" = "" ]; then
+    echo "Subprocesses detected ($pids), attempting to kill them first"
+    for pid in $pids ; do
+
+      # start in subshell, otherwise pid variable pollutes parent functions
+      (
+        stop_childs $(subpids $pid)
+      )
+
+      process_kill $pid "TERM"
+
+      for i in 1 2 3 4 5 ; do
+        echo -n "Waiting for pid $pid to die... "
+        process_status $pid || break
+        echo ""
+        sleep 1
+      done
+
+      if $(process_status $pid) ; then
+        echo "subprocess $pid stop failed; still running."
+        return 1
+      else
+        echo "stopped."
+      fi
+    done
+  fi
+}
+
+force_stop_childs() {
+  local pids=$1
+  for pid in $pids ; do
+    (
+      force_stop_childs $(subpids $pid)
+    )
+    process_kill $pid "KILL"
+  done
+}
+
+
 stop() {
   # Try a few times to kill TERM the program
   if status ; then
-    pid=`cat "$pidfile"`
+    local pid=`cat "$pidfile"`
     echo "Killing ${full_process_name} (pid $pid) with SIGTERM"
-    kill -TERM $pid
-    # Wait for it to exit.
-    for i in 1 2 3 4 5 ; do
-      echo "Waiting ${full_process_name} (pid $pid) to die..."
-      status || break
-      sleep 1
-    done
+
+    # start in subshell, otherwise pid variable pollutes parent functions
+    if ( stop_childs $(subpids $pid) ) ; then
+      process_kill $pid "TERM"
+
+      # Wait for it to exit.
+      for i in 1 2 3 4 5 ; do
+        echo "Waiting ${full_process_name} (pid $pid) to die..."
+        status || break
+        sleep 1
+      done
+    fi
+
     if status ; then
       echo "${full_process_name} stop failed; still running."
     else
@@ -59,7 +127,7 @@ stop() {
 
 status() {
   if [ -f "$pidfile" ] ; then
-    pid=`cat "$pidfile"`
+    local pid=`cat "$pidfile"`
     if kill -0 $pid > /dev/null 2> /dev/null ; then
       return 0
     else
@@ -72,8 +140,13 @@ status() {
 
 force_stop() {
   if status ; then
+    pid=$(cat "$pidfile")
     stop
-    status && kill -KILL `cat "$pidfile"`
+    # start in subshell, otherwise pid variable pollutes parent functions
+    (
+      force_stop_childs $(subpids $pid)
+    )
+    process_kill $pid "KILL"
   fi
 }
 

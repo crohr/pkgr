@@ -3,3 +3,6 @@ export APP_HOME="<%= home %>"
 export APP_NAME="<%= name %>"
 export APP_GROUP="<%= group %>"
 export APP_USER="<%= user %>"
+<% if runner %>
+export PROCESS_MANAGER="<%= runner.split("-").first %>"
+<% end %>

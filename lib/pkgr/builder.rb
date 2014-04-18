@@ -66,6 +66,12 @@ module Pkgr
         Pkgr.debug "Loading #{distribution.slug} from #{config_file}."
         @config = Config.load_file(config_file, distribution.slug).merge(config)
         Pkgr.debug "Found .pkgr.yml file. Updated config is now: #{config.inspect}"
+
+        # FIXME: make Config the authoritative source of the runner config (distribution only tells the default runner)
+        if @config.runner
+          type, *version = @config.runner.split("-")
+          distribution.runner = Runner.new(type, version.join("-"))
+        end
       end
     end
 
@@ -195,7 +201,7 @@ module Pkgr
 
     # Returns the current distribution we're packaging for.
     def distribution
-      @distribution ||= Distributions.current(config.force_os, config.runner)
+      @distribution ||= Distributions.current(config.force_os)
     end
 
     # List of available buildpacks for the current distribution.

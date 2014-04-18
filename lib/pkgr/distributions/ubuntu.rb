@@ -10,7 +10,7 @@ module Pkgr
       end
 
       def runner
-        Runner.new("upstart", "1.5")
+        @runner ||= Runner.new("upstart", "1.5")
       end
     end
   end

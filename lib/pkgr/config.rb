@@ -165,6 +165,7 @@ module Pkgr
       args.push "--buildpack \"#{buildpack}\"" unless buildpack.nil? || buildpack.empty?
       args.push "--buildpack_list \"#{buildpack_list}\"" unless buildpack_list.nil? || buildpack_list.empty?
       args.push "--force-os \"#{force_os}\"" unless force_os.nil? || force_os.empty?
+      args.push "--runner \"#{runner}\"" unless runner.nil? || runner.empty?
       args.push "--env #{env.variables.map{|v| "\"#{v}\""}.join(" ")}" if env.present?
       args.push "--auto" if auto
       args.push "--verbose" if verbose

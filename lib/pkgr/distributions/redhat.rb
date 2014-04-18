@@ -12,7 +12,7 @@ module Pkgr
       end
 
       def runner
-        Runner.new("sysv", "lsb-3.1")
+        @runner ||= Runner.new("sysv", "lsb-3.1")
       end
 
       def package_test_command(package)

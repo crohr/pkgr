@@ -39,6 +39,9 @@ module Pkgr
       :type => :string,
       :default => "x86_64",
       :desc => "Target architecture for the package"
+    method_option :runner,
+      :type => :string,
+      :desc => "Force a specific runner (e.g. upstart-1.5, sysv-lsb-1.3)"
     method_option :homepage,
       :type => :string,
       :desc => "Project homepage"

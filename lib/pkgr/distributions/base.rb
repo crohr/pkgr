@@ -8,6 +8,7 @@ module Pkgr
     # Base components and behaviors for all distributions.
     class Base
       attr_reader :release
+      attr_writer :runner
 
       def initialize(release)
         @release = release

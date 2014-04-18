@@ -12,7 +12,7 @@ module Pkgr
 
     class << self
       def load_file(path, distribution)
-        config = YAML.load_file(path)
+        config = YAML.load_file(path) || {}
         Pkgr.debug "Configuration from file: #{config.inspect} - Distribution: #{distribution.inspect}."
 
         targets = config.delete("targets") || {}

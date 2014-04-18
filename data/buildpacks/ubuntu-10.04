@@ -1,2 +1,2 @@
-https://github.com/heroku/heroku-buildpack-ruby.git
+https://github.com/heroku/heroku-buildpack-ruby.git,CURL_CONNECT_TIMEOUT=60,CURL_TIMEOUT=300
 https://github.com/heroku/heroku-buildpack-nodejs.git

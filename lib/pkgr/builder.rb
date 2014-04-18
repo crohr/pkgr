@@ -70,7 +70,7 @@ module Pkgr
         # FIXME: make Config the authoritative source of the runner config (distribution only tells the default runner)
         if @config.runner
           type, *version = @config.runner.split("-")
-          distribution.runner = Runner.new(type, version.join("-"))
+          distribution.runner = Distributions::Runner.new(type, version.join("-"))
         end
       end
     end

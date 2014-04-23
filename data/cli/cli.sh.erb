@@ -27,7 +27,7 @@ usage() {
 runner() {
   if [ -f $(_p /etc/debian_version) ]; then
     case "$(cat $(_p /etc/debian_version))" in
-      wheezy*|squeeze*)
+      wheezy*|squeeze*|jessie*)
         echo "upstart"
         ;;
       *)

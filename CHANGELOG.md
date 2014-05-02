@@ -1,3 +1,23 @@
+## 1.3.0 - 20140502
+
+* CLI: Support for Ubuntu Trusty 14.04
+* Put the CLI in /usr/bin.
+* Properly set HOME environment variable to /home/:user
+* Add more relaxed timeouts on ruby buildpacks.
+* Add PROCESS_MANAGER env variable if custom runner is forced.
+* Fix issues with .pkgr.yml custom runner not being picked up
+* Allow to force a custom runner (upstart, sysvinit).
+* Handles termination of processes that fork upon starting.
+* Fix sysvinit script.
+* Fix permissions on /etc/appname.
+* Fix dependencies installation.
+* Make user:group the owner of /etc/appname/*
+* Add tests for CLI
+* CentOS experimental support
+* Added --after-precompile and --license options.
+* Move slow test to integration.
+* Outputs buildpack cloning step.
+
 ## 1.2.0 - 20140409
 
 * Add --buildpack-list option, with support for environment variables to be given to a buildpack.

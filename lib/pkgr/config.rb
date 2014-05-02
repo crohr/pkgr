@@ -146,13 +146,11 @@ module Pkgr
     end
 
     def before_install
-      p [:b, @table[:before_install]]
       return nil if @table[:before_install].nil?
       Pathname.new(source_dir).join(@table[:before_install]).realpath.to_s
     end
 
     def after_install
-      p [:a, @table[:after_install]]
       return nil if @table[:after_install].nil?
       Pathname.new(source_dir).join(@table[:after_install]).realpath.to_s
     end

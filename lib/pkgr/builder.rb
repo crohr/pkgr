@@ -38,6 +38,8 @@ module Pkgr
     # Setup the build directory structure
     def setup
       Dir.chdir(build_dir) do
+        # useful for templates that need to read files
+        config.source_dir = source_dir
         distribution.templates(config).each do |template|
           template.install(config.sesame)
         end

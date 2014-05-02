@@ -2,7 +2,10 @@
 
 set -e
 
-APP_USER="<%= user %>"
+export APP_NAME="<%= name %>"
+export APP_USER="<%= user %>"
+export APP_GROUP="<%= group %>"
+export APP_HOME="<%= home %>"
 
 if ! getent passwd "${APP_USER}" > /dev/null; then
   if [ -f /etc/redhat-release ]; then
@@ -11,3 +14,16 @@ if ! getent passwd "${APP_USER}" > /dev/null; then
     adduser "${APP_USER}" --disabled-login --group --system --quiet --shell /bin/bash
   fi
 fi
+
+<% if before_install && File.readable?(before_install) %>
+# Call custom preinstall script. The package will not yet be unpacked, so the
+# preinst script cannot rely on any files included in its package.
+# https://www.debian.org/doc/debian-policy/ch-maintainerscripts.html
+CUSTOM_PREINSTALL_SCRIPT="<%= Base64.encode64 File.read(before_install) %>"
+
+tmpfile=$(mktemp)
+chmod a+x "${tmpfile}"
+echo "${CUSTOM_PREINSTALL_SCRIPT}" | base64 -d - > ${tmpfile}
+
+"${tmpfile}" "$@"
+<% end %>

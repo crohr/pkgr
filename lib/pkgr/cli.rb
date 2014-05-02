@@ -70,10 +70,16 @@ module Pkgr
       :desc => "Where to store the files cached between packaging runs. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
     method_option :before_precompile,
       :type => :string,
-      :desc => "Provide a script to run just before the buildpack compilation. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
+      :desc => "Provide a script to run just before the buildpack compilation, on the build machine. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
     method_option :after_precompile,
       :type => :string,
-      :desc => "Provide a script to run just after the buildpack compilation. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
+      :desc => "Provide a script to run just after the buildpack compilation, on the build machine. Path will be resolved from the temporary code repository folder, so use absolute paths if needed."
+    method_option :before_install,
+      :type => :string,
+      :desc => "Provide a script to run just before a package gets installated or updated, on the target machine."
+    method_option :after_install,
+      :type => :string,
+      :desc => "Provide a script to run just after a package gets installated or updated, on the target machine."
     method_option :dependencies,
       :type => :array,
       :default => [],

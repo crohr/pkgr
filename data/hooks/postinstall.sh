@@ -2,10 +2,11 @@
 
 set -e
 
-APP_NAME="<%= name %>"
-APP_USER="<%= user %>"
-APP_GROUP="<%= group %>"
-APP_HOME="<%= home %>"
+export APP_NAME="<%= name %>"
+export APP_USER="<%= user %>"
+export APP_GROUP="<%= group %>"
+export APP_HOME="<%= home %>"
+
 HOME_LOGS="${APP_HOME}/log"
 LOGS="/var/log/${APP_NAME}"
 
@@ -28,3 +29,14 @@ chown -R ${APP_USER}.${APP_GROUP} /etc/${APP_NAME}
 
 chmod 0750 /etc/${APP_NAME} /etc/${APP_NAME}/conf.d
 find /etc/${APP_NAME} -type f -exec chmod 0640 {} +
+
+<% if after_install && File.readable?(after_install) %>
+# Call custom postinstall script.
+CUSTOM_POSTINSTALL_SCRIPT="<%= Base64.encode64 File.read(after_install) %>"
+
+tmpfile=$(mktemp)
+chmod a+x "${tmpfile}"
+echo "${CUSTOM_POSTINSTALL_SCRIPT}" | base64 -d - > ${tmpfile}
+
+"${tmpfile}" "$@"
+<% end %>

@@ -1,5 +1,7 @@
 require 'ostruct'
 require 'yaml'
+require 'pathname'
+require 'base64'
 
 module Pkgr
   class Config < OpenStruct
@@ -143,6 +145,18 @@ module Pkgr
       end
     end
 
+    def before_install
+      p [:b, @table[:before_install]]
+      return nil if @table[:before_install].nil?
+      Pathname.new(source_dir).join(@table[:before_install]).realpath.to_s
+    end
+
+    def after_install
+      p [:a, @table[:after_install]]
+      return nil if @table[:after_install].nil?
+      Pathname.new(source_dir).join(@table[:after_install]).realpath.to_s
+    end
+
     # TODO: DRY this with cli.rb
     def to_args
       args = [
@@ -161,6 +175,8 @@ module Pkgr
       args.push "--compile-cache-dir \"#{compile_cache_dir}\"" unless compile_cache_dir.nil? || compile_cache_dir.empty?
       args.push "--before-precompile \"#{before_precompile}\"" unless before_precompile.nil? || before_precompile.empty?
       args.push "--after-precompile \"#{after_precompile}\"" unless after_precompile.nil? || after_precompile.empty?
+      args.push "--before-install \"#{before_install}\"" unless before_install.nil? || before_install.empty?
+      args.push "--after-install \"#{after_install}\"" unless after_install.nil? || after_install.empty?
       args.push "--license \"#{license}\"" unless license.nil? || license.empty?
       args.push "--buildpack \"#{buildpack}\"" unless buildpack.nil? || buildpack.empty?
       args.push "--buildpack_list \"#{buildpack_list}\"" unless buildpack_list.nil? || buildpack_list.empty?

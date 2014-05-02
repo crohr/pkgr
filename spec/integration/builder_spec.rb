@@ -30,7 +30,7 @@ describe "Builder" do
       :env => ["CURL_TIMEOUT=250"],
       :auto => true,
       :iteration => "1234",
-      :force_os => "debian-wheezy"
+      :force_os => "debian-7"
     }
 
     dispatcher = Pkgr::Dispatcher.new("/tmp/gitlabhq", config)

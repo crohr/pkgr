@@ -44,33 +44,42 @@ Full command line options are given below:
       pkgr package TARBALL
 
     Options:
-      [--target=TARGET]                        # Target package to build (only 'deb' supported for now)
-                                               # Default: deb
-      [--changelog=CHANGELOG]                  # Changelog
-      [--architecture=ARCHITECTURE]            # Target architecture for the package
-                                               # Default: x86_64
-      [--homepage=HOMEPAGE]                    # Project homepage
-      [--description=DESCRIPTION]              # Project description
-      [--version=VERSION]                      # Package version (if git directory given, it will use the latest git tag available)
-      [--iteration=ITERATION]                  # Package iteration (you should keep the default here)
-                                               # Default: 20131016164652
-      [--user=USER]                            # User to run the app under (defaults to your app name)
-      [--group=GROUP]                          # Group to run the app under (defaults to your app name)
-      [--compile-cache-dir=COMPILE_CACHE_DIR]  # Where to store the files cached between packaging runs
-      [--dependencies=one two three]           # Specific system dependencies that you want to install with the package
-      [--build-dependencies=one two three]     # Specific system dependencies that must be present before building
-      [--before-precompile=BEFORE_PRECOMPILE]  # Provide a script to run just before the buildpack compilation
-      [--host=HOST]                            # Remote host to build on (default: local machine)
-      [--auto]                                 # Automatically attempt to install missing dependencies
-      [--clean]                                # Automatically clean up temporary dirs
-                                               # Default: true
-      [--buildpack=BUILDPACK]                  # Custom buildpack to use
-      [--edge]                                 # Always use the latest version of the buildpack if already installed
-                                               # Default: true
-      [--verbose]                              # Run verbosely
-      [--debug]                                # Run very verbosely
-      [--name=NAME]                            # Application name (if directory given, it will default to the directory name)
-      [--env="RACK_ENV=staging" ]              # Specify environment variables for buildpack
+      [--buildpack=BUILDPACK]                        # Custom buildpack to use
+      [--buildpack-list=BUILDPACK_LIST]              # Specify a file containing a list of buildpacks to use (--buildpack takes precedence if given)
+      [--changelog=CHANGELOG]                        # Changelog
+      [--maintainer=MAINTAINER]                      # Maintainer
+      [--architecture=ARCHITECTURE]                  # Target architecture for the package
+                                                     # Default: x86_64
+      [--runner=RUNNER]                              # Force a specific runner (e.g. upstart-1.5, sysv-lsb-1.3)
+      [--homepage=HOMEPAGE]                          # Project homepage
+      [--description=DESCRIPTION]                    # Project description
+      [--version=VERSION]                            # Package version (if git directory given, it will use the latest git tag available)
+      [--iteration=ITERATION]                        # Package iteration (you should keep the default here)
+                                                     # Default: 20140502095614
+      [--license=LICENSE]                            # The license of your package (see <https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#license-short-name>)
+      [--user=USER]                                  # User to run the app under (defaults to your app name)
+      [--group=GROUP]                                # Group to run the app under (defaults to your app name)
+      [--compile-cache-dir=COMPILE_CACHE_DIR]        # Where to store the files cached between packaging runs. Path will be resolved from the temporary code repository folder, so use absolute paths if needed.
+      [--before-precompile=BEFORE_PRECOMPILE]        # Provide a script to run just before the buildpack compilation, on the build machine. Path will be resolved from the temporary code repository folder, so use absolute paths if needed.
+      [--after-precompile=AFTER_PRECOMPILE]          # Provide a script to run just after the buildpack compilation, on the build machine. Path will be resolved from the temporary code repository folder, so use absolute paths if needed.
+      [--before-install=BEFORE_INSTALL]              # Provide a script to run just before a package gets installated or updated, on the target machine.
+      [--after-install=AFTER_INSTALL]                # Provide a script to run just after a package gets installated or updated, on the target machine.
+      [--dependencies=one two three]                 # Specific system dependencies that you want to install with the package
+      [--build-dependencies=one two three]           # Specific system dependencies that must be present before building
+      [--host=HOST]                                  # Remote host to build on (default: local machine)
+      [--auto], [--no-auto]                          # Automatically attempt to install missing dependencies
+      [--clean], [--no-clean]                        # Automatically clean up temporary dirs
+                                                     # Default: true
+      [--edge], [--no-edge]                          # Always use the latest version of the buildpack if already installed
+                                                     # Default: true
+      [--env=one two three]                          # Specify environment variables for buildpack (--env "CURL_TIMEOUT=2" "BUNDLE_WITHOUT=development test")
+      [--force-os=FORCE_OS]                          # Force a specific distribution to build for (e.g. --force-os "ubuntu-12.04"). This may result in a broken package.
+      [--verbose], [--no-verbose]                    # Run verbosely
+      [--debug], [--no-debug]                        # Run very verbosely
+      [--name=NAME]                                  # Application name (if directory given, it will default to the directory name)
+      [--buildpacks-cache-dir=BUILDPACKS_CACHE_DIR]  # Directory where to store the buildpacks
+                                                     # Default: /home/vagrant/.pkgr/buildpacks
+
 
 ## Why?
 

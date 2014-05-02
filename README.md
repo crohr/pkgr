@@ -8,6 +8,7 @@ More languages and target distributions will be added after thorough testing, th
 
 ## Supported distributions (64bits only)
 
+* Ubuntu 14.04 ("Trusty")
 * Ubuntu 12.04 ("Precise")
 * Debian 7.4 ("Wheezy")
 * Ubuntu 10.04 ("Lucid")

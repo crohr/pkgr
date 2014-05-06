@@ -1,3 +1,8 @@
+## 1.3.1 - 20140506
+
+* Add buildpacks for Ubuntu 14.04.
+* Add support for pre/post install files.
+
 ## 1.3.0 - 20140502
 
 * CLI: Support for Ubuntu Trusty 14.04

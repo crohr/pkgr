@@ -1,3 +1,7 @@
+## 1.3.2 - 20140527
+
+* Added more relaxed curl timeouts for Ubuntu Trusty ruby buildpack.
+
 ## 1.3.1 - 20140506
 
 * Add buildpacks for Ubuntu 14.04.

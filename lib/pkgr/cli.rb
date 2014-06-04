@@ -21,7 +21,7 @@ module Pkgr
       :desc => "Directory where to store the buildpacks",
       :default => Pkgr::Buildpack.buildpacks_cache_dir
 
-    desc "package TARBALL", "Package the given tarball or directory, as a deb or rpm depending on the build machine"
+    desc "package TARBALL|DIRECTORY", "Package the given tarball or directory, as a deb or rpm depending on the build machine"
 
     method_option :buildpack,
       :type => :string,
@@ -110,6 +110,9 @@ module Pkgr
     method_option :force_os,
       :type => :string,
       :desc => 'Force a specific distribution to build for (e.g. --force-os "ubuntu-12.04"). This may result in a broken package.'
+    method_option :store_cache,
+      :type => :boolean,
+      :desc => 'Output a tarball of the cache in the current directory (name: cache.tar.gz)'
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

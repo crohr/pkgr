@@ -33,6 +33,7 @@ module Pkgr
         args << "-s dir"
         args << "--verbose"
         args << "--force"
+        args << "--exclude '**/.git**'"
         args << %{-C "#{build_dir}"}
         args << %{-n "#{config.name}"}
         args << %{--version "#{config.version}"}

@@ -183,6 +183,7 @@ module Pkgr
       args.push "--env #{env.variables.map{|v| "\"#{v}\""}.join(" ")}" if env.present?
       args.push "--auto" if auto
       args.push "--verbose" if verbose
+      args.push "--store-cache" if store_cache
       args.push "--debug" if debug
       args.push "--no-clean" if !clean
       args.push "--no-edge" if !edge

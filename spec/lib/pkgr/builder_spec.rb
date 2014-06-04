@@ -196,7 +196,7 @@ describe Pkgr::Builder do
 
     it "builds the proper fpm command" do
       command = builder.fpm_command.strip.squeeze(" ")
-      expect(command).to include("fpm -t deb -s dir --verbose --force -C \"#{builder.build_dir}\" -n \"my-app\" --version \"0.0.1\" --iteration \"#{config.iteration}\" --url \"#{config.homepage}\" --provides \"my-app\"")
+      expect(command).to include("fpm -t deb -s dir --verbose --force --exclude '**/.git**' -C \"#{builder.build_dir}\" -n \"my-app\" --version \"0.0.1\" --iteration \"#{config.iteration}\" --url \"#{config.homepage}\" --provides \"my-app\"")
     end
 
     it "launches fpm on build dir" do

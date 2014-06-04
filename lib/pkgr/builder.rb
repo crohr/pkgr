@@ -25,6 +25,7 @@ module Pkgr
       write_env
       write_init
       package
+      store_cache
     ensure
       teardown if config.clean
     end
@@ -132,6 +133,13 @@ module Pkgr
       app_package.logger = Pkgr.logger
       app_package.run_command
       app_package.error!
+    end
+
+    def store_cache
+      return true unless config.store_cache
+      generate_cache_tarball = Mixlib::ShellOut.new %{tar czf cache.tar.gz -C #{compile_cache_dir} .}
+      generate_cache_tarball.logger = Pkgr.logger
+      generate_cache_tarball.run_command
     end
 
     # Make sure to get rid of the build directory

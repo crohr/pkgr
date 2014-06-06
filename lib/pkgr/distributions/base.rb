@@ -42,6 +42,7 @@ module Pkgr
         unless missing_packages.empty?
           install_command = package_install_command(missing_packages)
           if config.auto
+            puts "-----> Installing missing build dependencies: #{missing_packages.join(", ")}"
             package_install = Mixlib::ShellOut.new(install_command)
             package_install.logger = Pkgr.logger
             package_install.run_command

@@ -20,7 +20,7 @@ module Pkgr
       end
 
       def package_install_command(packages)
-        "sudo yum check-update && sudo yum install -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
+        "sudo yum -q check-update ; sudo yum install -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
       end
 
       def fpm_command(build_dir, config)

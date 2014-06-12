@@ -119,6 +119,9 @@ scale_up() {
   echo "Scaling up..."
 
   if [ "${PROCESS_MANAGER}" = "upstart" ]; then
+    # copy initd
+    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}") $(_p "/etc/init.d/")
+    chmod 0755 $(_p "/etc/init.d/${APP_NAME}")
     # copy master
     cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}.conf") $(_p "/etc/init/")
     # copy master process

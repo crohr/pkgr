@@ -202,6 +202,7 @@ describe "bash cli" do
         expect(process.stdout).to include("Scaling up")
         expect(process.stdout).to include("my-app-web-1 start/running")
 
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_true
         expect(File.exist?(File.join(directory, "etc", "init", "my-app.conf"))).to be_true
         expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_true
         process_init = File.join(directory, "etc", "init", "my-app-web-1.conf")
@@ -216,6 +217,7 @@ describe "bash cli" do
         expect(process.stdout).to include("Scaling up")
         expect(process.stdout).to include("my-app-web-2 start/running")
 
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_true
         expect(File.exist?(File.join(directory, "etc", "init", "my-app.conf"))).to be_true
         expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_true
         process_init = File.join(directory, "etc", "init", "my-app-web-2.conf")

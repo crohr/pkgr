@@ -135,11 +135,12 @@ scale_up() {
 
       update_port $(_p "/etc/init/${PROCESS_ID}.conf") "${PROCESS_NAME}" $port $index
 
-      service "${PROCESS_ID}" start
+      # directly call initctl instead of service, otherwise CentOS 6.x does not understand.
+      initctl start "${PROCESS_ID}"
     done
 
-    service ${APP_NAME}-${PROCESS_NAME} start || true
-    service ${APP_NAME} start || true
+    initctl start ${APP_NAME}-${PROCESS_NAME} || true
+    initctl start ${APP_NAME} || true
   else
     cp $(_p "${APP_HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}") $(_p /etc/init.d/)
     chmod a+x $(_p "/etc/init.d/${APP_NAME}")
@@ -175,7 +176,7 @@ scale_down() {
     PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
 
     if [ "${PROCESS_MANAGER}" = "upstart" ]; then
-      service "${PROCESS_ID}" stop
+      initctl stop "${PROCESS_ID}"
       rm -f $(_p "/etc/init/${PROCESS_ID}.conf")
     else
       $(_p "/etc/init.d/${PROCESS_ID}") stop

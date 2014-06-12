@@ -54,7 +54,7 @@ def generate_cli(config, target)
   content = ERB.new(File.read(File.expand_path("../../../../data/cli/cli.sh.erb", __FILE__))).result(config.sesame)
   cli_filename = File.join(target, "usr", "bin", config.name)
   chroot_filename = File.join(target, "usr", "bin", "chroot")
-  service_filename = File.join(target, "usr", "bin", "service")
+  initctl_filename = File.join(target, "usr", "bin", "initctl")
   updaterc_filename = File.join(target, "usr", "bin", "update-rc.d")
 
   File.open(cli_filename, "w+") do |f|
@@ -69,9 +69,9 @@ def generate_cli(config, target)
   end
 
   # fake service
-  File.open(service_filename, "w+") do |f|
+  File.open(initctl_filename, "w+") do |f|
     f.puts "#!/bin/bash"
-    f.puts %{if [ "$2" = "start" ]; then echo "$1 start/running, process 1234"; else echo "$1 stop/waiting"; fi}
+    f.puts %{if [ "$1" = "start" ]; then echo "$2 start/running, process 1234"; else echo "$2 stop/waiting"; fi}
   end
 
   # update-rc.d
@@ -80,7 +80,7 @@ def generate_cli(config, target)
     f.puts %{echo called update-rc.d with "$@"}
   end
 
-  FileUtils.chmod 0755, [cli_filename, chroot_filename, service_filename, updaterc_filename]
+  FileUtils.chmod 0755, [cli_filename, chroot_filename, initctl_filename, updaterc_filename]
 end
 
 describe "bash cli" do

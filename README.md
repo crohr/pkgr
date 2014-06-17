@@ -2,21 +2,20 @@
 
 ## Goal
 
-Make debian packages out of any Ruby or NodeJS app that can run on Heroku. Hosted service available at <https://pkgr.io/>.
-
-More languages and target distributions will be added after thorough testing, though nothing prevents you from specifying a specific buildpack (see Usage).
+Make debian packages out of any app. Ruby and NodeJS officially supported, but you can also point to other buildpacks. Hosted service available at <https://packager.io/>.
 
 ## Supported distributions (64bits only)
 
 * Ubuntu 14.04 ("Trusty")
 * Ubuntu 12.04 ("Precise")
 * Debian 7.4 ("Wheezy")
+* Centos 6.x
 * Ubuntu 10.04 ("Lucid")
 * Debian 6 ("Squeeze")
 
 ## Examples
 
-See <https://pkgr.io/showcase> for examples of apps packaged with `pkgr` (Gitlab, Redmine, Discourse, Ghost, etc.).
+See <https://packager.io/> for examples of apps packaged with `pkgr` (Gitlab, OpenProject, Discourse, etc.).
 
 ## Installation
 
@@ -101,7 +100,7 @@ Finally, it's a great way to share your open source software with your users and
 
 * Uses Heroku buildpacks to embed all the dependencies related to your application runtime within the debian package. For a Rails app for instance, this means that `pkgr` will embed the specific ruby runtime you asked for, along with all the gems specified in your Gemfile. However, all other dependencies you may need must be specified as additional system dependencies (see Usage). This avoids the 'packaging-the-world' approach used by other tools such as omnibus (with the pros and cons that come with it), but it still allows you to use the latest and greatest libraries for your language of choice. See this [blog post][background-pkgr] for more background.
 
-[background-pkgr]: http://blog.pkgr.io/post/81988994454/why-i-made-pkgr-io-digressions-on-software-packaging
+[background-pkgr]: http://blog.packager.io/post/81988994454/why-i-made-pkgr-io-digressions-on-software-packaging
 
 * Gives you a nice executable, which closely replicates the Heroku toolbelt utility. For instance, assuming you're packaging an app called `my-app`, you can do the following:
 
@@ -143,7 +142,7 @@ If you get the following error `ERROR:  While executing gem ... (ArgumentError) 
 
 ## Authors
 
-* Cyril Rohr <cyril.rohr@gmail.com> - <http://crohr.me>
+* Cyril Rohr <cyril.rohr@gmail.com> - <http://crohr.me>, <https://packager.io>
 
 ## Copyright
 

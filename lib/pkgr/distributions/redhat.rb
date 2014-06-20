@@ -40,6 +40,8 @@ module Pkgr
           --template-scripts \
           --before-install #{preinstall_file(config)} \
           --after-install #{postinstall_file(config)} \
+          --before-remove #{preremove_file(config)} \
+          --after-remove #{postremove_file(config)} \
           #{dependencies(config.dependencies).map{|d| "-d '#{d}'"}.join(" ")} \
           .
         }

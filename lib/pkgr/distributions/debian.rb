@@ -49,6 +49,8 @@ module Pkgr
         args << %{--template-scripts}
         args << %{--before-install #{preinstall_file(config)}}
         args << %{--after-install #{postinstall_file(config)}}
+        args << %{--before-remove #{preremove_file(config)}}
+        args << %{--after-remove #{postremove_file(config)}}
         dependencies(config.dependencies).each{|d| args << "-d '#{d}'"}
         args
       end

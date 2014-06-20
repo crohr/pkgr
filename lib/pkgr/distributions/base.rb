@@ -127,6 +127,18 @@ module Pkgr
         @postinstall_file.path
       end
 
+
+      def postremove_file(config)
+        @postremove_file ||= generate_hook_file("postremove.sh", config)
+        @postremove_file.path
+      end
+
+
+      def preremove_file(config)
+        @preremove_file ||= generate_hook_file("preremove.sh", config)
+        @preremove_file.path
+      end
+
       protected
 
       def load_buildpack_list(config)

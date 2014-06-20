@@ -45,6 +45,9 @@ module Pkgr
     method_option :homepage,
       :type => :string,
       :desc => "Project homepage"
+    method_option :home,
+      :type => :string,
+      :desc => "Project home Directory, Where to place project? Default /opt/PROJECTNAME"
     method_option :description,
       :type => :string,
       :desc => "Project description"
@@ -80,6 +83,12 @@ module Pkgr
     method_option :after_install,
       :type => :string,
       :desc => "Provide a script to run just after a package gets installated or updated, on the target machine."
+    method_option :before_remove,
+      :type => :string,
+      :desc => "Provide a script to run just before a package gets uninstallated, on the target machine."
+    method_option :after_remove,
+      :type => :string,
+      :desc => "Provide a script to run just after a package gets uninstallated, on the target machine."
     method_option :dependencies,
       :type => :array,
       :default => [],

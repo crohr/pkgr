@@ -24,33 +24,64 @@ module Pkgr
       end
 
       def fpm_command(build_dir, config)
-        %{fpm #{fpm_args(build_dir, config).join(" ")} .}
+        DebianFpm.new(self, build_dir, config).command
       end
 
-      def fpm_args(build_dir, config)
-        args = []
-        args << "-t deb"
-        args << "-s dir"
-        args << "--verbose"
-        args << "--force"
-        args << "--exclude '**/.git**'"
-        args << %{-C "#{build_dir}"}
-        args << %{-n "#{config.name}"}
-        args << %{--version "#{config.version}"}
-        args << %{--iteration "#{config.iteration}"}
-        args << %{--url "#{config.homepage}"}
-        args << %{--provides "#{config.name}"}
-        args << %{--deb-user "root"}
-        args << %{--deb-group "root"}
-        args << %{--license "#{config.license}"} unless config.license.nil?
-        args << %{-a "#{config.architecture}"}
-        args << %{--description "#{config.description}"}
-        args << %{--maintainer "#{config.maintainer}"}
-        args << %{--template-scripts}
-        args << %{--before-install #{preinstall_file(config)}}
-        args << %{--after-install #{postinstall_file(config)}}
-        dependencies(config.dependencies).each{|d| args << "-d '#{d}'"}
-        args
+      class DebianFpm
+        attr_reader :distribution, :build_dir, :config
+
+        def initialize(distribution, build_dir, config)
+          @distribution = distribution
+          @build_dir = build_dir
+          @config = config
+        end
+
+        def command
+          %{fpm #{args.join(" ")} .}
+        end
+
+        def args
+          list = []
+          list << "-t deb"
+          list << "-s dir"
+          list << "--verbose"
+          list << "--force"
+          list << "--exclude '**/.git**'"
+          list << %{-C "#{build_dir}"}
+          list << %{-n "#{config.name}"}
+          list << %{--version "#{config.version}"}
+          list << %{--iteration "#{config.iteration}"}
+          list << %{--url "#{config.homepage}"}
+          list << %{--provides "#{config.name}"}
+          list << %{--deb-user "root"}
+          list << %{--deb-group "root"}
+          list << %{--license "#{config.license}"} unless config.license.nil?
+          list << %{-a "#{config.architecture}"}
+          list << %{--description "#{config.description}"}
+          list << %{--maintainer "#{config.maintainer}"}
+          list << %{--template-scripts}
+          list << debconfig
+          list << debtemplates
+          list << %{--before-install #{distribution.preinstall_file(config)}}
+          list << %{--after-install #{distribution.postinstall_file(config)}}
+          distribution.dependencies(config.dependencies).each{|d| list << "-d '#{d}'"}
+          list.compact
+        end
+
+        def debconfig
+          expected_debconfig_file = File.join(build_dir, config.home, "debian", "config")
+          if File.exists?(expected_debconfig_file)
+            %{--deb-config "#{expected_debconfig_file}"}
+          end
+        end
+
+        def debtemplates
+          expected_debtemplates_file = File.join(build_dir, config.home, "debian", "templates")
+          if File.exists?(expected_debtemplates_file)
+            %{--deb-templates "#{expected_debtemplates_file}"}
+          end
+        end
+
       end
     end
   end

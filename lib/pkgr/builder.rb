@@ -3,6 +3,7 @@ require 'fileutils'
 require 'pkgr/config'
 require 'pkgr/distributions'
 require 'pkgr/process'
+require 'pkgr/addon'
 
 module Pkgr
   class Builder
@@ -24,6 +25,7 @@ module Pkgr
       compile
       write_env
       write_init
+      setup_addons
       package
       store_cache
     ensure
@@ -127,6 +129,18 @@ module Pkgr
       end
     end
 
+    # If addons are declared in .pkgr.yml, add them
+    def setup_addons
+      config.addons.each do |addon_name|
+        distribution.add_addon(resolve_addon!(addon_name))
+      end
+    end
+
+    def resolve_addon!(addon_name)
+      addon = Addon.new(addon_name, addons_dir)
+      addon.install!(config.name)
+    end
+
     # Launch the FPM command that will generate the package.
     def package
       app_package = Mixlib::ShellOut.new(fpm_command)
@@ -188,6 +202,10 @@ module Pkgr
 
     def vendor_dir
       File.join(source_dir, "vendor", "pkgr")
+    end
+
+    def addons_dir
+      File.join(vendor_dir, "addons")
     end
 
     # Directory where binstubs will be created for the corresponding Procfile commands.

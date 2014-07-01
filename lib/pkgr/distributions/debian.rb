@@ -69,6 +69,11 @@ module Pkgr
         end
 
         def debconfig
+          debconfig_file = Tempfile.new("debconfig")
+          debconfig_file.write "#!/bin/bash"
+          config.addons.each do |addon|
+            debconfig_file.write addon.config.read
+          end
           expected_debconfig_file = File.join(build_dir, config.home, "debian", "config")
           if File.exists?(expected_debconfig_file)
             %{--deb-config "#{expected_debconfig_file}"}

@@ -117,6 +117,10 @@ module Pkgr
         list
       end
 
+      def add_addon(addon)
+        return true
+      end
+
       def preinstall_file(config)
         @preinstall_file ||= generate_hook_file("preinstall.sh", config)
         @preinstall_file.path

@@ -44,9 +44,11 @@ module Pkgr
       def add_addon(addon)
         File.open(debtemplates.path, "a") do |f|
           f.puts(addon.debtemplates.read)
+          f.puts
         end
         File.open(debconfig.path, "a") do |f|
           f.puts(addon.debconfig.read)
+          f.puts
         end
       end
 

@@ -111,6 +111,10 @@ module Pkgr
       @errors ||= []
     end
 
+    def addons
+      @table[:addons] || []
+    end
+
     def before_hook
       if before_precompile.nil? || before_precompile.empty?
         before_steps = self.before || []

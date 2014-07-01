@@ -1,0 +1,4 @@
+Template: _APP_NAME_/option1
+Type: boolean
+Description: Short title?
+ Long description.

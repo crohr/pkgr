@@ -132,13 +132,15 @@ module Pkgr
     # If addons are declared in .pkgr.yml, add them
     def setup_addons
       config.addons.each do |addon_name|
-        distribution.add_addon(resolve_addon!(addon_name))
+        addon = resolve_addon!(addon_name)
+        distribution.add_addon(addon)
       end
     end
 
     def resolve_addon!(addon_name)
       addon = Addon.new(addon_name, addons_dir)
       addon.install!(config.name)
+      addon
     end
 
     # Launch the FPM command that will generate the package.

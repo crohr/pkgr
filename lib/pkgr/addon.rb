@@ -27,6 +27,24 @@ module Pkgr
       "#{url}/archive/master.tar.gz"
     end
 
+    def debtemplates
+      debtemplates_file = File.join(dir, "debian", "templates")
+      if File.exists?(debtemplates_file)
+        File.new(debtemplates_file)
+      else
+        StringIO.new
+      end
+    end
+
+    def debconfig
+      debconfig_file = File.join(dir, "debian", "config")
+      if File.exists?(debconfig_file)
+        File.new(debconfig_file)
+      else
+        StringIO.new
+      end
+    end
+
     def install!(package_name)
       install_addon = Mixlib::ShellOut.new %{curl -L --max-redirs 3 --retry 5 -s '#{tarball_url}' | tar xzf - --strip-components=1 -C '#{dir}'}
       install_addon.logger = Pkgr.logger

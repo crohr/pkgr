@@ -8,5 +8,6 @@ describe "Addon" do
     addon.install!("blank-sinatra-app")
 
     expect(File.read(File.join(addons_dir, "mysql", "debian", "templates"))).to include("blank-sinatra-app")
+    expect(addon.debtemplates.read).to include("blank-sinatra-app")
   end
 end

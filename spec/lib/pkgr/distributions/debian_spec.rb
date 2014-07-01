@@ -3,6 +3,14 @@ require File.dirname(__FILE__) + '/../../../spec_helper'
 describe Pkgr::Distributions::Debian do
   let(:distribution) { Pkgr::Distributions::Debian.new("7.4") }
 
+  it "has a default debconfig by default" do
+    expect(distribution.debconfig.read).to eq("#!/bin/bash\n")
+  end
+
+  it "has a default debtemplates by default" do
+    expect(distribution.debtemplates.read).to eq("")
+  end
+
   it "has file and dir templates" do
     expect(distribution.templates(double(:config, name: "my-app", home: "/opt/my-app"))).to_not be_empty
   end
@@ -33,6 +41,39 @@ describe Pkgr::Distributions::Debian do
         distribution = Pkgr::Distributions::Debian.new(release)
         expect(distribution.buildpacks(Pkgr::Config.new)).to_not be_empty
       end
+    end
+  end
+
+  describe "#add_addon" do
+    let(:addons_dir) { Dir.mktmpdir }
+    let(:addon) { Pkgr::Addon.new("mysql", addons_dir) }
+
+    before do
+      FileUtils.cp_r(fixture("addon-mysql"), File.join(addons_dir, "mysql"))
+    end
+
+    it "adds the addon's debconf templates to the global package templates" do
+      distribution.add_addon(addon)
+      expect(distribution.debtemplates.read).to include(File.read(fixture("addon-mysql/debian/templates")))
+    end
+
+    it "appends the debconf templates if multiple addons" do
+      empty_addon = Pkgr::Addon.new("redis", addons_dir)
+      distribution.add_addon(addon)
+      distribution.add_addon(empty_addon)
+      expect(distribution.debtemplates.read).to include(File.read(fixture("addon-mysql/debian/templates")))
+    end
+
+    it "adds the addon's debconf config to the global package config" do
+      distribution.add_addon(addon)
+      expect(distribution.debconfig.read).to include(File.read(fixture("addon-mysql/debian/config")))
+    end
+
+    it "appends the debconf config if multiple addons" do
+      empty_addon = Pkgr::Addon.new("redis", addons_dir)
+      distribution.add_addon(addon)
+      distribution.add_addon(empty_addon)
+      expect(distribution.debconfig.read).to include(File.read(fixture("addon-mysql/debian/config")))
     end
   end
 end

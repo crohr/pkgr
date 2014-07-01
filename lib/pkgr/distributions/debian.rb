@@ -27,6 +27,29 @@ module Pkgr
         DebianFpm.new(self, build_dir, config).command
       end
 
+      def debconfig
+        @debconfig ||= begin
+          tmpfile = Tempfile.new("debconfig")
+          tmpfile.puts "#!/bin/bash"
+          tmpfile.rewind
+          tmpfile
+        end
+        @debconfig
+      end
+
+      def debtemplates
+        @debtemplates ||= Tempfile.new("debtemplates")
+      end
+
+      def add_addon(addon)
+        File.open(debtemplates.path, "a") do |f|
+          f.puts(addon.debtemplates.read)
+        end
+        File.open(debconfig.path, "a") do |f|
+          f.puts(addon.debconfig.read)
+        end
+      end
+
       class DebianFpm
         attr_reader :distribution, :build_dir, :config
 
@@ -60,33 +83,13 @@ module Pkgr
           list << %{--description "#{config.description}"}
           list << %{--maintainer "#{config.maintainer}"}
           list << %{--template-scripts}
-          list << debconfig
-          list << debtemplates
+          list << %{--deb-config #{distribution.debconfig.path}}
+          list << %{--deb-templates #{distribution.debtemplates.path}}
           list << %{--before-install #{distribution.preinstall_file(config)}}
           list << %{--after-install #{distribution.postinstall_file(config)}}
           distribution.dependencies(config.dependencies).each{|d| list << "-d '#{d}'"}
           list.compact
         end
-
-        def debconfig
-          debconfig_file = Tempfile.new("debconfig")
-          debconfig_file.write "#!/bin/bash"
-          config.addons.each do |addon|
-            debconfig_file.write addon.config.read
-          end
-          expected_debconfig_file = File.join(build_dir, config.home, "debian", "config")
-          if File.exists?(expected_debconfig_file)
-            %{--deb-config "#{expected_debconfig_file}"}
-          end
-        end
-
-        def debtemplates
-          expected_debtemplates_file = File.join(build_dir, config.home, "debian", "templates")
-          if File.exists?(expected_debtemplates_file)
-            %{--deb-templates "#{expected_debtemplates_file}"}
-          end
-        end
-
       end
     end
   end

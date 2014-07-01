@@ -104,4 +104,10 @@ describe Pkgr::Config do
       expect(File.read(hook)).to eq("do_something\ndo_something_else\n")
     end
   end
+
+  describe "#addons" do
+    it "has none by default" do
+      expect(config.addons.length).to eq(0)
+    end
+  end
 end

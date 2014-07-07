@@ -42,14 +42,14 @@ module Pkgr
       end
 
       def add_addon(addon)
-        File.open(debtemplates.path, "a") do |f|
-          f.puts(addon.debtemplates.read)
-          f.puts
+        # make a debian package out of the addon
+        Dir.chdir(addon.dir) do
+          make_package = Mixlib::ShellOut.new %{dpkg-buildpackage -b -d}
+          make_package.logger = Pkgr.logger
+          make_package.run_command
+          make_package.error!
         end
-        File.open(debconfig.path, "a") do |f|
-          f.puts(addon.debconfig.read)
-          f.puts
-        end
+        FileUtils.mv(Dir.glob(File.join(File.dirname(addon.dir), "*.deb")), Dir.pwd)
       end
 
       class DebianFpm

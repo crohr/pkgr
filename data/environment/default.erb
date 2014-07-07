@@ -4,6 +4,7 @@ export APP_NAME="<%= name %>"
 export APP_GROUP="<%= group %>"
 export APP_USER="<%= user %>"
 export HOME="/home/<%= user %>"
+export PORT=${PORT:=6000}
 <% if runner %>
 export PROCESS_MANAGER="<%= runner.split("-").first %>"
 <% end %>

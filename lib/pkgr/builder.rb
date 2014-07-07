@@ -134,6 +134,7 @@ module Pkgr
       config.addons.each do |addon_name|
         addon = resolve_addon!(addon_name)
         distribution.add_addon(addon)
+        config.dependencies.push([config.name, addon.name].join("-"))
       end
     end
 

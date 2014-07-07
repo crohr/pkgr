@@ -45,13 +45,13 @@ module Pkgr
       end
     end
 
-    def install!(package_name)
+    def install!(package_name, src_dir)
       install_addon = Mixlib::ShellOut.new %{curl -L --max-redirs 3 --retry 5 -s '#{tarball_url}' | tar xzf - --strip-components=1 -C '#{dir}'}
       install_addon.logger = Pkgr.logger
       install_addon.run_command
       install_addon.error!
 
-      compile_addon = Mixlib::ShellOut.new %{#{dir}/bin/compile '#{package_name}'}
+      compile_addon = Mixlib::ShellOut.new %{#{dir}/bin/compile '#{package_name}' '#{src_dir}'}
       compile_addon.logger = Pkgr.logger
       compile_addon.run_command
       compile_addon.error!

@@ -140,7 +140,7 @@ module Pkgr
 
     def resolve_addon!(addon_name)
       addon = Addon.new(addon_name, addons_dir)
-      addon.install!(config.name)
+      addon.install!(config.name, source_dir)
       addon
     end
 

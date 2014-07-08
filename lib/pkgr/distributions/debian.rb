@@ -50,6 +50,8 @@ module Pkgr
           make_package.error!
         end
         FileUtils.mv(Dir.glob(File.join(File.dirname(addon.dir), "*.deb")), Dir.pwd)
+        # return name of the dependency
+        addon.debian_dependency_name
       end
 
       class DebianFpm

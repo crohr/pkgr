@@ -1,10 +1,12 @@
 module Pkgr
   class Addon
     attr_reader :nickname, :addons_dir
+    attr_reader :config
 
-    def initialize(nickname, addons_dir)
+    def initialize(nickname, addons_dir, config)
       @nickname = nickname
       @addons_dir = addons_dir
+      @config = config
     end
 
     def name
@@ -27,6 +29,13 @@ module Pkgr
       "#{url}/archive/master.tar.gz"
     end
 
+    def debian_dependency_name
+      [
+        [config.name, name].join("-"),
+        "(= #{config.version}-#{config.iteration})"
+      ].join(" ")
+    end
+
     def debtemplates
       debtemplates_file = File.join(dir, "debian", "templates")
       if File.exists?(debtemplates_file)
@@ -45,13 +54,13 @@ module Pkgr
       end
     end
 
-    def install!(package_name, src_dir)
+    def install!(src_dir)
       install_addon = Mixlib::ShellOut.new %{curl -L --max-redirs 3 --retry 5 -s '#{tarball_url}' | tar xzf - --strip-components=1 -C '#{dir}'}
       install_addon.logger = Pkgr.logger
       install_addon.run_command
       install_addon.error!
 
-      compile_addon = Mixlib::ShellOut.new %{#{dir}/bin/compile '#{package_name}' '#{src_dir}'}
+      compile_addon = Mixlib::ShellOut.new %{#{dir}/bin/compile '#{config.name}' '#{config.version}' '#{config.iteration}' '#{src_dir}'}
       compile_addon.logger = Pkgr.logger
       compile_addon.run_command
       compile_addon.error!

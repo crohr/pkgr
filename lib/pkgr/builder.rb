@@ -133,14 +133,14 @@ module Pkgr
     def setup_addons
       config.addons.each do |addon_name|
         addon = resolve_addon!(addon_name)
-        distribution.add_addon(addon)
-        config.dependencies.push([config.name, addon.name].join("-"))
+        dependency = distribution.add_addon(addon)
+        config.dependencies.push(dependency) if dependency
       end
     end
 
     def resolve_addon!(addon_name)
-      addon = Addon.new(addon_name, addons_dir)
-      addon.install!(config.name, source_dir)
+      addon = Addon.new(addon_name, addons_dir, config)
+      addon.install!(source_dir)
       addon
     end
 

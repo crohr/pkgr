@@ -118,7 +118,7 @@ module Pkgr
       end
 
       def add_addon(addon)
-        return true
+        nil
       end
 
       def preinstall_file(config)

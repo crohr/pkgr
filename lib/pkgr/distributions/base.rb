@@ -91,7 +91,8 @@ module Pkgr
           "etc/#{app_name}/conf.d",
           "etc/default",
           "etc/init",
-          "var/log/#{app_name}"
+          "var/log/#{app_name}",
+          "var/db/#{app_name}"
         ].each{|dir| list.push Templates::DirTemplate.new(dir) }
 
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", data_file("environment", "default.erb"))

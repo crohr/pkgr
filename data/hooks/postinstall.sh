@@ -21,6 +21,7 @@ chown -R ${APP_USER}.${APP_GROUP} ${LOGS}
 [ -f /etc/${APP_NAME}/conf.d/other ] || touch /etc/${APP_NAME}/conf.d/other
 
 chown -R ${APP_USER}.${APP_GROUP} /etc/${APP_NAME}
+chown -R ${APP_USER}.${APP_GROUP} /var/db/${APP_NAME}
 
 chmod 0750 /etc/${APP_NAME} /etc/${APP_NAME}/conf.d
 find /etc/${APP_NAME} -type f -exec chmod 0640 {} +

@@ -110,4 +110,15 @@ describe Pkgr::Config do
       expect(config.addons.length).to eq(0)
     end
   end
+
+  describe "#crons" do
+    it "has none by default" do
+      expect(config.crons.length).to eq(0)
+    end
+
+    it "correctly exports the crons if any" do
+      config = Pkgr::Config.new(crons: ["path/to/cron1", "path/to/cron2"])
+      expect(config.crons).to eq(["path/to/cron1", "path/to/cron2"])
+    end
+  end
 end

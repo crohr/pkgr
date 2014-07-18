@@ -25,6 +25,7 @@ module Pkgr
       compile
       write_env
       write_init
+      setup_crons
       setup_addons
       package
       store_cache
@@ -125,6 +126,21 @@ module Pkgr
           process_config.process_name = process.name
           process_config.process_command = process.command
           file.install(process_config.sesame)
+        end
+      end
+    end
+
+    # Write cron files
+    def setup_crons
+      crons_dir = File.join(build_dir, distribution.crons_dir)
+      FileUtils.mkdir_p crons_dir
+
+      config.crons.each do |cron_path|
+        src = File.join(source_dir, cron_path)
+        if File.exists?(src)
+          puts "-----> Installing cron #{cron_path}"
+          FileUtils.cp src, crons_dir
+          FileUtils.chmod 0750, File.join(crons_dir, File.basename(src))
         end
       end
     end

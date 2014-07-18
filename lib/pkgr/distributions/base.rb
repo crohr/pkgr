@@ -118,6 +118,10 @@ module Pkgr
         list
       end
 
+      def crons_dir
+        "etc/cron.d"
+      end
+
       def add_addon(addon)
         nil
       end

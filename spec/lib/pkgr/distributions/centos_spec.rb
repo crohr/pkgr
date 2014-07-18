@@ -19,7 +19,7 @@ describe Pkgr::Distributions::Centos do
 
   describe "#add_addon" do
     it "does nothing yet" do
-      expect(distribution.add_addon(double(:addon))).to eq(true)
+      expect(distribution.add_addon(double(:addon))).to eq(nil)
     end
   end
 end

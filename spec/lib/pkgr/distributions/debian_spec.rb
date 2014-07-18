@@ -45,10 +45,12 @@ describe Pkgr::Distributions::Debian do
   end
 
   describe "#add_addon" do
+    let(:config) { double(:config) }
     let(:addons_dir) { Dir.mktmpdir }
-    let(:addon) { Pkgr::Addon.new("mysql", addons_dir) }
+    let(:addon) { Pkgr::Addon.new("mysql", addons_dir, config) }
 
     before do
+      pending "addons are no longer added to main debconf file"
       FileUtils.cp_r(fixture("addon-mysql"), File.join(addons_dir, "mysql"))
     end
 
@@ -58,7 +60,7 @@ describe Pkgr::Distributions::Debian do
     end
 
     it "appends the debconf templates if multiple addons" do
-      empty_addon = Pkgr::Addon.new("redis", addons_dir)
+      empty_addon = Pkgr::Addon.new("redis", addons_dir, config)
       distribution.add_addon(addon)
       distribution.add_addon(empty_addon)
       expect(distribution.debtemplates.read).to include(File.read(fixture("addon-mysql/debian/templates")))
@@ -70,7 +72,7 @@ describe Pkgr::Distributions::Debian do
     end
 
     it "appends the debconf config if multiple addons" do
-      empty_addon = Pkgr::Addon.new("redis", addons_dir)
+      empty_addon = Pkgr::Addon.new("redis", addons_dir, config)
       distribution.add_addon(addon)
       distribution.add_addon(empty_addon)
       expect(distribution.debconfig.read).to include(File.read(fixture("addon-mysql/debian/config")))

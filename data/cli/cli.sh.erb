@@ -7,6 +7,8 @@ set -o pipefail
 APP_NAME=$(basename $0)
 # useful for testing
 ROOT_PATH=${ROOT_PATH:="/"}
+# store original pwd
+export ORIGINAL_PWD=$(pwd)
 
 # Helper function that returns the real path, based on the given ROOT_PATH
 _p() {

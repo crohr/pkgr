@@ -93,7 +93,7 @@ module Pkgr
     end
 
     def env
-      Pkgr::Env.new(@table[:env])
+      @table[:env].is_a?(Pkgr::Env) ? @table[:env] : Pkgr::Env.new(@table[:env])
     end
 
     def valid?

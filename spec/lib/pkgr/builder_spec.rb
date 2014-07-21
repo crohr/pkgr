@@ -18,7 +18,7 @@ describe Pkgr::Builder do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config).tap{|b| b.stub(:distribution => distribution)} }
 
     it "asks the distribution to check for missing dependencies" do
-      distribution.should_receive(:check).with(builder.config)
+      distribution.should_receive(:check)
       expect{ builder.check }.to_not raise_error
     end
   end
@@ -139,7 +139,7 @@ describe Pkgr::Builder do
 
   describe "#write_env and #write_init" do
     let(:builder) { Pkgr::Builder.new(fixture("my-app.tar.gz"), config) }
-    let(:distribution) { Pkgr::Distributions::Ubuntu.new("12.04") }
+    let(:distribution) { Pkgr::Distributions::Ubuntu.new("12.04", config) }
 
     before do
       builder.stub(:distribution => distribution)
@@ -204,7 +204,7 @@ describe Pkgr::Builder do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
 
     before do
-      builder.stub(:distribution => Pkgr::Distributions::Ubuntu.new("12.04"))
+      builder.stub(:distribution => Pkgr::Distributions::Ubuntu.new("12.04", config))
       builder.setup
     end
 

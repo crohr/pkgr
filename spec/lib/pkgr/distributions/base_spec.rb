@@ -1,17 +1,16 @@
 require File.dirname(__FILE__) + '/../../../spec_helper'
 
 describe Pkgr::Distributions::Base do
-  let(:distribution) { Pkgr::Distributions::Base.new("7.4") }
+  let(:config) { Pkgr::Config.new }
+  let(:distribution) { Pkgr::Distributions::Base.new("7.4", config) }
 
   describe "pre/post install" do
-    let(:config) { Pkgr::Config.new }
-
     it "has a preinstall file" do
-      expect(distribution.preinstall_file(config)).to_not be_nil
+      expect(distribution.preinstall_file).to_not be_nil
     end
 
     it "has a postinstall file" do
-      expect(distribution.postinstall_file(config)).to_not be_nil
+      expect(distribution.postinstall_file).to_not be_nil
     end
   end
 
@@ -38,13 +37,11 @@ describe Pkgr::Distributions::Base do
   end
 
   describe "#buildpacks" do
-    let(:config) { OpenStruct.new }
-
     it "can take an external list of default buildpacks" do
       config.buildpack_list = fixture("buildpack-list")
-      list = distribution.buildpacks(config)
+      list = distribution.buildpacks
       expect(list.length).to eq(2)
-      expect(list.all?{|b| b.is_a?(Pkgr::Buildpack)}).to be_true
+      expect(list.all?{|b| b.is_a?(Pkgr::Buildpack)}).to eq(true)
       expect(list.first.env.to_hash).to eq({
         "VENDOR_URL"=>"https://path/to/vendor", "CURL_TIMEOUT"=>"123"
       })
@@ -53,7 +50,7 @@ describe Pkgr::Distributions::Base do
     it "prioritize buildpack specific environment variables over the global ones" do
       config.env = Pkgr::Env.new(["VENDOR_URL=http://global/path"])
       config.buildpack_list = fixture("buildpack-list")
-      list = distribution.buildpacks(config)
+      list = distribution.buildpacks
       expect(list.first.env.to_hash["VENDOR_URL"]).to eq("https://path/to/vendor")
       expect(list.last.env.to_hash["VENDOR_URL"]).to eq("http://global/path")
     end

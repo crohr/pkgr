@@ -1,7 +1,8 @@
 require File.dirname(__FILE__) + '/../../../spec_helper'
 
 describe Pkgr::Distributions::Debian do
-  let(:distribution) { Pkgr::Distributions::Debian.new("7.4") }
+  let(:config) { Pkgr::Config.new }
+  let(:distribution) { Pkgr::Distributions::Debian.new("7.4", config) }
 
   it "has a default debconfig by default" do
     expect(distribution.debconfig.read).to eq("#!/bin/bash\n")
@@ -12,7 +13,9 @@ describe Pkgr::Distributions::Debian do
   end
 
   it "has file and dir templates" do
-    expect(distribution.templates(double(:config, name: "my-app", home: "/opt/my-app"))).to_not be_empty
+    config.name = "my-app"
+    config.home = "/opt/my-app"
+    expect(distribution.templates).to_not be_empty
   end
 
   describe "#dependencies" do
@@ -26,31 +29,28 @@ describe Pkgr::Distributions::Debian do
   end
 
   describe "#buildpacks" do
-    let(:config) { OpenStruct.new }
-
     it "has a list of default buildpacks" do
-      list = distribution.buildpacks(config)
+      list = distribution.buildpacks
       expect(list).to_not be_empty
-      expect(list.all?{|b| b.is_a?(Pkgr::Buildpack)}).to be_true
+      expect(list.all?{|b| b.is_a?(Pkgr::Buildpack)}).to eq(true)
     end
   end
 
   describe "buildpack list" do
     ["6.0.4", "7.4"].each do |release|
       it "debian #{release} has a list of default buildpacks" do
-        distribution = Pkgr::Distributions::Debian.new(release)
-        expect(distribution.buildpacks(Pkgr::Config.new)).to_not be_empty
+        distribution = Pkgr::Distributions::Debian.new(release, config)
+        expect(distribution.buildpacks).to_not be_empty
       end
     end
   end
 
   describe "#add_addon" do
-    let(:config) { double(:config) }
     let(:addons_dir) { Dir.mktmpdir }
     let(:addon) { Pkgr::Addon.new("mysql", addons_dir, config) }
 
     before do
-      pending "addons are no longer added to main debconf file"
+      skip "addons are no longer added to main debconf file"
       FileUtils.cp_r(fixture("addon-mysql"), File.join(addons_dir, "mysql"))
     end
 

@@ -23,8 +23,8 @@ module Pkgr
         "sudo apt-get update && sudo apt-get install --force-yes -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
       end
 
-      def fpm_command(build_dir, config)
-        DebianFpm.new(self, build_dir, config).command
+      def fpm_command(build_dir)
+        DebianFpm.new(self, build_dir).command
       end
 
       def debconfig
@@ -57,10 +57,10 @@ module Pkgr
       class DebianFpm
         attr_reader :distribution, :build_dir, :config
 
-        def initialize(distribution, build_dir, config)
+        def initialize(distribution, build_dir)
           @distribution = distribution
           @build_dir = build_dir
-          @config = config
+          @config = distribution.config
         end
 
         def command
@@ -89,8 +89,8 @@ module Pkgr
           list << %{--template-scripts}
           list << %{--deb-config #{distribution.debconfig.path}}
           list << %{--deb-templates #{distribution.debtemplates.path}}
-          list << %{--before-install #{distribution.preinstall_file(config)}}
-          list << %{--after-install #{distribution.postinstall_file(config)}}
+          list << %{--before-install #{distribution.preinstall_file}}
+          list << %{--after-install #{distribution.postinstall_file}}
           distribution.dependencies(config.dependencies).each{|d| list << "-d '#{d}'"}
           list.compact
         end

@@ -23,7 +23,7 @@ module Pkgr
         "sudo yum -q check-update ; sudo yum install -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
       end
 
-      def fpm_command(build_dir, config)
+      def fpm_command(build_dir)
         %{
           fpm -t rpm -s dir --verbose --force \
           -C "#{build_dir}" \

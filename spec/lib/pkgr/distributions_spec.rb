@@ -17,7 +17,7 @@ describe Pkgr::Distributions do
   end
 
   it "forces a specific distribution" do
-    distro = Pkgr::Distributions.current("debian-7.4")
+    distro = Pkgr::Distributions.current(double(:config, force_os: "debian-7.4"))
     expect(distro).to be_a(Pkgr::Distributions::Debian)
     expect(distro.release).to eq("7")
   end

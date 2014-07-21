@@ -33,23 +33,6 @@ module Pkgr
       teardown if config.clean
     end
 
-    # Check configuration, and verifies that the current distribution's requirements are satisfied
-    def check
-      raise Errors::ConfigurationInvalid, config.errors.join("; ") unless config.valid?
-      distribution.check(config)
-    end
-
-    # Setup the build directory structure
-    def setup
-      Dir.chdir(build_dir) do
-        # useful for templates that need to read files
-        config.source_dir = source_dir
-        distribution.templates(config).each do |template|
-          template.install(config.sesame)
-        end
-      end
-    end
-
     # Extract the given tarball to the target directory
     def extract
       FileUtils.mkdir_p source_dir
@@ -73,10 +56,30 @@ module Pkgr
         @config = Config.load_file(config_file, distribution.slug).merge(config)
         Pkgr.debug "Found .pkgr.yml file. Updated config is now: #{config.inspect}"
 
+        # update distribution config
+        distribution.config = @config
+
         # FIXME: make Config the authoritative source of the runner config (distribution only tells the default runner)
         if @config.runner
           type, *version = @config.runner.split("-")
           distribution.runner = Distributions::Runner.new(type, version.join("-"))
+        end
+      end
+    end
+
+    # Check configuration, and verifies that the current distribution's requirements are satisfied
+    def check
+      raise Errors::ConfigurationInvalid, config.errors.join("; ") unless config.valid?
+      distribution.check
+    end
+
+    # Setup the build directory structure
+    def setup
+      Dir.chdir(build_dir) do
+        # useful for templates that need to read files
+        config.source_dir = source_dir
+        distribution.templates.each do |template|
+          template.install(config.sesame)
         end
       end
     end
@@ -248,12 +251,12 @@ module Pkgr
 
     # Returns the current distribution we're packaging for.
     def distribution
-      @distribution ||= Distributions.current(config.force_os)
+      @distribution ||= Distributions.current(config)
     end
 
     # List of available buildpacks for the current distribution.
     def buildpacks
-      distribution.buildpacks(config)
+      distribution.buildpacks
     end
 
     # Buildpack detected for the app, if any.
@@ -266,7 +269,7 @@ module Pkgr
     end
 
     def fpm_command
-      distribution.fpm_command(build_dir, config)
+      distribution.fpm_command(build_dir)
     end
 
     protected

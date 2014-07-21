@@ -1,10 +1,13 @@
 require File.dirname(__FILE__) + '/../../../spec_helper'
 
 describe Pkgr::Distributions::Centos do
-  let(:distribution) { Pkgr::Distributions::Centos.new("6.5") }
+  let(:config) { Pkgr::Config.new }
+  let(:distribution) { Pkgr::Distributions::Centos.new("6.5", config) }
 
   it "has file and dir templates" do
-    expect(distribution.templates(double(:config, name: "my-app", home: "/opt/my-app"))).to_not be_empty
+    config.name = "my-app"
+    config.home = "/opt/my-app"
+    expect(distribution.templates).to_not be_empty
   end
 
   describe "#dependencies" do

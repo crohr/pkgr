@@ -1,6 +1,7 @@
 require 'pkgr/buildpack'
 require 'pkgr/env'
 require 'pkgr/distributions/runner'
+require 'pkgr/config'
 require 'yaml'
 
 module Pkgr
@@ -9,8 +10,10 @@ module Pkgr
     class Base
       attr_reader :release
       attr_writer :runner
+      attr_accessor :config
 
-      def initialize(release)
+      def initialize(release, config = Config.new)
+        @config = config
         @release = release
       end
 
@@ -32,7 +35,7 @@ module Pkgr
       end
 
       # Check if all build dependencies are present.
-      def check(config)
+      def check
         missing_packages = (build_dependencies(config.build_dependencies) || []).select do |package|
           test_command = package_test_command(package)
           Pkgr.debug "sh(#{test_command})"
@@ -59,13 +62,13 @@ module Pkgr
       end # def default_buildpack_list
 
       # Returns a list of Buildpack objects
-      def buildpacks(config)
+      def buildpacks
         custom_buildpack_uri = config.buildpack
         if custom_buildpack_uri
           uuid = Digest::SHA1.hexdigest(custom_buildpack_uri)
           [Buildpack.new(custom_buildpack_uri, :custom, config.env)]
         else
-          load_buildpack_list(config)
+          load_buildpack_list
         end
       end # def buildpacks
 
@@ -80,7 +83,7 @@ module Pkgr
       end # def build_dependencies
 
       # Returns a list of file and directory templates.
-      def templates(config)
+      def templates
         app_name = config.name
         list = []
 
@@ -126,19 +129,19 @@ module Pkgr
         nil
       end
 
-      def preinstall_file(config)
-        @preinstall_file ||= generate_hook_file("preinstall.sh", config)
+      def preinstall_file
+        @preinstall_file ||= generate_hook_file("preinstall.sh")
         @preinstall_file.path
       end
 
-      def postinstall_file(config)
-        @postinstall_file ||= generate_hook_file("postinstall.sh", config)
+      def postinstall_file
+        @postinstall_file ||= generate_hook_file("postinstall.sh")
         @postinstall_file.path
       end
 
       protected
 
-      def load_buildpack_list(config)
+      def load_buildpack_list
         file = config.buildpack_list || default_buildpack_list
         return [] if file.nil?
 
@@ -153,7 +156,7 @@ module Pkgr
         File.new(File.join(Pkgr.data_dir, *names))
       end
 
-      def generate_hook_file(hook_name, config)
+      def generate_hook_file(hook_name)
         source = data_file("hooks", hook_name)
         file = Tempfile.new("postinstall")
         file.write ERB.new(File.read(source)).result(config.sesame)

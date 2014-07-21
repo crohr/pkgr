@@ -15,7 +15,7 @@ describe Pkgr::Buildpack do
 
     it "should have a default buildpacks cache directory" do
       expect(Pkgr::Buildpack.buildpacks_cache_dir).to eq(File.expand_path("~/.pkgr/buildpacks"))
-      expect(File.directory?(Pkgr::Buildpack.buildpacks_cache_dir)).to be_true
+      expect(File.directory?(Pkgr::Buildpack.buildpacks_cache_dir)).to eq(true)
     end
 
     it "should overwrite the default buildpacks cache directory" do

@@ -38,8 +38,8 @@ module Pkgr
           --description "#{config.description}" \
           --maintainer "#{config.maintainer}" \
           --template-scripts \
-          --before-install #{preinstall_file(config)} \
-          --after-install #{postinstall_file(config)} \
+          --before-install #{preinstall_file} \
+          --after-install #{postinstall_file} \
           #{dependencies(config.dependencies).map{|d| "-d '#{d}'"}.join(" ")} \
           .
         }

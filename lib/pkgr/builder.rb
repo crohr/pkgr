@@ -141,7 +141,7 @@ module Pkgr
       config.crons.each do |cron_path|
         src = File.join(source_dir, cron_path)
         if File.exists?(src)
-          puts "-----> Installing cron #{cron_path}"
+          puts "-----> [cron] #{cron_path}"
           FileUtils.cp src, crons_dir
           FileUtils.chmod 0750, File.join(crons_dir, File.basename(src))
         end
@@ -159,6 +159,7 @@ module Pkgr
 
     def resolve_addon!(addon_name)
       addon = Addon.new(addon_name, addons_dir, config)
+      puts "-----> [addon] #{addon.name} (#{addon.url})"
       addon.install!(source_dir)
       addon
     end

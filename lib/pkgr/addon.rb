@@ -60,8 +60,20 @@ module Pkgr
       install_addon.run_command
       install_addon.error!
 
-      compile_addon = Mixlib::ShellOut.new %{#{dir}/bin/compile '#{config.name}' '#{config.version}' '#{config.iteration}' '#{src_dir}'}
+      # TODO: remove args from command once all addons use env variables
+      compile_addon = Mixlib::ShellOut.new(%{#{dir}/bin/compile '#{config.name}' '#{config.version}' '#{config.iteration}' '#{src_dir}' 2>&1}, {
+        :environment => {
+          "APP_NAME" => config.name,
+          "APP_VERSION" => config.version,
+          "APP_ITERATION" => config.iteration,
+          "APP_SAFE_NAME" => config.name.gsub("-", "_"),
+          "APP_USER" => config.user,
+          "APP_GROUP" => config.group,
+          "APP_WORKSPACE" => src_dir
+        }
+      })
       compile_addon.logger = Pkgr.logger
+      compile_addon.live_stream = LiveStream.new(STDOUT)
       compile_addon.run_command
       compile_addon.error!
     end
@@ -71,6 +83,19 @@ module Pkgr
         directory = File.join(addons_dir, File.basename(name))
         FileUtils.mkdir_p(directory)
         directory
+      end
+    end
+
+    class LiveStream
+      attr_reader :stream
+      def initialize(stream = STDOUT)
+        @stream = stream
+      end
+
+      def <<(data)
+        data.split("\n").each do |line|
+          stream.puts "       #{line}"
+        end
       end
     end
   end

@@ -10,12 +10,16 @@ module Pkgr
     end
 
     def name
-      File.basename(nickname, ".git").sub("addon-", "")
+      File.basename(url_without_branch, ".git").sub("addon-", "")
+    end
+
+    def url_without_branch
+      nickname.split("#")[0]
     end
 
     def url
       if nickname.start_with?("http")
-        nickname
+        url_without_branch
       else
         user, repo = nickname.split("/", 2)
         user, repo = "pkgr", user if repo.nil?
@@ -25,8 +29,12 @@ module Pkgr
       end
     end
 
+    def branch
+      nickname.split("#")[1] || "master"
+    end
+
     def tarball_url
-      "#{url}/archive/master.tar.gz"
+      "#{url}/archive/#{branch}.tar.gz"
     end
 
     def debian_dependency_name

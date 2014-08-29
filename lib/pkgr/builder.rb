@@ -277,7 +277,7 @@ module Pkgr
     def run_hook(file)
       return true if file.nil?
 
-      cmd = %{env -i PATH="$PATH"#{config.env} bash '#{file}' 2>&1}
+      cmd = %{env -i APP_NAME="#{config.name}" PATH="$PATH"#{config.env} bash '#{file}' 2>&1}
 
       Pkgr.logger.debug "Running hook in #{source_dir}: #{file.inspect}"
       puts "-----> Running hook: #{file.inspect}"

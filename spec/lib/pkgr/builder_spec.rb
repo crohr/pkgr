@@ -191,10 +191,10 @@ describe Pkgr::Builder do
       end.to_not raise_error
     end
 
-    it "resolves the addon and adds it" do
-      config.addons = ["mysql"]
-      addon = double(:addon)
-      expect(builder).to receive(:resolve_addon!).with("mysql").and_return(addon)
+    it "installs the addon and adds it" do
+      addon = Pkgr::Addon.new("mysql", "path/to/addons/dir", config)
+      allow(config).to receive(:addons).and_return([addon])
+      expect(addon).to receive(:install!).with(builder.source_dir)
       expect(builder.distribution).to receive(:add_addon).with(addon)
       builder.setup_addons
     end

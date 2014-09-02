@@ -65,6 +65,10 @@ module Pkgr
           distribution.runner = Distributions::Runner.new(type, version.join("-"))
         end
       end
+      # required to build proper Addon objects
+      config.addons_dir = addons_dir
+      # useful for templates that need to read files
+      config.source_dir = source_dir
     end
 
     # Check configuration, and verifies that the current distribution's requirements are satisfied
@@ -76,8 +80,6 @@ module Pkgr
     # Setup the build directory structure
     def setup
       Dir.chdir(build_dir) do
-        # useful for templates that need to read files
-        config.source_dir = source_dir
         distribution.templates.each do |template|
           template.install(config.sesame)
         end
@@ -150,18 +152,12 @@ module Pkgr
 
     # If addons are declared in .pkgr.yml, add them
     def setup_addons
-      config.addons.each do |addon_name|
-        addon = resolve_addon!(addon_name)
+      config.addons.each do |addon|
+        puts "-----> [addon] #{addon.name} (#{addon.url} @ #{addon.branch})"
+        addon.install!(source_dir)
         dependency = distribution.add_addon(addon)
         config.dependencies.push(dependency) if dependency
       end
-    end
-
-    def resolve_addon!(addon_name)
-      addon = Addon.new(addon_name, addons_dir, config)
-      puts "-----> [addon] #{addon.name} (#{addon.url})"
-      addon.install!(source_dir)
-      addon
     end
 
     # Launch the FPM command that will generate the package.

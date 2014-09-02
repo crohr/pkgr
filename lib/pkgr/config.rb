@@ -112,7 +112,10 @@ module Pkgr
     end
 
     def addons
-      @table[:addons] || []
+      # make proper Addon objects out of existing addon slugs
+      (@table[:addons] || []).map do |addon_slug|
+        Addon.new(addon_slug, addons_dir, self)
+      end
     end
 
     def crons

@@ -5,6 +5,8 @@ set -e
 set -o pipefail
 
 APP_NAME=$(basename $0)
+# list of application wizard addons
+ADDONS="<%= addons.map{|addon| addon.name}.join(" ") %>"
 # useful for testing
 ROOT_PATH=${ROOT_PATH:="/"}
 # store original pwd
@@ -22,6 +24,7 @@ usage() {
   echo "  $APP_NAME logs [--tail|-n NUMBER]"
   echo "  $APP_NAME config:get VAR"
   echo "  $APP_NAME config:set VAR=VALUE"
+  echo "  $APP_NAME reconfigure"
 }
 
 
@@ -207,6 +210,16 @@ scale() {
   fi
 }
 
+reconfigure() {
+  # only available for debian for now
+  if which dpkg-reconfigure &>/dev/null ; then
+    for addon in ${ADDONS}; do
+      dpkg-reconfigure "${APP_NAME}-${addon}"
+    done
+    # always reconfigure main package as well
+    dpkg-reconfigure "${APP_NAME}"
+  fi
+}
 
 while : ; do
   case "$1" in
@@ -282,6 +295,10 @@ while : ; do
     config:get)
       [ $# -lt 2 ] && usage
       show_env | grep -e "^${2}=" | sed -r "s/^${2}=//"
+      break;;
+
+    reconfigure)
+      reconfigure
       break;;
 
     *)

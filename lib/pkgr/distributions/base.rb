@@ -3,6 +3,7 @@ require 'pkgr/env'
 require 'pkgr/distributions/runner'
 require 'pkgr/config'
 require 'yaml'
+require 'open-uri'
 
 module Pkgr
   module Distributions
@@ -145,7 +146,7 @@ module Pkgr
         file = config.buildpack_list || default_buildpack_list
         return [] if file.nil?
 
-        File.read(file).split("\n").map do |line|
+        open(file).read.split("\n").map do |line|
           url, *raw_env = line.split(",")
           buildpack_env = (config.env || Env.new).merge(Env.new(raw_env))
           Buildpack.new(url, :builtin, buildpack_env)

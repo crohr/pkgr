@@ -11,6 +11,8 @@ ADDONS="<%= addons.map{|addon| addon.name}.join(" ") %>"
 ROOT_PATH=${ROOT_PATH:="/"}
 # store original pwd
 export ORIGINAL_PWD=$(pwd)
+# required for chroot on fedora
+PATH="$PATH:/usr/sbin"
 
 # Helper function that returns the real path, based on the given ROOT_PATH
 _p() {

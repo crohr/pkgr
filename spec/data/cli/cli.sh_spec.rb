@@ -202,11 +202,11 @@ describe "bash cli" do
         expect(process.stdout).to include("Scaling up")
         expect(process.stdout).to include("my-app-web-1 start/running")
 
-        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init", "my-app.conf"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_true
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init", "my-app.conf"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_truthy
         process_init = File.join(directory, "etc", "init", "my-app-web-1.conf")
-        expect(File.exist?(process_init)).to be_true
+        expect(File.exist?(process_init)).to be_truthy
         expect(File.read(process_init)).to include("PORT=6000")
       end
 
@@ -217,11 +217,11 @@ describe "bash cli" do
         expect(process.stdout).to include("Scaling up")
         expect(process.stdout).to include("my-app-web-2 start/running")
 
-        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init", "my-app.conf"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_true
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init", "my-app.conf"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_truthy
         process_init = File.join(directory, "etc", "init", "my-app-web-2.conf")
-        expect(File.exist?(process_init)).to be_true
+        expect(File.exist?(process_init)).to be_truthy
         expect(File.read(process_init)).to include("PORT=6001")
       end
 
@@ -245,9 +245,9 @@ describe "bash cli" do
         expect(process.stdout).to include("Scaling down")
         expect(process.stdout).to include("my-app-web-1 stop/waiting")
 
-        expect(File.exist?(File.join(directory, "etc", "init", "my-app.conf"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init", "my-app-web-1.conf"))).to be_false
+        expect(File.exist?(File.join(directory, "etc", "init", "my-app.conf"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init", "my-app-web-1.conf"))).to be_falsey
       end
 
       it "keeps track of what it's doing" do
@@ -258,12 +258,12 @@ describe "bash cli" do
         process.call("scale web=2")
         expect(process).to be_ok
 
-        expect(File.exist?(File.join(directory, "etc", "init", "my-app.conf"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_true
+        expect(File.exist?(File.join(directory, "etc", "init", "my-app.conf"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_truthy
         init1 = File.join(directory, "etc", "init", "my-app-web-1.conf")
-        expect(File.exist?(init1)).to be_true
+        expect(File.exist?(init1)).to be_truthy
         init2 = File.join(directory, "etc", "init", "my-app-web-2.conf")
-        expect(File.exist?(init2)).to be_true
+        expect(File.exist?(init2)).to be_truthy
         expect(File.read(init1)).to include("PORT=6000")
         expect(File.read(init2)).to include("PORT=6001")
       end
@@ -286,10 +286,10 @@ describe "bash cli" do
 
         expect(process.stdout).to include("my-app-web-1 started")
 
-        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web"))).to be_true
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web"))).to be_truthy
         process_init = File.join(directory, "etc", "init.d", "my-app-web-1")
-        expect(File.exist?(process_init)).to be_true
+        expect(File.exist?(process_init)).to be_truthy
         expect(File.read(process_init)).to include("PORT=6000")
       end
 
@@ -300,11 +300,11 @@ describe "bash cli" do
         expect(process.stdout).to include("Scaling up")
         expect(process.stdout).to include("my-app-web-2 started")
 
-        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web-1"))).to be_true
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web-1"))).to be_truthy
         process_init = File.join(directory, "etc", "init.d", "my-app-web-2")
-        expect(File.exist?(process_init)).to be_true
+        expect(File.exist?(process_init)).to be_truthy
         expect(File.read(process_init)).to include("PORT=6001")
       end
 
@@ -328,9 +328,9 @@ describe "bash cli" do
         expect(process.stdout).to include("Scaling down")
         expect(process.stdout).to include("called update-rc.d with -f my-app-web-1 remove")
 
-        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web"))).to be_true
-        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web-1"))).to be_false
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web"))).to be_truthy
+        expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web-1"))).to be_falsey
       end
     end
   end

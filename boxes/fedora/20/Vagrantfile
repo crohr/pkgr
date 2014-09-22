@@ -1,0 +1,13 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "fedora-20"
+  config.vm.box_url = "https://dl.dropboxusercontent.com/u/15733306/vagrant/fedora-20-netinst-2014_01_05-minimal-puppet-guestadditions.box"
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ["modifyvm", :id, "--memory", "384"]
+  end
+  config.vm.synced_folder "../../../../", "/vagrant"
+  config.vm.provision :shell, :path => "./bootstrap.sh"
+  config.vbguest.auto_update = false
+end

@@ -47,7 +47,7 @@ end
 
 def generate_cli(config, target)
 
-  ["etc/default", "etc/#{config.name}/conf.d", "usr/bin", "etc/init", "etc/init.d", config.home, "var/log/#{config.name}"].each do |dir|
+  ["etc/default", "etc/#{config.name}/conf.d", "usr/bin", "usr/sbin", "etc/init", "etc/init.d", config.home, "var/log/#{config.name}"].each do |dir|
     FileUtils.mkdir_p(File.join(target, dir))
   end
 
@@ -55,7 +55,8 @@ def generate_cli(config, target)
   cli_filename = File.join(target, "usr", "bin", config.name)
   chroot_filename = File.join(target, "usr", "bin", "chroot")
   initctl_filename = File.join(target, "usr", "bin", "initctl")
-  updaterc_filename = File.join(target, "usr", "bin", "update-rc.d")
+  updaterc_filename = File.join(target, "usr", "sbin", "update-rc.d")
+  chkconfig_filename = File.join(target, "usr", "sbin", "chkconfig")
 
   File.open(cli_filename, "w+") do |f|
     f.puts content
@@ -80,7 +81,13 @@ def generate_cli(config, target)
     f.puts %{echo called update-rc.d with "$@"}
   end
 
-  FileUtils.chmod 0755, [cli_filename, chroot_filename, initctl_filename, updaterc_filename]
+  # chkconfig
+  File.open(chkconfig_filename, "w+") do |f|
+    f.puts "#!/bin/bash"
+    f.puts %{echo called chkconfig with "$@"}
+  end
+
+  FileUtils.chmod 0755, [cli_filename, chroot_filename, initctl_filename, updaterc_filename, chkconfig_filename]
 end
 
 describe "bash cli" do
@@ -90,7 +97,7 @@ describe "bash cli" do
   }
 
   let(:command) {
-    %{sudo -E env PATH="#{directory}/usr/bin:$PATH" #{config.name}}
+    %{sudo -E env PATH="#{directory}/usr/bin:#{directory}/usr/sbin:$PATH" #{config.name}}
   }
 
   let(:process) {
@@ -269,12 +276,37 @@ describe "bash cli" do
       end
     end
 
-    context "sysvinit" do
+    context "sysvinit [fedora]" do
+      before do
+        File.open(File.join(directory, "etc", "redhat-release"), "w+") {|f| f << "Fedora release 20 (Heisenbug)\n"}
+        create_scaling_templates("sysv-lsb-3.1", "web", "ls -al")
+      end
+
+      it "use chkconfig to enable services" do
+        process.call("scale web=1")
+        expect(process).to be_ok
+        expect(process.stdout).to include("Scaling up")
+        ["called chkconfig with my-app on", "called chkconfig with my-app-web on", "called chkconfig with my-app-web-1 on"].each do |output|
+          expect(process.stdout).to include(output)
+        end
+      end
+
+      it "uses chkconfig to disable services" do
+        process.call("scale web=1")
+        process.call("scale web=0")
+        expect(process).to be_ok
+        expect(process.stdout).to include("Scaling down")
+        ["called chkconfig with my-app-web-1 off"].each do |output|
+          expect(process.stdout).to include(output)
+        end
+      end
+    end
+
+    context "sysvinit [debian]" do
       before do
         File.open(File.join(directory, "etc", "debian_version"), "w+") {|f| f << "7.4\n"}
         create_scaling_templates("sysv-lsb-3.1", "web", "ls -al")
       end
-
 
       it "scales up from 0" do
         process.call("scale web=1")

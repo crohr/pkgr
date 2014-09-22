@@ -31,18 +31,27 @@ usage() {
 
 
 # Returns the type of process manager supported by the current distribution.
-runner() {
+setup_runner() {
   if [ -f $(_p /etc/debian_version) ]; then
     case "$(cat $(_p /etc/debian_version))" in
       wheezy*|squeeze*|jessie*)
-        echo "upstart"
+        APP_RUNNER="upstart"
         ;;
       *)
-        echo "sysv"
+        APP_RUNNER="sysv"
+        SYSV_MANAGER="update-rc.d"
         ;;
     esac
   elif [ -f $(_p /etc/redhat-release) ]; then
-    echo "upstart"
+    case "$(cat $(_p /etc/redhat-release))" in
+      CentOS*)
+        APP_RUNNER="upstart"
+        ;;
+      *)
+        APP_RUNNER="sysv"
+        SYSV_MANAGER="chkconfig"
+        ;;
+    esac
   fi
 }
 
@@ -52,6 +61,7 @@ if [ ! 0 -eq ${EUID} ]; then
   exit 1
 fi
 
+setup_runner
 DEFAULT_FILE=$(_p "/etc/default/${APP_NAME}")
 
 # Source all environment variables for the app. This must be done as
@@ -66,10 +76,6 @@ for file in $(_p "${APP_HOME}/.profile.d")/*.sh; do
   # .profile.d scripts assume HOME indicates the path to the app directory
   if [ -f $file ]; then HOME=${APP_HOME} . $file; fi
 done
-
-# You can force a specific process manager by setting the PROCESS_MANAGER
-# environment variable.
-PROCESS_MANAGER=${PROCESS_MANAGER:=$(runner)}
 
 # Return all the environment variables accessible to the app.
 show_env() {
@@ -93,7 +99,7 @@ tail_logs() {
 
 current_number_of_processes() {
   PROCESS_NAME="$1"
-  if [ "${PROCESS_MANAGER}" = "upstart" ]; then
+  if [ "${APP_RUNNER}" = "upstart" ]; then
     echo $(ls -rv1 $(_p /etc/init/)${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)\.conf/\1/g')
   else
     echo $(ls -rv1 $(_p /etc/init.d/)${APP_NAME}-${PROCESS_NAME}-* 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)/\1/g')
@@ -117,6 +123,24 @@ update_port() {
   fi
 }
 
+sysv_enable() {
+  local name="$1"
+  if [ "$SYSV_MANAGER" = "chkconfig" ] ; then
+    $SYSV_MANAGER "$name" on
+  elif [ "$SYSV_MANAGER" = "update-rc.d" ] ; then
+    $SYSV_MANAGER "$name" defaults
+  fi
+}
+
+sysv_disable() {
+  local name="$1"
+  if [ "$SYSV_MANAGER" = "chkconfig" ] ; then
+    $SYSV_MANAGER "$name" off
+  elif [ "$SYSV_MANAGER" = "update-rc.d" ] ; then
+    $SYSV_MANAGER -f "$name" remove
+  fi
+}
+
 scale_up() {
   PROCESS_NAME="${1}"
   CURRENT_SCALE=${2}
@@ -125,7 +149,7 @@ scale_up() {
 
   echo "Scaling up..."
 
-  if [ "${PROCESS_MANAGER}" = "upstart" ]; then
+  if [ "${APP_RUNNER}" = "upstart" ]; then
     # copy initd
     cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}") $(_p "/etc/init.d/")
     chmod 0755 $(_p "/etc/init.d/${APP_NAME}")
@@ -151,10 +175,10 @@ scale_up() {
   else
     cp $(_p "${APP_HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}") $(_p /etc/init.d/)
     chmod a+x $(_p "/etc/init.d/${APP_NAME}")
-    update-rc.d ${APP_NAME} defaults
+    sysv_enable ${APP_NAME}
     cp $(_p "${APP_HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}-${PROCESS_NAME}") $(_p /etc/init.d/)
     chmod a+x $(_p "/etc/init.d/${APP_NAME}-${PROCESS_NAME}")
-    update-rc.d ${APP_NAME}-${PROCESS_NAME} defaults
+    sysv_enable ${APP_NAME}-${PROCESS_NAME}
     for i in $(seq ${SCALE_DELTA}); do
       index=$((${i} + ${CURRENT_SCALE}))
       PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
@@ -164,7 +188,7 @@ scale_up() {
       update_port $(_p "/etc/init.d/${PROCESS_ID}") "${PROCESS_NAME}" $port $index
 
       chmod a+x $(_p "/etc/init.d/${PROCESS_ID}")
-      update-rc.d ${PROCESS_ID} defaults
+      sysv_enable ${PROCESS_ID}
       $(_p "/etc/init.d/${PROCESS_ID}") start
     done
   fi
@@ -182,12 +206,12 @@ scale_down() {
     index=$((${i} + ${NEW_SCALE}))
     PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
 
-    if [ "${PROCESS_MANAGER}" = "upstart" ]; then
+    if [ "${APP_RUNNER}" = "upstart" ]; then
       initctl stop "${PROCESS_ID}"
       rm -f $(_p "/etc/init/${PROCESS_ID}.conf")
     else
       $(_p "/etc/init.d/${PROCESS_ID}") stop
-      update-rc.d -f ${PROCESS_ID} remove
+      sysv_disable ${PROCESS_ID}
       rm -f $(_p "/etc/init.d/${PROCESS_ID}")
     fi
   done

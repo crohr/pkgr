@@ -9,6 +9,12 @@ module Pkgr
         # maybe adopt the same structure as pleaserun, with defaults, etc.
         @runner ||= Runner.new("upstart", "1.5")
       end
+
+      def templates
+        list = super
+        list.push Templates::DirTemplate.new("etc/init")
+        list
+      end
     end
   end
 end

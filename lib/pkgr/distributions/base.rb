@@ -94,7 +94,6 @@ module Pkgr
           config.home.gsub(/^\//, ""),
           "etc/#{app_name}/conf.d",
           "etc/default",
-          "etc/init",
           "var/log/#{app_name}",
           "var/db/#{app_name}"
         ].each{|dir| list.push Templates::DirTemplate.new(dir) }

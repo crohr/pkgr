@@ -1,0 +1,2 @@
+https://github.com/pkgr/heroku-buildpack-ruby.git#universal-staging,BUILDPACK_NODE_VERSION="0.6.8",CURL_CONNECT_TIMEOUT=60,CURL_TIMEOUT=300
+https://github.com/heroku/heroku-buildpack-nodejs.git#v58

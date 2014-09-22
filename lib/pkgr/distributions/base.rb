@@ -140,6 +140,16 @@ module Pkgr
         @postinstall_file.path
       end
 
+      def preuninstall_file
+        @preuninstall_file ||= generate_hook_file("preuninstall.sh")
+        @preuninstall_file.path
+      end
+
+      def postuninstall_file
+        @postuninstall_file ||= generate_hook_file("postuninstall.sh")
+        @postuninstall_file.path
+      end
+
       protected
 
       def load_buildpack_list
@@ -170,4 +180,4 @@ module Pkgr
 end # module Pkgr
 
 require 'pkgr/distributions/debian'
-require 'pkgr/distributions/redhat'
+require 'pkgr/distributions/fedora'

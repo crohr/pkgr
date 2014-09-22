@@ -4,6 +4,7 @@ require 'pkgr/config'
 require 'pkgr/distributions'
 require 'pkgr/process'
 require 'pkgr/addon'
+require 'pkgr/cron'
 
 module Pkgr
   class Builder
@@ -137,16 +138,14 @@ module Pkgr
 
     # Write cron files
     def setup_crons
-      crons_dir = File.join(build_dir, distribution.crons_dir)
-      FileUtils.mkdir_p crons_dir
+      crons_dir = File.join("/", distribution.crons_dir)
 
-      config.crons.each do |cron_path|
-        src = File.join(source_dir, cron_path)
-        if File.exists?(src)
-          puts "-----> [cron] #{cron_path}"
-          FileUtils.cp src, crons_dir
-          FileUtils.chmod 0750, File.join(crons_dir, File.basename(src))
-        end
+      config.crons.map! do |cron_path|
+        Cron.new(File.expand_path(cron_path, config.home), File.join(crons_dir, File.basename(cron_path)))
+      end
+
+      config.crons.each do |cron|
+        puts "-----> [cron] #{cron.source} => #{cron.destination}"
       end
     end
 

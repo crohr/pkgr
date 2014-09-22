@@ -91,6 +91,8 @@ module Pkgr
           list << %{--deb-templates #{distribution.debtemplates.path}}
           list << %{--before-install #{distribution.preinstall_file}}
           list << %{--after-install #{distribution.postinstall_file}}
+          list << %{--before-remove #{distribution.preuninstall_file}}
+          list << %{--after-remove #{distribution.postuninstall_file}}
           distribution.dependencies(config.dependencies).each{|d| list << "-d '#{d}'"}
           list.compact
         end

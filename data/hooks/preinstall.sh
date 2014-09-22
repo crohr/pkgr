@@ -9,8 +9,10 @@ export APP_HOME="<%= home %>"
 
 if ! getent passwd "${APP_USER}" > /dev/null; then
   if [ -f /etc/redhat-release ]; then
-    # TODO: create proper group, in case APP_GROUP != APP_USER
-    adduser "${APP_USER}" --user-group --system --create-home --shell /bin/bash
+    if ! getent group "${APP_GROUP}" > /dev/null ; then
+      groupadd --system "${APP_GROUP}"
+    fi
+    adduser "${APP_USER}" -g "${APP_GROUP}" --system --create-home --shell /bin/bash
   else
     if ! getent group "${APP_GROUP}" > /dev/null; then
       addgroup "${APP_GROUP}" --system --quiet

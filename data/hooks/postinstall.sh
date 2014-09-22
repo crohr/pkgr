@@ -26,6 +26,12 @@ chown ${APP_USER}.${APP_GROUP} /var/db/${APP_NAME}
 chmod 0750 /etc/${APP_NAME} /etc/${APP_NAME}/conf.d
 find /etc/${APP_NAME} -type f -exec chmod 0640 {} +
 
+<% crons.each do |cron| %>
+rm -f <%= cron.destination %>
+cp <%= cron.source %> <%= cron.destination %>
+chmod 0640 <%= cron.destination %>
+<% end %>
+
 <% if after_install && File.readable?(after_install) %>
 # Call custom postinstall script.
 CUSTOM_POSTINSTALL_SCRIPT="<%= Base64.encode64 File.read(after_install) %>"

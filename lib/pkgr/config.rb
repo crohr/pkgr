@@ -166,6 +166,16 @@ module Pkgr
       Pathname.new(source_dir).join(@table[:after_install]).realpath.to_s
     end
 
+    def before_remove
+      return nil if @table[:before_remove].nil?
+      Pathname.new(source_dir).join(@table[:before_remove]).realpath.to_s
+    end
+
+    def after_remove
+      return nil if @table[:after_remove].nil?
+      Pathname.new(source_dir).join(@table[:after_remove]).realpath.to_s
+    end
+
     # TODO: DRY this with cli.rb
     def to_args
       args = [
@@ -186,6 +196,9 @@ module Pkgr
       args.push "--after-precompile \"#{after_precompile}\"" unless after_precompile.nil? || after_precompile.empty?
       args.push "--before-install \"#{before_install}\"" unless before_install.nil? || before_install.empty?
       args.push "--after-install \"#{after_install}\"" unless after_install.nil? || after_install.empty?
+      args.push "--before-remove \"#{before_remove}\"" unless before_remove.nil? || before_remove.empty?
+      args.push "--after-remove \"#{after_remove}\"" unless after_remove.nil? || after_remove.empty?
+
       args.push "--license \"#{license}\"" unless license.nil? || license.empty?
       args.push "--buildpack \"#{buildpack}\"" unless buildpack.nil? || buildpack.empty?
       args.push "--buildpack_list \"#{buildpack_list}\"" unless buildpack_list.nil? || buildpack_list.empty?

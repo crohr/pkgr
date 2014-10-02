@@ -5,6 +5,7 @@ require 'pkgr/distributions'
 require 'pkgr/process'
 require 'pkgr/addon'
 require 'pkgr/cron'
+require 'pkgr/installer'
 
 module Pkgr
   class Builder
@@ -23,11 +24,17 @@ module Pkgr
       update_config
       check
       setup
+
+      if config.installer == true || config.installer.starts_with?("http")
+        setup_pipeline
+      else
+        setup_addons
+      end
+
       compile
       write_env
       write_init
       setup_crons
-      setup_addons
       package
       store_cache
     ensure
@@ -70,6 +77,17 @@ module Pkgr
       config.addons_dir = addons_dir
       # useful for templates that need to read files
       config.source_dir = source_dir
+      config.build_dir = build_dir
+    end
+
+    def pipeline
+      @pipeline ||= begin
+        components = []
+        unless config.wizards.empty? || config.installer == false
+          components << Installer.new(config.installer, distribution).setup
+        end
+        components
+      end
     end
 
     # Check configuration, and verifies that the current distribution's requirements are satisfied
@@ -84,6 +102,23 @@ module Pkgr
         distribution.templates.each do |template|
           template.install(config.sesame)
         end
+      end
+    end
+
+    def setup_pipeline
+      pipeline.each do |component|
+        @config = component.call(config)
+      end
+    end
+
+    # LEGACY, remove once openproject no longer needs it
+    # If addons are declared in .pkgr.yml, add them
+    def setup_addons
+      config.addons.each do |addon|
+        puts "-----> [addon] #{addon.name} (#{addon.url} @ #{addon.branch})"
+        addon.install!(source_dir)
+        dependency = distribution.add_addon(addon)
+        config.dependencies.push(dependency) if dependency
       end
     end
 
@@ -149,15 +184,6 @@ module Pkgr
       end
     end
 
-    # If addons are declared in .pkgr.yml, add them
-    def setup_addons
-      config.addons.each do |addon|
-        puts "-----> [addon] #{addon.name} (#{addon.url} @ #{addon.branch})"
-        addon.install!(source_dir)
-        dependency = distribution.add_addon(addon)
-        config.dependencies.push(dependency) if dependency
-      end
-    end
 
     # Launch the FPM command that will generate the package.
     def package

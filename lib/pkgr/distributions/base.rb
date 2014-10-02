@@ -95,7 +95,8 @@ module Pkgr
           "etc/#{app_name}/conf.d",
           "etc/default",
           "var/log/#{app_name}",
-          "var/db/#{app_name}"
+          "var/db/#{app_name}",
+          "usr/share/#{app_name}"
         ].each{|dir| list.push Templates::DirTemplate.new(dir) }
 
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", data_file("environment", "default.erb"))
@@ -147,6 +148,10 @@ module Pkgr
       def postuninstall_file
         @postuninstall_file ||= generate_hook_file("postuninstall.sh")
         @postuninstall_file.path
+      end
+
+      def installer_dependencies
+        ["dialog", "bash"]
       end
 
       protected

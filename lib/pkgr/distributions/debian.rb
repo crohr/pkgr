@@ -22,6 +22,10 @@ module Pkgr
       def package_install_command(packages)
         "sudo apt-get update && sudo apt-get install --force-yes -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
       end
+      
+      def installer_dependencies
+        super.push("debianutils").uniq
+      end
 
       def fpm_command(build_dir)
         DebianFpm.new(self, build_dir).command

@@ -5,8 +5,6 @@ set -e
 set -o pipefail
 
 APP_NAME=$(basename $0)
-# list of application wizard addons
-ADDONS="<%= addons.map{|addon| addon.name}.join(" ") %>"
 # useful for testing
 ROOT_PATH=${ROOT_PATH:="/"}
 # store original pwd
@@ -236,14 +234,27 @@ scale() {
   fi
 }
 
+configure() {
+  local installer_dir="$(_p "/usr/share/${APP_NAME}/installer")"
+  if [ -d "$installer_dir" ] ; then
+    ${installer_dir}/bin/run $@
+  else
+    echo "No installer has been configured for ${APP_NAME}"
+  fi
+}
+
 reconfigure() {
-  # only available for debian for now
-  if which dpkg-reconfigure &>/dev/null ; then
-    for addon in ${ADDONS}; do
-      dpkg-reconfigure "${APP_NAME}-${addon}"
-    done
-    # always reconfigure main package as well
-    dpkg-reconfigure "${APP_NAME}"
+  if [ "$APP_ADDONS" = "" ] ; then
+    configure --reconfigure
+  else
+    # only available for debian for now
+    if which dpkg-reconfigure &>/dev/null ; then
+      for addon in ${APP_ADDONS}; do
+        dpkg-reconfigure "${APP_NAME}-${addon}"
+      done
+      # always reconfigure main package as well
+      dpkg-reconfigure "${APP_NAME}"
+    fi
   fi
 }
 
@@ -323,8 +334,12 @@ while : ; do
       show_env | grep -e "^${2}=" | sed -r "s/^${2}=//"
       break;;
 
+    configure)
+      configure $@
+      break;;
+
     reconfigure)
-      reconfigure
+      reconfigure $@
       break;;
 
     *)

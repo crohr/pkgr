@@ -14,7 +14,7 @@ module Pkgr
     end
 
     def url_without_branch
-      nickname.split("#")[0]
+      nickname.split("#")[0].sub(/\.git$/,'')
     end
 
     def url

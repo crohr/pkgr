@@ -64,6 +64,10 @@ module Pkgr
       @table.delete(key)
     end
 
+    def safe_name
+      name.gsub("-", "_") 
+    end
+
     def home
       "/opt/#{name}"
     end
@@ -115,6 +119,14 @@ module Pkgr
       # make proper Addon objects out of existing addon slugs
       (@table[:addons] || []).map do |addon_slug|
         Addon.new(addon_slug, addons_dir, self)
+      end
+    end
+
+    def wizards
+      @wizards ||= (@table[:wizards] || []).map do |wizard_string|
+        wizard_string.split(/\s*\|\s*/).map do |wizard|
+          Addon.new(wizard, nil, nil)
+        end
       end
     end
 

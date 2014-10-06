@@ -25,7 +25,7 @@ module Pkgr
       check
       setup
 
-      if config.installer == true || config.installer.starts_with?("http")
+      if config.installer
         setup_pipeline
       else
         setup_addons

@@ -122,6 +122,11 @@ module Pkgr
       end
     end
 
+    def installer
+      return nil if @table[:installer].nil? || @table[:installer] == false
+      @table[:installer]
+    end
+
     def wizards
       @wizards ||= (@table[:wizards] || []).map do |wizard_string|
         wizard_string.split(/\s*\|\s*/).map do |wizard|

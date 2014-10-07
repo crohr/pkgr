@@ -32,6 +32,12 @@ cp <%= cron.source %> <%= cron.destination %>
 chmod 0640 <%= cron.destination %>
 <% end %>
 
+<% if installer %>
+echo "******"
+echo "This package provides an installer. Please run the following command to finish the installation:"
+echo "sudo ${APP_NAME} configure"
+<% end %>
+
 <% if after_install && File.readable?(after_install) %>
 # Call custom postinstall script.
 CUSTOM_POSTINSTALL_SCRIPT="<%= Base64.encode64 File.read(after_install) %>"

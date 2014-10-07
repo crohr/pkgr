@@ -21,7 +21,7 @@ module Pkgr
     end
 
     def setup
-      shell.stream!("git clone --depth=1 --branch=\"#{branch}\" \"#{url}\" #{installer_tmp_dir}")
+      shell.run!("git clone --depth=1 --branch=\"#{branch}\" \"#{url}\" #{installer_tmp_dir}")
       self
     end
 
@@ -31,6 +31,7 @@ module Pkgr
           addon_group.each do |addon|
             addon_dir = "addons/#{addon.name}"
             FileUtils.mkdir_p addon_dir
+            puts "-----> [wizard] adding #{addon.name} wizard (#{addon.url}##{addon.branch})"
             shell.run!(
               "curl -L --max-redirs 3 --retry 5 -s '#{addon.tarball_url}' | tar xzf - --strip-components=1 -C '#{addon_dir}'")
           end

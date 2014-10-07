@@ -55,7 +55,7 @@ class Command
     IO.popen("#{env_string} #{command}") do |io|
       until io.eof?
         data = io.gets
-        logger << data
+        puts data
       end
     end
 

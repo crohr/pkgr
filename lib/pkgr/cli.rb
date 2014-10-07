@@ -125,13 +125,13 @@ module Pkgr
     rescue => e
       Pkgr.debug "#{e.class.name} : #{e.message}"
       e.backtrace.each{|line| Pkgr.debug line}
-      puts "  ! ERROR: #{e.message}"
+      puts "     ! ERROR: #{e.message}"
       exit 1
     # Only used for logging. Re-raise immediately.
     rescue Exception => e
       Pkgr.debug "#{e.class.name} : #{e.message}"
       e.backtrace.each{|line| Pkgr.debug line}
-      puts "  ! SYSTEM ERROR: #{e.class.name} : #{e.message}"
+      puts "     ! SYSTEM ERROR: #{e.class.name} : #{e.message}"
       raise e
     end
   end

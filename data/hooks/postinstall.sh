@@ -33,9 +33,10 @@ chmod 0640 <%= cron.destination %>
 <% end %>
 
 <% if installer %>
-echo "******"
-echo "This package provides an installer. Please run the following command to finish the installation:"
+echo "=============="
+echo "The ${APP_NAME} package provides an installer. Please run the following command to finish the installation:"
 echo "sudo ${APP_NAME} configure"
+echo "=============="
 <% end %>
 
 <% if after_install && File.readable?(after_install) %>

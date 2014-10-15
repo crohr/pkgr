@@ -65,7 +65,7 @@ module Pkgr
     end
 
     def safe_name
-      name.gsub("-", "_") 
+      name.gsub("-", "_")
     end
 
     def home

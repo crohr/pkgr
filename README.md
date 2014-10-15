@@ -6,12 +6,11 @@ Make debian packages out of any app. Ruby and NodeJS officially supported, but y
 
 ## Supported distributions (64bits only)
 
-* Ubuntu 14.04 ("Trusty")
-* Ubuntu 12.04 ("Precise")
-* Debian 7.4 ("Wheezy")
-* Centos 6.x
-* Ubuntu 10.04 ("Lucid")
-* Debian 6 ("Squeeze")
+* Ubuntu 14.04 ("trusty")
+* Ubuntu 12.04 ("precise")
+* Debian 7 ("wheezy")
+* Centos 6
+* Fedora 20
 
 ## Examples
 
@@ -31,17 +30,13 @@ To package your app, you can either execute `pkgr` locally if your app repositor
 
     pkgr package path/to/app/repo
 
-Or, assuming your build machine is accessible via SSH by doing `ssh pkgr-build-machine` (set this in your `~/.ssh/config` file), you can do as follows:
-
-    pkgr package path/to/app/repo --host pkgr-build-machine
-
 The resulting .deb package will be in your current working directory.
 
 Full command line options are given below:
 
     $ pkgr help package
     Usage:
-      pkgr package TARBALL
+      pkgr package TARBALL|DIRECTORY
 
     Options:
       [--buildpack=BUILDPACK]                        # Custom buildpack to use
@@ -55,7 +50,7 @@ Full command line options are given below:
       [--description=DESCRIPTION]                    # Project description
       [--version=VERSION]                            # Package version (if git directory given, it will use the latest git tag available)
       [--iteration=ITERATION]                        # Package iteration (you should keep the default here)
-                                                     # Default: 20140502095614
+                                                     # Default: 20141015024539
       [--license=LICENSE]                            # The license of your package (see <https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#license-short-name>)
       [--user=USER]                                  # User to run the app under (defaults to your app name)
       [--group=GROUP]                                # Group to run the app under (defaults to your app name)
@@ -74,12 +69,12 @@ Full command line options are given below:
                                                      # Default: true
       [--env=one two three]                          # Specify environment variables for buildpack (--env "CURL_TIMEOUT=2" "BUNDLE_WITHOUT=development test")
       [--force-os=FORCE_OS]                          # Force a specific distribution to build for (e.g. --force-os "ubuntu-12.04"). This may result in a broken package.
+      [--store-cache], [--no-store-cache]            # Output a tarball of the cache in the current directory (name: cache.tar.gz)
       [--verbose], [--no-verbose]                    # Run verbosely
       [--debug], [--no-debug]                        # Run very verbosely
       [--name=NAME]                                  # Application name (if directory given, it will default to the directory name)
       [--buildpacks-cache-dir=BUILDPACKS_CACHE_DIR]  # Directory where to store the buildpacks
                                                      # Default: /home/vagrant/.pkgr/buildpacks
-
 
 ## Why?
 
@@ -109,6 +104,7 @@ Finally, it's a great way to share your open source software with your users and
         my-app run [procfile process] # e.g. my-app run rake db:migrate; my-app run console; etc.
         my-app run [arbitrary process] # e.g. my-app run ruby -v; my-app run bundle install; etc.
         my-app scale web=1 worker=1
+        my-app logs [--tail]
         ...
 
 * Your app will reside in `/opt/app-name`.
@@ -125,7 +121,7 @@ Finally, it's a great way to share your open source software with your users and
 
 * You must have a Procfile.
 
-* Your application must be Heroku compatible, meaning you should be able to set your main app's configuration via environment variables.
+* Your application should be Heroku compatible, meaning you should be able to set your main app's configuration via environment variables.
 
 ## Troubleshooting
 

@@ -1,3 +1,12 @@
+## 1.4.0 - 20141015
+
+* Add support for Fedora 20.
+* Add support for packaging Go apps.
+* Add support for installing cron files automatically.
+* Allow to output a compressed version of the compile cache.
+* Update ruby buildpack to use universal branch of https://github.com/pkgr/heroku-buildpack-ruby.
+* Preliminary support for installer wizards. New configure and reconfigure CLI commands.
+
 ## 1.3.2 - 20140527
 
 * Added more relaxed curl timeouts for Ubuntu Trusty ruby buildpack.

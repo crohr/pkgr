@@ -2,7 +2,17 @@
 
 ## Goal
 
-Make debian packages out of any app. Ruby and NodeJS officially supported, but you can also point to other buildpacks. Hosted service available at <https://packager.io/>.
+Make debian or rpm packages out of any app, including init script, logrotate, etc. Excellent way to distribute apps or command line tools without complicated installation instructions.
+
+Hosted service available at <https://packager.io/>.
+
+## Officially supported languages
+
+* Ruby
+* NodeJS
+* Go
+
+You can also point to other buildpacks ([doc](https://packager.io/documentation/reference/the-pkgryml-file.html#buildpack)). They may just work.
 
 ## Supported distributions (64bits only)
 

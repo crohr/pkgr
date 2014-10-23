@@ -7,7 +7,7 @@ module Pkgr
       def runner
         # in truth it is 0.6.5, but it also works with 1.5 templates.
         # maybe adopt the same structure as pleaserun, with defaults, etc.
-        @runner ||= Runner.new("upstart", "1.5")
+        @runner ||= Runner.new("upstart", "1.5", "initctl")
       end
 
       def templates

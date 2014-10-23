@@ -10,7 +10,7 @@ module Pkgr
       end
 
       def runner
-        @runner ||= Runner.new("upstart", "1.5")
+        @runner ||= Runner.new("upstart", "1.5", "initctl")
       end
 
       def templates

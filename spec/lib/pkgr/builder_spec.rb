@@ -143,6 +143,7 @@ describe Pkgr::Builder do
 
     before do
       builder.stub(:distribution => distribution)
+      builder.update_config
       builder.setup
       FileUtils.cp fixture(".release"), builder.source_dir
       FileUtils.cp fixture("Procfile"), builder.source_dir
@@ -205,6 +206,7 @@ describe Pkgr::Builder do
 
     before do
       builder.stub(:distribution => Pkgr::Distributions::Ubuntu.new("12.04", config))
+      builder.update_config
       builder.setup
     end
 

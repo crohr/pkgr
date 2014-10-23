@@ -1,6 +1,6 @@
 module Pkgr
   module Distributions
-    class Runner < Struct.new(:type, :version)
+    class Runner < Struct.new(:type, :version, :cli)
       def sysv?
         type == "sysv"
       end

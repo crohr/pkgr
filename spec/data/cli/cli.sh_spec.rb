@@ -121,65 +121,68 @@ describe "bash cli" do
     FileUtils.rm_rf(directory) unless debug?
   end
 
-  it "displays the usage if no args given" do
-    process.call("")
-    expect(process).to be_ok
-    expect(process.stdout).to include("my-app run COMMAND")
-  end
+  context "distribution independent" do
 
-  it "returns the content of the logs" do
-    File.open("#{directory}/var/log/#{config.name}/web-1.log", "w+") { |f| f << "some log here 1"}
-    File.open("#{directory}/var/log/#{config.name}/worker-1.log", "w+") { |f| f << "some log here 2"}
-
-    process.call("logs")
-    expect(process).to be_ok
-    expect(process.stdout).to include("some log here 1")
-    expect(process.stdout).to include("some log here 2")
-  end
-
-  describe "config" do
-    it "sets a config" do
-      process.call("config:set YOH=YEAH")
+    it "displays the usage if no args given" do
+      process.call("")
       expect(process).to be_ok
-      expect(process.stdout).to eq("")
-
-      expect(File.read("#{directory}/etc/my-app/conf.d/other")).to eq("export YOH=YEAH\n")
-
-      process.call("config:get YOH")
-      expect(process).to be_ok
-      expect(process.stdout).to eq("YEAH")
+      expect(process.stdout).to include("my-app run COMMAND")
     end
 
-    it "returns the full config" do
-      process.call("config")
-      expect(process).to be_ok
-      expect(process.stdout).to include("HOME=#{config.home}")
-    end
-  end
+    it "returns the content of the logs" do
+      File.open("#{directory}/var/log/#{config.name}/web-1.log", "w+") { |f| f << "some log here 1"}
+      File.open("#{directory}/var/log/#{config.name}/worker-1.log", "w+") { |f| f << "some log here 2"}
 
-  describe "run" do
-    it "returns the result of the arbitrary command" do
-      process.call("run pwd")
+      process.call("logs")
       expect(process).to be_ok
-      expect(process.stdout).to eq(File.join(directory, config.home))
+      expect(process.stdout).to include("some log here 1")
+      expect(process.stdout).to include("some log here 2")
     end
 
-    it "returns the result of a declared process" do
-      web_process_filename = File.join(directory, config.home, "vendor", "pkgr", "processes", "web")
-      FileUtils.mkdir_p(File.dirname(web_process_filename))
-      File.open(web_process_filename, "w+") do |f|
-        f.puts "#!/bin/sh"
-        f << "exec "
-        f << "ls"
-        f << " $@"
+    describe "config" do
+      it "sets a config" do
+        process.call("config:set YOH=YEAH")
+        expect(process).to be_ok
+        expect(process.stdout).to eq("")
+
+        expect(File.read("#{directory}/etc/my-app/conf.d/other")).to eq("export YOH=YEAH\n")
+
+        process.call("config:get YOH")
+        expect(process).to be_ok
+        expect(process.stdout).to eq("YEAH")
       end
-      FileUtils.chmod 0755, web_process_filename
 
-      process.call("run web -1")
-      expect(process).to be_ok
-      expect(process.stdout.split("\n")).to eq(["vendor"])
+      it "returns the full config" do
+        process.call("config")
+        expect(process).to be_ok
+        expect(process.stdout).to include("HOME=#{config.home}")
+      end
     end
-  end
+
+    describe "run" do
+      it "returns the result of the arbitrary command" do
+        process.call("run pwd")
+        expect(process).to be_ok
+        expect(process.stdout).to eq(File.join(directory, config.home))
+      end
+
+      it "returns the result of a declared process" do
+        web_process_filename = File.join(directory, config.home, "vendor", "pkgr", "processes", "web")
+        FileUtils.mkdir_p(File.dirname(web_process_filename))
+        File.open(web_process_filename, "w+") do |f|
+          f.puts "#!/bin/sh"
+          f << "exec "
+          f << "ls"
+          f << " $@"
+        end
+        FileUtils.chmod 0755, web_process_filename
+
+        process.call("run web -1")
+        expect(process).to be_ok
+        expect(process.stdout.split("\n")).to eq(["vendor"])
+      end
+    end
+  end # distribution independent
 
   describe "scale" do
     def create_scaling_templates(runner_type, process_name, process_command)
@@ -198,8 +201,13 @@ describe "bash cli" do
     end
 
     context "upstart" do
+
       before do
-        File.open(File.join(directory, "etc", "debian_version"), "w+") {|f| f << "wheezy/sid\n"}
+        File.open(File.join(directory, "etc", "default", config.name), "a") do |f|
+          f.puts %{export APP_RUNNER_TYPE="upstart"}
+          f.puts %{export APP_RUNNER_CLI="initctl"}
+        end
+
         create_scaling_templates("upstart-1.5", "web", "ls -al")
       end
 
@@ -277,8 +285,12 @@ describe "bash cli" do
     end
 
     context "sysvinit [fedora]" do
-      before do
-        File.open(File.join(directory, "etc", "redhat-release"), "w+") {|f| f << "Fedora release 20 (Heisenbug)\n"}
+      before(:each) do
+        File.open(File.join(directory, "etc", "default", config.name), "a") do |f|
+          f.puts %{export APP_RUNNER_TYPE="sysvinit"}
+          f.puts %{export APP_RUNNER_CLI="chkconfig"}
+        end
+
         create_scaling_templates("sysv-lsb-3.1", "web", "ls -al")
       end
 
@@ -303,8 +315,13 @@ describe "bash cli" do
     end
 
     context "sysvinit [debian]" do
+
       before do
-        File.open(File.join(directory, "etc", "debian_version"), "w+") {|f| f << "7.4\n"}
+        File.open(File.join(directory, "etc", "default", config.name), "a") do |f|
+          f.puts %{export APP_RUNNER_TYPE="sysvinit"}
+          f.puts %{export APP_RUNNER_CLI="update-rc.d"}
+        end
+
         create_scaling_templates("sysv-lsb-3.1", "web", "ls -al")
       end
 

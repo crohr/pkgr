@@ -73,6 +73,7 @@ module Pkgr
           distribution.runner = Distributions::Runner.new(type, version.join("-"))
         end
       end
+      config.distribution = distribution
       # required to build proper Addon objects
       config.addons_dir = addons_dir
       # useful for templates that need to read files

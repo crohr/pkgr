@@ -24,33 +24,8 @@ usage() {
   echo "  $APP_NAME logs [--tail|-n NUMBER]"
   echo "  $APP_NAME config:get VAR"
   echo "  $APP_NAME config:set VAR=VALUE"
+  echo "  $APP_NAME configure"
   echo "  $APP_NAME reconfigure"
-}
-
-
-# Returns the type of process manager supported by the current distribution.
-setup_runner() {
-  if [ -f $(_p /etc/debian_version) ]; then
-    case "$(cat $(_p /etc/debian_version))" in
-      wheezy*|squeeze*|jessie*)
-        APP_RUNNER="upstart"
-        ;;
-      *)
-        APP_RUNNER="sysv"
-        SYSV_MANAGER="update-rc.d"
-        ;;
-    esac
-  elif [ -f $(_p /etc/redhat-release) ]; then
-    case "$(cat $(_p /etc/redhat-release))" in
-      CentOS*)
-        APP_RUNNER="upstart"
-        ;;
-      *)
-        APP_RUNNER="sysv"
-        SYSV_MANAGER="chkconfig"
-        ;;
-    esac
-  fi
 }
 
 if [ ! 0 -eq ${EUID} ]; then
@@ -59,7 +34,6 @@ if [ ! 0 -eq ${EUID} ]; then
   exit 1
 fi
 
-setup_runner
 DEFAULT_FILE=$(_p "/etc/default/${APP_NAME}")
 
 # Source all environment variables for the app. This must be done as
@@ -97,7 +71,7 @@ tail_logs() {
 
 current_number_of_processes() {
   PROCESS_NAME="$1"
-  if [ "${APP_RUNNER}" = "upstart" ]; then
+  if [ "${APP_RUNNER_TYPE}" = "upstart" ]; then
     echo $(ls -rv1 $(_p /etc/init/)${APP_NAME}-${PROCESS_NAME}-*.conf 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)\.conf/\1/g')
   else
     echo $(ls -rv1 $(_p /etc/init.d/)${APP_NAME}-${PROCESS_NAME}-* 2>/dev/null | head -1 | sed -r 's/.*\-([0-9]+)/\1/g')
@@ -123,19 +97,19 @@ update_port() {
 
 sysv_enable() {
   local name="$1"
-  if [ "$SYSV_MANAGER" = "chkconfig" ] ; then
-    $SYSV_MANAGER "$name" on
-  elif [ "$SYSV_MANAGER" = "update-rc.d" ] ; then
-    $SYSV_MANAGER "$name" defaults
+  if [ "$APP_RUNNER_CLI" = "chkconfig" ] ; then
+    $APP_RUNNER_CLI "$name" on
+  elif [ "$APP_RUNNER_CLI" = "update-rc.d" ] ; then
+    $APP_RUNNER_CLI "$name" defaults
   fi
 }
 
 sysv_disable() {
   local name="$1"
-  if [ "$SYSV_MANAGER" = "chkconfig" ] ; then
-    $SYSV_MANAGER "$name" off
-  elif [ "$SYSV_MANAGER" = "update-rc.d" ] ; then
-    $SYSV_MANAGER -f "$name" remove
+  if [ "$APP_RUNNER_CLI" = "chkconfig" ] ; then
+    $APP_RUNNER_CLI "$name" off
+  elif [ "$APP_RUNNER_CLI" = "update-rc.d" ] ; then
+    $APP_RUNNER_CLI -f "$name" remove
   fi
 }
 
@@ -147,7 +121,7 @@ scale_up() {
 
   echo "Scaling up..."
 
-  if [ "${APP_RUNNER}" = "upstart" ]; then
+  if [ "${APP_RUNNER_TYPE}" = "upstart" ]; then
     # copy initd
     cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}") $(_p "/etc/init.d/")
     chmod 0755 $(_p "/etc/init.d/${APP_NAME}")
@@ -165,11 +139,11 @@ scale_up() {
       update_port $(_p "/etc/init/${PROCESS_ID}.conf") "${PROCESS_NAME}" $port $index
 
       # directly call initctl instead of service, otherwise CentOS 6.x does not understand.
-      initctl start "${PROCESS_ID}"
+      $APP_RUNNER_CLI start "${PROCESS_ID}"
     done
 
-    initctl start ${APP_NAME}-${PROCESS_NAME} || true
-    initctl start ${APP_NAME} || true
+    $APP_RUNNER_CLI start ${APP_NAME}-${PROCESS_NAME} || true
+    $APP_RUNNER_CLI start ${APP_NAME} || true
   else
     cp $(_p "${APP_HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}") $(_p /etc/init.d/)
     chmod a+x $(_p "/etc/init.d/${APP_NAME}")
@@ -204,8 +178,8 @@ scale_down() {
     index=$((${i} + ${NEW_SCALE}))
     PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
 
-    if [ "${APP_RUNNER}" = "upstart" ]; then
-      initctl stop "${PROCESS_ID}"
+    if [ "${APP_RUNNER_TYPE}" = "upstart" ]; then
+      $APP_RUNNER_CLI stop "${PROCESS_ID}"
       rm -f $(_p "/etc/init/${PROCESS_ID}.conf")
     else
       $(_p "/etc/init.d/${PROCESS_ID}") stop

@@ -5,10 +5,9 @@ export APP_SAFE_NAME="<%= safe_name %>"
 export APP_GROUP="<%= group %>"
 export APP_USER="<%= user %>"
 export APP_WIZARDS="<%= wizards.map{|wizard_group| wizard_group.map{|w| w.name}.join("|")}.join(",") %>"
+export APP_RUNNER_TYPE="<%= distribution.runner.type %>"
+export APP_RUNNER_CLI="<%= distribution.runner.cli %>"
 # Legacy addons
 export APP_ADDONS="<%= addons.map{|addon| addon.name}.join(" ") %>"
 export HOME="/home/<%= user %>"
 export PORT=${PORT:=6000}
-<% if runner %>
-export PROCESS_MANAGER="<%= runner.split("-").first %>"
-<% end %>

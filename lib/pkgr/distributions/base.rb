@@ -102,11 +102,11 @@ module Pkgr
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", data_file("environment", "default.erb"))
         list.push Templates::FileTemplate.new("etc/logrotate.d/#{app_name}", data_file("logrotate", "logrotate.erb"))
 
-        # Put cli in /usr/bin, as redhat based distros don't have /usr/local/bin in their sudo PATH.
-        list.push Templates::FileTemplate.new("usr/bin/#{app_name}", data_file("cli", "cli.sh.erb"), mode: 0755)
+        if config.cli?
+          # Put cli in /usr/bin, as redhat based distros don't have /usr/local/bin in their sudo PATH.
+          list.push Templates::FileTemplate.new("usr/bin/#{app_name}", data_file("cli", "cli.sh.erb"), mode: 0755)
+        end
 
-        # NOTE: /etc/appname/conf.d/* files are no longer installed here, since we don't want to overwrite any pre-existing config.
-        # They're now installed in the postinstall script.
         list
       end
 

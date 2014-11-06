@@ -9,5 +9,6 @@ export APP_RUNNER_TYPE="<%= distribution.runner.type %>"
 export APP_RUNNER_CLI="<%= distribution.runner.cli %>"
 # Legacy addons
 export APP_ADDONS="<%= addons.map{|addon| addon.name}.join(" ") %>"
-export HOME="/home/<%= user %>"
+export HOME=${HOME:="/home/<%= user %>"}
 export PORT=${PORT:=6000}
+<%= "export APP_CLI=\"#{cli}\"" if cli.is_a?(String) %>

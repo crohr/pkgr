@@ -68,8 +68,12 @@ module Pkgr
       name.gsub("-", "_")
     end
 
+    def cli?
+      @table.has_key?(:cli) ? @table[:cli] : true
+    end
+
     def home
-      "/opt/#{name}"
+      @table[:home] || "/opt/#{name}"
     end
 
     def user

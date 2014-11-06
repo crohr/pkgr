@@ -28,25 +28,29 @@ usage() {
   echo "  $APP_NAME reconfigure"
 }
 
+DEFAULT_FILE=$(_p "/etc/default/${APP_NAME}")
+
+. ${DEFAULT_FILE}
+
+for file in $(_p "${APP_HOME}/.profile.d")/*.sh; do
+  # .profile.d scripts assume HOME indicates the path to the app directory
+  if [ -f $file ]; then HOME=${APP_HOME} . $file; fi
+done
+
+if [ "$APP_CLI" != "" ] ; then
+  exec $APP_HOME/bin/$APP_CLI "$@"
+fi
+
 if [ ! 0 -eq ${EUID} ]; then
   echo "You must be executing with root privileges to launch commands."
   echo "Either log in as root, use sudo, or add sudo privileges for running ${APP_NAME} with your user."
   exit 1
 fi
 
-DEFAULT_FILE=$(_p "/etc/default/${APP_NAME}")
-
 # Source all environment variables for the app. This must be done as
 # privileged user since the config variables are only readable by root.
-. ${DEFAULT_FILE}
-
 for file in $(_p "/etc/${APP_NAME}/conf.d")/*; do
   if [ -f $file ]; then . $file; fi
-done
-
-for file in $(_p "${APP_HOME}/.profile.d")/*.sh; do
-  # .profile.d scripts assume HOME indicates the path to the app directory
-  if [ -f $file ]; then HOME=${APP_HOME} . $file; fi
 done
 
 # Return all the environment variables accessible to the app.

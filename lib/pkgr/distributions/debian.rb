@@ -33,7 +33,7 @@ module Pkgr
 
       def verify(output_dir)
         Dir.glob(File.join(output_dir, "*deb")).each do |package|
-          Pkgr.logger.info "Verifying package #{package}..."
+          puts "-----> Verifying package #{File.basename(package)}"
           Dir.mktmpdir do |dir|
             verify_package = Mixlib::ShellOut.new %{dpkg-deb -x #{package} #{dir}}
             verify_package.logger = Pkgr.logger

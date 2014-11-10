@@ -36,6 +36,7 @@ module Pkgr
       write_init
       setup_crons
       package
+      verify
       store_cache
     ensure
       teardown if config.clean
@@ -192,6 +193,11 @@ module Pkgr
       app_package.logger = Pkgr.logger
       app_package.run_command
       app_package.error!
+    end
+
+    def verify
+      return true unless config.verify
+      distribution.verify(Dir.pwd)
     end
 
     def store_cache

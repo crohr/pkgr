@@ -57,6 +57,11 @@ module Pkgr
         end
       end
 
+      # Verifies packages
+      def verify(output_dir)
+        true
+      end
+
       # e.g. data/buildpacks/ubuntu/12.04
       def default_buildpack_list
         data_file(File.join("buildpacks", slug))

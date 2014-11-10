@@ -31,6 +31,18 @@ module Pkgr
         DebianFpm.new(self, build_dir).command
       end
 
+      def verify(output_dir)
+        Dir.glob(File.join(output_dir, "*deb")).each do |package|
+          Pkgr.logger.info "Verifying package #{package}..."
+          Dir.mktmpdir do |dir|
+            verify_package = Mixlib::ShellOut.new %{dpkg-deb -x #{package} #{dir}}
+            verify_package.logger = Pkgr.logger
+            verify_package.run_command
+            verify_package.error!
+          end
+        end
+      end
+
       def debconfig
         @debconfig ||= begin
           tmpfile = Tempfile.new("debconfig")

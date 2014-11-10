@@ -113,6 +113,10 @@ module Pkgr
     method_option :store_cache,
       :type => :boolean,
       :desc => 'Output a tarball of the cache in the current directory (name: cache.tar.gz)'
+    method_option :verify,
+      :type => :boolean,
+      :default => true,
+      :desc => "Verifies output package"
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

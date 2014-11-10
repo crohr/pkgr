@@ -230,6 +230,7 @@ module Pkgr
       args.push "--verbose" if verbose
       args.push "--store-cache" if store_cache
       args.push "--debug" if debug
+      args.push "--verify" if verify
       args.push "--no-clean" if !clean
       args.push "--no-edge" if !edge
       args

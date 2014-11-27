@@ -48,6 +48,12 @@ module Pkgr
     method_option :description,
       :type => :string,
       :desc => "Project description"
+    method_option :vendor,
+      :type => :string,
+      :desc => "Vendor name for package"
+    method_option :category,
+      :type => :string,
+      :desc => "Category this package belongs to (default: 'none')"
     method_option :version,
       :type => :string,
       :desc => "Package version (if git directory given, it will use the latest git tag available)"

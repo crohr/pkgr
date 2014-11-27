@@ -92,6 +92,14 @@ module Pkgr
       @table[:homepage] || "http://example.com/no-uri-given"
     end
 
+    def vendor
+      @table[:vendor] || ""
+    end
+
+    def category
+      @table[:category] || "none"
+    end
+
     def description
       @table[:description] || "No description given"
     end

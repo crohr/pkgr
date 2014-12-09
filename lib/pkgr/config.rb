@@ -112,6 +112,10 @@ module Pkgr
       @table[:env].is_a?(Pkgr::Env) ? @table[:env] : Pkgr::Env.new(@table[:env])
     end
 
+    def data_dir
+      @table[:data_dir] || Pkgr::CLI.default_data_dir
+    end
+
     def valid?
       @errors = []
       @errors.push("name can't be blank") if name.nil? || name.empty?

@@ -116,6 +116,10 @@ module Pkgr
       @table[:data_dir] || Pkgr::CLI.default_data_dir
     end
 
+    def directories
+      @table[:directories] || nil
+    end
+
     def valid?
       @errors = []
       @errors.push("name can't be blank") if name.nil? || name.empty?

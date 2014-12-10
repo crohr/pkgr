@@ -134,6 +134,9 @@ module Pkgr
       :type => :string,
       :default => default_data_dir,
       :desc => "Path to data directory. Can be used for overriding default templates, hooks(pre-, post- scripts), configs (buildpacks, distro dependencies), environments, etc. To retrieve default files you can use data command"
+    method_option :directories,
+      :type => :string,
+      :desc => "Recursively mark a directory as being owned by the package. This option is just passed to fpm."
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

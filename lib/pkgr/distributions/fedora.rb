@@ -58,6 +58,7 @@ module Pkgr
           args << %{--after-install "#{postinstall_file}"}
           args << %{--before-remove "#{preuninstall_file}"}
           args << %{--after-remove "#{postuninstall_file}"}
+          args << %{--directories "#{config.directories}"} if config.directories
           args << dependencies(config.dependencies).map{|d| "-d '#{d}'"}.join(" ")
           args << "."
         end

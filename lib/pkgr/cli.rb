@@ -45,6 +45,9 @@ module Pkgr
     method_option :homepage,
       :type => :string,
       :desc => "Project homepage"
+    method_option :home,
+      :type => :string,
+      :desc => "Project home Directory, Where to place project? Default /opt/PROJECTNAME"
     method_option :description,
       :type => :string,
       :desc => "Project description"

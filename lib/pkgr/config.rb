@@ -73,8 +73,9 @@ module Pkgr
     end
 
     def home
-      @table[:home] || "/opt/#{name}"
+      "#{@table[:home]}/#{name}" || "/opt/#{name}"
     end
+
 
     def user
       @table[:user] || name
@@ -206,6 +207,7 @@ module Pkgr
         "--group \"#{group}\"",
         "--iteration \"#{iteration}\"",
         "--homepage \"#{homepage}\"",
+        "--home \"#{home}\"",
         "--architecture \"#{architecture}\"",
         "--description \"#{description}\"",
         "--maintainer \"#{maintainer}\""

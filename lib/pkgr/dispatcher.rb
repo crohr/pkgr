@@ -20,7 +20,7 @@ module Pkgr
       setup
 
       if remote?
-        command = %{ ( cat "#{path}" | ssh "#{host}" pkgr package - #{config.to_args.join(" ")} ) && rsync "#{host}":~/*.deb .}
+        command = %{ ( cat "#{path}" | ssh "#{host}" pkgr package - #{config.to_args.join(" ")} ) && rsync "#{host}":~/*.{deb,rpm} .}
         Pkgr.debug command
         IO.popen(command) do |io|
           until io.eof?

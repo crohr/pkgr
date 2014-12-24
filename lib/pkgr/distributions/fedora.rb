@@ -28,28 +28,40 @@ module Pkgr
       end
 
       def fpm_command(build_dir)
-        %{
-          fpm -t rpm -s dir --verbose --force \
-          -C "#{build_dir}" \
-          -n "#{config.name}" \
-          --version "#{config.version}" \
-          --iteration "#{config.iteration}" \
-          --url "#{config.homepage}" \
-          --provides "#{config.name}" \
-          --deb-user "root" \
-          --deb-group "root" \
-          -a "#{config.architecture}" \
-          --description "#{config.description}" \
-          --maintainer "#{config.maintainer}" \
-          --template-scripts \
-          --before-install #{preinstall_file} \
-          --after-install #{postinstall_file} \
-          --before-remove #{preuninstall_file} \
-          --after-remove #{postuninstall_file} \
-          #{dependencies(config.dependencies).map{|d| "-d '#{d}'"}.join(" ")} \
-          .
-        }
+        "fpm #{fpm_args(build_dir).join(" ")}"
       end
+
+      private
+
+        def fpm_args(build_dir)
+          args = []
+          args << %{-t rpm}
+          args << %{-s dir}
+          args << %{--verbose}
+          args << %{--force}
+          args << %{--exclude '**/.git**'}
+          args << %{-C "#{build_dir}"}
+          args << %{-n "#{config.name}"}
+          args << %{--version "#{config.version}"}
+          args << %{--iteration "#{config.iteration}"}
+          args << %{--url "#{config.homepage}"}
+          args << %{--provides "#{config.name}"}
+          args << %{--license "#{config.license}"} if config.license
+          args << %{--deb-user root}
+          args << %{--deb-group root}
+          args << %{--vendor "#{config.vendor}"}
+          args << %{-a "#{config.architecture}"}
+          args << %{--description "#{config.description}"}
+          args << %{--maintainer "#{config.maintainer}"}
+          args << %{--template-scripts}
+          args << %{--before-install "#{preinstall_file}"}
+          args << %{--after-install "#{postinstall_file}"}
+          args << %{--before-remove "#{preuninstall_file}"}
+          args << %{--after-remove "#{postuninstall_file}"}
+          args << %{--directories "#{config.directories}"} if config.directories
+          args << dependencies(config.dependencies).map{|d| "-d '#{d}'"}.join(" ")
+          args << "."
+        end
     end
   end
 end

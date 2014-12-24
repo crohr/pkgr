@@ -191,7 +191,7 @@ describe "bash cli" do
       FileUtils.mkdir_p target_dir
 
       runner = Pkgr::Distributions::Runner.new(type, version.join("-"))
-      runner.templates(Pkgr::Process.new(process_name, process_command), config.name).each do |template|
+      runner.templates(Pkgr::Process.new(process_name, process_command), config.name, config.data_dir).each do |template|
         Dir.chdir(target_dir) do
           config.process_name = process_name
           config.process_command = process_command

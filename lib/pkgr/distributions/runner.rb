@@ -1,6 +1,9 @@
 module Pkgr
   module Distributions
     class Runner < Struct.new(:type, :version, :cli)
+
+      attr_accessor :data_dir
+
       def sysv?
         type == "sysv"
       end
@@ -9,7 +12,8 @@ module Pkgr
         type == "upstart"
       end
 
-      def templates(process, app_name)
+      def templates(process, app_name, data_dir)
+        @data_dir = data_dir
         send("templates_#{type}", process, app_name)
       end
 
@@ -32,7 +36,7 @@ module Pkgr
       end
 
       def data_file(name)
-        File.new(File.join(Pkgr.data_dir, "init", type, version, name))
+        File.new(File.join(data_dir, "init", type, version, name))
       end
     end
   end

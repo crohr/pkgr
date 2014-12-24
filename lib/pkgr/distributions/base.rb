@@ -120,7 +120,7 @@ module Pkgr
         list = []
         procfile_entries.select(&:daemon?).each do |process|
           Pkgr.debug "Adding #{process.inspect} to initialization scripts"
-          runner.templates(process, app_name).each do |template|
+          runner.templates(process, app_name, config.data_dir).each do |template|
             list.push [process, template]
           end
         end
@@ -173,7 +173,7 @@ module Pkgr
       end # def load_buildpack_list
 
       def data_file(*names)
-        File.new(File.join(Pkgr.data_dir, *names))
+        File.new(File.join(config.data_dir, *names))
       end
 
       def generate_hook_file(hook_name)

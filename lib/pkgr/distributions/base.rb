@@ -118,7 +118,7 @@ module Pkgr
       # Returns a list of <Process, FileTemplate> tuples.
       def initializers_for(app_name, procfile_entries)
         list = []
-        procfile_entries.select(&:daemon?).each do |process|
+        procfile_entries.each do |process|
           Pkgr.debug "Adding #{process.inspect} to initialization scripts"
           runner.templates(process, app_name).each do |template|
             list.push [process, template]

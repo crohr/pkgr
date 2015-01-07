@@ -31,7 +31,7 @@ describe Pkgr::Distributions::Base do
       runner.stub(templates: [double(:template1), double(:template2)])
 
       templates_by_process = distribution.initializers_for("my-app", processes).group_by{|(a,b)| a}
-      expect(templates_by_process.keys.map(&:name)).to eq(["web", "worker"])
+      expect(templates_by_process.keys.map(&:name)).to eq(["web", "console", "worker"])
       expect(templates_by_process[processes[0]].length).to eq(2)
     end
   end

@@ -1,0 +1,13 @@
+default:
+  - curl
+  - gcc
+  - gcc-c++
+  - kernel-devel
+  - libopenssl-devel
+  - readline-devel
+  - libxml2-devel
+  - libxslt-devel
+  - libevent-devel
+  - postgresql-devel
+  - libmysqlclient-devel
+  - sqlite3-devel

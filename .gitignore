@@ -3,4 +3,5 @@
 Gemfile.lock
 .bundle/
 /*.deb
+/*.rpm
 *.swp

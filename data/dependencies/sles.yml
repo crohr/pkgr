@@ -1,0 +1,10 @@
+default:
+  - openssl
+  - readline
+  - libxml2
+  - libxslt
+  - libevent
+  - postgresql93
+  - libmysqlclient18
+  - sqlite3
+  - shadow

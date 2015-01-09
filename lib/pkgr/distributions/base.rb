@@ -190,3 +190,4 @@ end # module Pkgr
 
 require 'pkgr/distributions/debian'
 require 'pkgr/distributions/fedora'
+require 'pkgr/distributions/sles'

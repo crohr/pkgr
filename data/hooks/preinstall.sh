@@ -8,11 +8,11 @@ export APP_GROUP="<%= group %>"
 export APP_HOME="<%= home %>"
 
 if ! getent passwd "${APP_USER}" > /dev/null; then
-  if [ -f /etc/redhat-release ]; then
+  if [ -f /etc/redhat-release ] || [ -f /etc/SuSE-release ]; then
     if ! getent group "${APP_GROUP}" > /dev/null ; then
       groupadd --system "${APP_GROUP}"
     fi
-    adduser "${APP_USER}" -g "${APP_GROUP}" --system --create-home --shell /bin/bash
+    useradd "${APP_USER}" -g "${APP_GROUP}" --system --create-home --shell /bin/bash
   else
     if ! getent group "${APP_GROUP}" > /dev/null; then
       addgroup "${APP_GROUP}" --system --quiet

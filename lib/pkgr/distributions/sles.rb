@@ -23,9 +23,9 @@ module Pkgr
         "sudo zypper refresh ; sudo zypper install -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
       end
 
-      # def installer_dependencies
-      #   super.push("which").uniq
-      # end
+      def installer_dependencies
+        super.push("which").uniq
+      end
 
       def fpm_command(build_dir)
         %{

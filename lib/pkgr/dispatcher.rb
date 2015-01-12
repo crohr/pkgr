@@ -7,7 +7,7 @@ module Pkgr
 
     def initialize(path, opts = {})
       opts = opts.dup
-      @path = File.expand_path(path)
+      @path = path == '-' ? path : File.expand_path(path)
       @host = opts.delete(:host)
       @config = Config.new(opts)
     end

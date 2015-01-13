@@ -7,7 +7,7 @@ module Pkgr
 
     def initialize(path, opts = {})
       opts = opts.dup
-      @path = File.expand_path(path)
+      @path = path == '-' ? path : File.expand_path(path)
       @host = opts.delete(:host)
       @config = Config.new(opts)
     end
@@ -20,7 +20,7 @@ module Pkgr
       setup
 
       if remote?
-        command = %{ ( cat "#{path}" | ssh "#{host}" pkgr package - #{config.to_args.join(" ")} ) && rsync "#{host}":~/*.{deb,rpm} .}
+        command = %{ ( cat "#{path}" | ssh "#{host}" pkgr package - #{config.to_args.join(" ")} ) && rsync -av --include './' --include '*.deb' --include '*.rpm' --exclude '*' "#{host}":~/ .}
         Pkgr.debug command
         IO.popen(command) do |io|
           until io.eof?

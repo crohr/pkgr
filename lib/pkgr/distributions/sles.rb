@@ -24,7 +24,7 @@ module Pkgr
       end
 
       def installer_dependencies
-        super.push("which").uniq
+        super.push("which").push("net-tools").uniq
       end
 
       def fpm_command(build_dir)

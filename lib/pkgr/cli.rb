@@ -5,6 +5,13 @@ require 'pkgr/env'
 
 module Pkgr
   class CLI < Thor
+
+    no_tasks do
+      def self.default_data_dir
+        "#{File.expand_path("../../../data", __FILE__)}"
+      end
+    end
+
     class_option :verbose,
       :type => :boolean,
       :default => false,
@@ -48,6 +55,12 @@ module Pkgr
     method_option :description,
       :type => :string,
       :desc => "Project description"
+    method_option :vendor,
+      :type => :string,
+      :desc => "Vendor name for package"
+    method_option :category,
+      :type => :string,
+      :desc => "Category this package belongs to (default: 'none')"
     method_option :version,
       :type => :string,
       :desc => "Package version (if git directory given, it will use the latest git tag available)"
@@ -117,6 +130,10 @@ module Pkgr
       :type => :boolean,
       :default => true,
       :desc => "Verifies output package"
+    method_option :data_dir,
+      :type => :string,
+      :default => default_data_dir,
+      :desc => "Path to data directory. Can be used for overriding default templates, hooks(pre-, post- scripts), configs (buildpacks, distro dependencies), environments, etc. To retrieve default files you can use data command"
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]
@@ -138,5 +155,13 @@ module Pkgr
       puts "     ! SYSTEM ERROR: #{e.class.name} : #{e.message}"
       raise e
     end
+
+
+    desc "data DIRECTORY", "Copy data templates into destination DIRECTORY for modification purpose and reusing it later within --data-dir option. "
+
+    def data(destination_path)
+      FileUtils.copy_entry Pkgr::CLI.default_data_dir, destination_path
+    end
+
   end
 end

@@ -92,6 +92,14 @@ module Pkgr
       @table[:homepage] || "http://example.com/no-uri-given"
     end
 
+    def vendor
+      @table[:vendor] || ""
+    end
+
+    def category
+      @table[:category] || "none"
+    end
+
     def description
       @table[:description] || "No description given"
     end
@@ -102,6 +110,10 @@ module Pkgr
 
     def env
       @table[:env].is_a?(Pkgr::Env) ? @table[:env] : Pkgr::Env.new(@table[:env])
+    end
+
+    def data_dir
+      @table[:data_dir] || Pkgr::CLI.default_data_dir
     end
 
     def valid?

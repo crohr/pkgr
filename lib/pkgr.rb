@@ -12,9 +12,4 @@ module Pkgr
     class UnknownDistribution < Base; end
     class ConfigurationInvalid < Base; end
   end
-
-  def data_dir
-    File.expand_path("../../data", __FILE__)
-  end
-  module_function :data_dir
 end

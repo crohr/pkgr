@@ -35,6 +35,10 @@ module Pkgr
     method_option :maintainer,
       :type => :string,
       :desc => "Maintainer"
+    method_option :vendor,
+      :type => :string,
+      :desc => "Package vendor",
+      :default => "pkgr <https://github.com/crohr/pkgr>"
     method_option :architecture,
       :type => :string,
       :default => "x86_64",

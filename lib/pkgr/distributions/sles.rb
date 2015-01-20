@@ -41,6 +41,7 @@ module Pkgr
           -a "#{config.architecture}" \
           --description "#{config.description}" \
           --maintainer "#{config.maintainer}" \
+          --vendor "#{config.vendor}" \
           --template-scripts \
           --before-install #{preinstall_file} \
           --after-install #{postinstall_file} \

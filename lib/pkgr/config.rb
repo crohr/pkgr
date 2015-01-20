@@ -208,7 +208,8 @@ module Pkgr
         "--homepage \"#{homepage}\"",
         "--architecture \"#{architecture}\"",
         "--description \"#{description}\"",
-        "--maintainer \"#{maintainer}\""
+        "--maintainer \"#{maintainer}\"",
+        "--vendor \"#{vendor}\""
       ]
       args.push "--dependencies #{dependencies.map{|d| "\"#{d}\""}.join}" unless dependencies.nil? || dependencies.empty?
       args.push "--build-dependencies #{build_dependencies.map{|d| "\"#{d}\""}.join}" unless build_dependencies.nil? || build_dependencies.empty?

@@ -102,6 +102,7 @@ module Pkgr
           list << %{-a "#{config.architecture}"}
           list << %{--description "#{config.description}"}
           list << %{--maintainer "#{config.maintainer}"}
+          list << %{--vendor "#{config.vendor}"}
           list << %{--template-scripts}
           list << %{--deb-config #{distribution.debconfig.path}}
           list << %{--deb-templates #{distribution.debtemplates.path}}

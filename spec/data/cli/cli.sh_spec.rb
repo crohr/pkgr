@@ -145,7 +145,7 @@ describe "bash cli" do
         expect(process).to be_ok
         expect(process.stdout).to eq("")
 
-        expect(File.read("#{directory}/etc/my-app/conf.d/other")).to eq("export YOH=YEAH\n")
+        expect(File.read("#{directory}/etc/my-app/conf.d/other")).to eq("export YOH=\"YEAH\"\n")
 
         process.call("config:get YOH")
         expect(process).to be_ok
@@ -157,7 +157,7 @@ describe "bash cli" do
         expect(process).to be_ok
         expect(process.stdout).to eq("")
 
-        expect(File.read("#{directory}/etc/my-app/conf.d/other")).to eq("export DATABASE_URL=mysql2://username:password@hostname/datbase_name/?reconnect=true\n")
+        expect(File.read("#{directory}/etc/my-app/conf.d/other")).to eq("export DATABASE_URL=\"mysql2://username:password@hostname/datbase_name/?reconnect=true\"\n")
         process.call("config:get DATABASE_URL")
         expect(process).to be_ok
         expect(process.stdout).to eq("mysql2://username:password@hostname/datbase_name/?reconnect=true")
@@ -168,7 +168,7 @@ describe "bash cli" do
         expect(process).to be_ok
         process.call("config:set YOH=")
         expect(process).to be_ok
-        expect(File.read("#{directory}/etc/my-app/conf.d/other").strip).to eq("export YOH=")
+        expect(File.read("#{directory}/etc/my-app/conf.d/other").strip).to eq("export YOH=\"\"")
         process.call("config:get YOH")
         expect(process).to be_ok
         expect(process.stdout).to eq("")

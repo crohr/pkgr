@@ -296,14 +296,14 @@ while : ; do
       CONFIG=(${2//=/ })
 
       VAR=${CONFIG[0]:?"Invalid variable name"}
-      VALUE=${2:$((${#VAR} + 1))}
+      VALUE="${2:$((${#VAR} + 1))}"
 
       CONFIG_FILE=$(_p "/etc/${APP_NAME}/conf.d/other")
       touch ${CONFIG_FILE}
 
       sed -i -r "s/^.*${VAR}.*$//g" $(_p "/etc/${APP_NAME}/conf.d")/*
 
-      echo "export ${VAR}=${VALUE}" >> "${CONFIG_FILE}"
+      echo "export ${VAR}=\"${VALUE}\"" >> "${CONFIG_FILE}"
 
       break;;
 

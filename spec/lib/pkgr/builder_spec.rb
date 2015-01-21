@@ -174,6 +174,12 @@ describe Pkgr::Builder do
       builder.write_init
       expect(Dir.glob(File.join(builder.scaling_dir, "*/*")).map{|file| file.gsub(builder.scaling_dir, "")}.sort).to eq([
         "/upstart/my-app",
+        "/upstart/my-app-console-PROCESS_NUM.conf",
+        "/upstart/my-app-console.conf",
+        "/upstart/my-app-rake-PROCESS_NUM.conf",
+        "/upstart/my-app-rake.conf",
+        "/upstart/my-app-redis-PROCESS_NUM.conf",
+        "/upstart/my-app-redis.conf",
         "/upstart/my-app-web-PROCESS_NUM.conf",
         "/upstart/my-app-web.conf",
         "/upstart/my-app-worker-PROCESS_NUM.conf",

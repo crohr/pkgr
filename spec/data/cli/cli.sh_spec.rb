@@ -152,10 +152,34 @@ describe "bash cli" do
         expect(process.stdout).to eq("YEAH")
       end
 
+      it "correctly sets a config with an = sign in the value" do
+        process.call("config:set DATABASE_URL='mysql2://username:password@hostname/datbase_name/?reconnect=true'")
+        expect(process).to be_ok
+        expect(process.stdout).to eq("")
+
+        expect(File.read("#{directory}/etc/my-app/conf.d/other")).to eq("export DATABASE_URL=mysql2://username:password@hostname/datbase_name/?reconnect=true\n")
+        process.call("config:get DATABASE_URL")
+        expect(process).to be_ok
+        expect(process.stdout).to eq("mysql2://username:password@hostname/datbase_name/?reconnect=true")
+      end
+
+      it "allows empty values" do
+        process.call("config:set YOH=YEAH")
+        expect(process).to be_ok
+        process.call("config:set YOH=")
+        expect(process).to be_ok
+        expect(File.read("#{directory}/etc/my-app/conf.d/other").strip).to eq("export YOH=")
+        process.call("config:get YOH")
+        expect(process).to be_ok
+        expect(process.stdout).to eq("")
+      end
+
       it "returns the full config" do
+        process.call("config:set DATABASE_URL='mysql2://username:password@hostname/datbase_name/?reconnect=true'")
         process.call("config")
         expect(process).to be_ok
         expect(process.stdout).to include("HOME=#{config.home}")
+        expect(process.stdout).to include("DATABASE_URL=mysql2://username:password@hostname/datbase_name/?reconnect=true")
       end
     end
 

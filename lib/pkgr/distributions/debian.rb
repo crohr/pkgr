@@ -1,6 +1,7 @@
 require 'pkgr/buildpack'
 require 'pkgr/process'
 require 'pkgr/distributions/base'
+require 'pkgr/fpm_command'
 
 module Pkgr
   module Distributions
@@ -28,7 +29,7 @@ module Pkgr
       end
 
       def fpm_command(build_dir)
-        DebianFpm.new(self, build_dir).command
+        DebianFpmCommand.new(self, build_dir).command
       end
 
       def verify(output_dir)
@@ -70,48 +71,13 @@ module Pkgr
         addon.debian_dependency_name
       end
 
-      class DebianFpm
-        attr_reader :distribution, :build_dir, :config
-
-        def initialize(distribution, build_dir)
-          @distribution = distribution
-          @build_dir = build_dir
-          @config = distribution.config
-        end
-
-        def command
-          %{fpm #{args.join(" ")} .}
-        end
-
+      class DebianFpmCommand < FpmCommand
         def args
-          list = []
+          list = super
           list << "-t deb"
-          list << "-s dir"
-          list << "--verbose"
-          list << "--force"
-          list << "--exclude '**/.git**'"
-          list << %{-C "#{build_dir}"}
-          list << %{-n "#{config.name}"}
-          list << %{--version "#{config.version}"}
-          list << %{--iteration "#{config.iteration}"}
-          list << %{--url "#{config.homepage}"}
-          list << %{--provides "#{config.name}"}
           list << %{--deb-user "root"}
           list << %{--deb-group "root"}
-          list << %{--license "#{config.license}"} unless config.license.nil?
-          list << %{-a "#{config.architecture}"}
-          list << %{--description "#{config.description}"}
-          list << %{--maintainer "#{config.maintainer}"}
-          list << %{--vendor "#{config.vendor}"}
-          list << %{--template-scripts}
-          list << %{--deb-config #{distribution.debconfig.path}}
-          list << %{--deb-templates #{distribution.debtemplates.path}}
-          list << %{--before-install #{distribution.preinstall_file}}
-          list << %{--after-install #{distribution.postinstall_file}}
-          list << %{--before-remove #{distribution.preuninstall_file}}
-          list << %{--after-remove #{distribution.postuninstall_file}}
-          distribution.dependencies(config.dependencies).each{|d| list << "-d '#{d}'"}
-          list.compact
+          list
         end
       end
     end

@@ -1,6 +1,7 @@
 require 'pkgr/buildpack'
 require 'pkgr/process'
 require 'pkgr/distributions/base'
+require 'pkgr/fpm_command'
 
 module Pkgr
   module Distributions
@@ -28,29 +29,17 @@ module Pkgr
       end
 
       def fpm_command(build_dir)
-        %{
-          fpm -t rpm -s dir --verbose --force \
-          -C "#{build_dir}" \
-          -n "#{config.name}" \
-          --version "#{config.version}" \
-          --iteration "#{config.iteration}" \
-          --url "#{config.homepage}" \
-          --provides "#{config.name}" \
-          --deb-user "root" \
-          --deb-group "root" \
-          -a "#{config.architecture}" \
-          --description "#{config.description}" \
-          --maintainer "#{config.maintainer}" \
-          --vendor "#{config.vendor}" \
-          --template-scripts \
-          --before-install #{preinstall_file} \
-          --after-install #{postinstall_file} \
-          --before-remove #{preuninstall_file} \
-          --after-remove #{postuninstall_file} \
-          #{dependencies(config.dependencies).map{|d| "-d '#{d}'"}.join(" ")} \
-          .
-        }
+        FedoraFpmCommand.new(self, build_dir).command
       end
+
+      class FedoraFpmCommand < FpmCommand
+        def args
+          list = super
+          list << "-t rpm"
+          list
+        end
+      end
+
     end
   end
 end

@@ -181,6 +181,15 @@ describe "bash cli" do
         expect(process.stdout).to include("HOME=#{config.home}")
         expect(process.stdout).to include("DATABASE_URL=mysql2://username:password@hostname/datbase_name/?reconnect=true")
       end
+
+      it "does not overwrite keys with the same substring" do
+        process.call("config:set SERVER_HOSTNAME=example.com")
+        process.call("config:set HOST=127.0.0.1")
+        process.call("config:get HOST")
+        expect(process.stdout).to eq("127.0.0.1")
+        process.call("config:get SERVER_HOSTNAME")
+        expect(process.stdout).to eq("example.com")
+      end
     end
 
     describe "run" do

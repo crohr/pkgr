@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe "Addon" do
+describe "Addon", pending: true do
   let(:addons_dir) { Dir.mktmpdir }
 
   it "downloads and compiles the addon" do

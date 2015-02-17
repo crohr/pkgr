@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe "Builder" do
+describe "Builder", pending: true do
   it "builds the full package [Rails app]" do
     Pkgr.level = Logger.const_get(ENV['DEBUG'] || "DEBUG")
     config = Pkgr::Config.new(

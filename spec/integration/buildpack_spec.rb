@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 require 'pkgr/buildpack'
 
-describe "Builder" do
+describe "Buildpacks" do
   describe "with ruby buildpack" do
     let(:buildpack) { Pkgr::Buildpack.new("https://github.com/heroku/heroku-buildpack-ruby.git") }
     let(:path) { Dir.mktmpdir }
@@ -17,7 +17,7 @@ describe "Builder" do
     end
 
     it "can detect a ruby app" do
-      buildpack.detect(path).should be_true
+      expect(buildpack.detect(path)).to eq(true)
     end
   end
 end

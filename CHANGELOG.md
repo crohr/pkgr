@@ -1,3 +1,15 @@
+## 1.4.1 - 20150217
+
+* Allow to set config variables with equal signs in their values
+* Add --vendor option
+* Add net-tools to dependencies when using installer
+* Add which to dependencies when using installer
+* Add support for SLES12 (rpm)
+* Get remote compiling working
+* All processes from Procfile are now exported as potential services
+* Add option to verify the generated packages
+* CLI support: allow to overwrite default CLI to point to custom executable
+
 ## 1.4.0 - 20141015
 
 * Add support for Fedora 20.

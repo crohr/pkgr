@@ -14,17 +14,17 @@ Gem::Specification.new do |s|
   s.email                     = ["cyril.rohr@gmail.com"]
   s.executables               = ["pkgr"]
   s.homepage                  = "http://github.com/crohr/pkgr"
-  s.summary                   = "Package any app as a debian package"
-  s.description               = "Embeds your app dependencies (e.g. a specific ruby version and you gems in the case of Rails apps) into a debian package, for easy installation. Provides init scripts and more."
+  s.summary                   = "Package any Ruby, NodeJS or Go app as a deb or rpm package"
+  s.description               = "Simplify the deployment of your applications by automatically packaging your application and its dependencies on multiple platforms."
 
   s.license = 'MIT'
 
-  s.add_dependency('rake')
-  s.add_dependency('thor')
-  s.add_dependency('fpm')
-  s.add_dependency('facter')
-  s.add_dependency('mixlib-log')
-  s.add_dependency('mixlib-shellout')
+  s.add_dependency('rake', '>= 0')
+  s.add_dependency('thor', '>= 0')
+  s.add_dependency('fpm', '>= 0')
+  s.add_dependency('facter', '>= 0')
+  s.add_dependency('mixlib-log', '>= 0')
+  s.add_dependency('mixlib-shellout', '>= 0')
   s.add_development_dependency('rspec', '~> 2')
 
   s.files = Dir.glob("{lib,data}/**/*") + %w(LICENSE README.md)

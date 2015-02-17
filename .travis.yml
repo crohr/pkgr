@@ -1,4 +1,7 @@
 language: ruby
+before_script:
+  - git config --global user.email hello@world.com
+  - git config --global user.name "John Doe"
 rvm:
   - 1.9.3
   - 2.1.5

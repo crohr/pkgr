@@ -19,12 +19,12 @@ Gem::Specification.new do |s|
 
   s.license = 'MIT'
 
-  s.add_dependency('rake', '>= 0')
-  s.add_dependency('thor', '>= 0')
-  s.add_dependency('fpm', '>= 0')
-  s.add_dependency('facter', '>= 0')
-  s.add_dependency('mixlib-log', '>= 0')
-  s.add_dependency('mixlib-shellout', '>= 0')
+  s.add_dependency('rake', '~> 10.3')
+  s.add_dependency('thor', '~> 0.19')
+  s.add_dependency('fpm', '~> 1.1')
+  s.add_dependency('facter', '~> 2.1')
+  s.add_dependency('mixlib-log', '~> 1.6')
+  s.add_dependency('mixlib-shellout', '~> 1.4')
   s.add_development_dependency('rspec', '~> 2')
 
   s.files = Dir.glob("{lib,data}/**/*") + %w(LICENSE README.md)

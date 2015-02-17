@@ -26,8 +26,11 @@ module Pkgr
           end
         end
 
-        (targets[distribution.to_s] || {}).each do |k,v|
-          config[k] = v
+        distro_config = targets[distribution.to_s]
+        if distro_config.is_a?(Hash)
+          distro_config.each do |k,v|
+            config[k] = v
+          end
         end
 
         self.new(config)

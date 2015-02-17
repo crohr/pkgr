@@ -77,6 +77,14 @@ describe Pkgr::Config do
     expect(new_config.build_dependencies).to eq(["libmagickcore-dev", "libmagickwand-dev"])
   end
 
+  it "does not fail if a distribution is set to true" do
+    Pkgr::Config.load_file(fixture("pkgr.yml"), "centos-6")
+  end
+
+  it "does not fail if a distribution is set to false" do
+    Pkgr::Config.load_file(fixture("pkgr.yml"), "fedora-20")
+  end
+
   describe "#after_hook" do
     it "returns the content of the after_precompile option if any" do
       config.after_precompile = "path/to/hook"

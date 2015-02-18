@@ -35,7 +35,7 @@ module Pkgr
       class SlesFpmCommand < FpmCommand
         def args
           list = super
-          list << "-t rpm"
+          list << "-t" << "rpm"
           list
         end
       end

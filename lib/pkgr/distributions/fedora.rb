@@ -35,7 +35,7 @@ module Pkgr
       class FedoraFpmCommand < FpmCommand
         def args
           list = super
-          list << "-t rpm"
+          list << "-t" << "rpm"
           list
         end
       end

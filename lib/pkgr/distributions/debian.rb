@@ -74,9 +74,9 @@ module Pkgr
       class DebianFpmCommand < FpmCommand
         def args
           list = super
-          list << "-t deb"
-          list << %{--deb-user "root"}
-          list << %{--deb-group "root"}
+          list << "-t" << "deb"
+          list << "--deb-user" << "root"
+          list << "--deb-group" << "root"
           list
         end
       end

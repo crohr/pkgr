@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
   s.license = 'MIT'
 
-  s.add_dependency('rake', '~> 10.3')
+  s.add_dependency('rake', '~> 10.0')
   s.add_dependency('thor', '~> 0.19')
   s.add_dependency('fpm', '~> 1.1')
   s.add_dependency('facter', '~> 2.1')

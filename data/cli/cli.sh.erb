@@ -183,7 +183,7 @@ scale_down() {
     PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
 
     if [ "${APP_RUNNER_TYPE}" = "upstart" ]; then
-      $APP_RUNNER_CLI stop "${PROCESS_ID}"
+      $APP_RUNNER_CLI stop "${PROCESS_ID}" || /bin/true # dont fail if server stopped differently
       rm -f $(_p "/etc/init/${PROCESS_ID}.conf")
     else
       $(_p "/etc/init.d/${PROCESS_ID}") stop

@@ -232,5 +232,19 @@ describe Pkgr::Builder do
 
       expect{ builder.package }.to_not raise_error
     end
+
+    it "retries 3 more times before giving up if verify raises" do
+      builder.stub(fpm_command: "ls")
+      expect(builder).to receive(:verify).exactly(4).and_raise(Mixlib::ShellOut::ShellCommandFailed, "error")
+      expect{ builder.package }.to raise_error(Mixlib::ShellOut::ShellCommandFailed, "error")
+    end
+
+    it "retries and succeeds" do
+      builder.stub(fpm_command: "ls")
+      expect(builder).to receive(:verify).ordered.and_raise(Mixlib::ShellOut::ShellCommandFailed, "error")
+      expect(builder).to receive(:verify).ordered.and_return(true)
+      expect{ builder.package }.to_not raise_error
+    end
+
   end
 end

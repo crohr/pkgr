@@ -36,7 +36,6 @@ module Pkgr
       write_init
       setup_crons
       package
-      verify
       store_cache
     ensure
       teardown if config.clean
@@ -188,11 +187,20 @@ module Pkgr
 
 
     # Launch the FPM command that will generate the package.
-    def package
+    def package(remaining_attempts = 3)
       app_package = Mixlib::ShellOut.new(fpm_command)
       app_package.logger = Pkgr.logger
       app_package.run_command
       app_package.error!
+      begin
+        verify
+      rescue Mixlib::ShellOut::ShellCommandFailed => e
+        if remaining_attempts > 0
+          package(remaining_attempts - 1)
+        else
+          raise
+        end
+      end
     end
 
     def verify

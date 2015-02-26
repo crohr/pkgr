@@ -56,7 +56,8 @@ Full command line options are given below:
       [--architecture=ARCHITECTURE]                  # Target architecture for the package
                                                      # Default: x86_64
       [--runner=RUNNER]                              # Force a specific runner (e.g. upstart-1.5, sysv-lsb-1.3)
-      [--homepage=HOMEPAGE]                          # Project homepage
+      [--homepage=HOMEPAGE]                          # Project homepage, eg : www.example.com
+      [--home=HOME_DIR]                              # Project home, Where the project has to be reside?
       [--description=DESCRIPTION]                    # Project description
       [--version=VERSION]                            # Package version (if git directory given, it will use the latest git tag available)
       [--iteration=ITERATION]                        # Package iteration (you should keep the default here)
@@ -69,6 +70,8 @@ Full command line options are given below:
       [--after-precompile=AFTER_PRECOMPILE]          # Provide a script to run just after the buildpack compilation, on the build machine. Path will be resolved from the temporary code repository folder, so use absolute paths if needed.
       [--before-install=BEFORE_INSTALL]              # Provide a script to run just before a package gets installated or updated, on the target machine.
       [--after-install=AFTER_INSTALL]                # Provide a script to run just after a package gets installated or updated, on the target machine.
+      [--before-remove=BEFORE_REMOVE]                # Provide a script to run just before a package gets uninstallated, on the target machine.
+      [--after-remove=AFTER_REMOVE]                # Provide a script to run just after a package gets uninstallated or updated, on the target machine.
       [--dependencies=one two three]                 # Specific system dependencies that you want to install with the package
       [--build-dependencies=one two three]           # Specific system dependencies that must be present before building
       [--host=HOST]                                  # Remote host to build on (default: local machine)
@@ -85,6 +88,8 @@ Full command line options are given below:
       [--name=NAME]                                  # Application name (if directory given, it will default to the directory name)
       [--buildpacks-cache-dir=BUILDPACKS_CACHE_DIR]  # Directory where to store the buildpacks
                                                      # Default: /home/vagrant/.pkgr/buildpacks
+
+     pkgr package ./tap/ --user=USERNAME --group=GROUPNAME --maintainer="USERNAME<USER_EMAIL>" --runner='upstart-1.5' --dependencies=nodejs nodejs-legacy  --after-install=$PWD/postinst --before-install=$PWD/preinst --after-remove=$PWD/postrm --before-remove=$PWD/prerm --auto  --clean --name=PACKAGENAME --version=0.5 --iteration=1  --edge  --homepage="http://www.HOMEPAGE.com" --description="PACKAGE DESCRIPTION" --license="Apache" --home="/usr/share/"
 
 ## Why?
 

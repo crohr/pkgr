@@ -84,6 +84,14 @@ module Pkgr
     method_option :after_install,
       :type => :string,
       :desc => "Provide a script to run just after a package gets installated or updated, on the target machine."
+#Before and after Remove
+    method_option :before_remove,
+      :type => :string,
+      :desc => "Provide a script to run just before a package gets uninstallated, on the target machine."
+    method_option :after_remove,
+      :type => :string,
+      :desc => "Provide a script to run just after a package gets uninstallated, on the target machine."
+
     method_option :dependencies,
       :type => :array,
       :default => [],

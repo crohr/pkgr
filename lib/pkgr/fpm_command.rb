@@ -19,7 +19,7 @@ module Pkgr
       list << "-s" << "dir"
       list << "--verbose"
       list << "--force"
-      list << "--exclude" << "'**/.git**'"
+      list << "--exclude" << "**/.git**"
       list << "-C" << build_dir
       list << "-n" << config.name
       list << "--version" << config.version

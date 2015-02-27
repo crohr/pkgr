@@ -1,3 +1,11 @@
+## 1.4.2 - 20150227
+
+* Use Shellwords to escape command line args
+* Allow scaledowns to finish even if stopping the service does not work
+* Retry the packaging command at most 3 times if the package verification failed
+* Add CLI options for `--before-remove` and `--after-remove` scripts
+* Make sure `.git` directories are not included in the resulting package
+
 ## 1.4.1 - 20150217
 
 * Allow to set config variables with equal signs in their values

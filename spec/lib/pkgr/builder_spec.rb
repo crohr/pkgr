@@ -222,7 +222,7 @@ describe Pkgr::Builder do
 
     it "builds the proper fpm command" do
       command = builder.fpm_command.strip.squeeze(" ")
-      expect(command).to include(Shellwords.join(["fpm", "-s", "dir", "--verbose", "--force", "--exclude", "'**/.git**'", "-C", builder.build_dir, "-n", "my-app", "--version", "0.0.1", "--iteration", config.iteration, "--url", config.homepage, "--provides", "my-app"]))
+      expect(command).to include(Shellwords.join(["fpm", "-s", "dir", "--verbose", "--force", "--exclude", "**/.git**", "-C", builder.build_dir, "-n", "my-app", "--version", "0.0.1", "--iteration", config.iteration, "--url", config.homepage, "--provides", "my-app"]))
       expect(command).to include("-t deb")
     end
 

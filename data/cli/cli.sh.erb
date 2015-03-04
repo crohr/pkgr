@@ -34,7 +34,7 @@ DEFAULT_FILE=$(_p "/etc/default/${APP_NAME}")
 
 for file in $(_p "${APP_HOME}/.profile.d")/*.sh; do
   # .profile.d scripts assume HOME indicates the path to the app directory
-  if [ -f $file ]; then HOME=${APP_HOME} . $file; fi
+  if [ -f $file ]; then HOME=${APP_HOME} . $file &>/dev/null; fi
 done
 
 if [ "$APP_CLI" != "" ] ; then

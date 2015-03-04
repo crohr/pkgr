@@ -1,3 +1,8 @@
+## 1.4.3 - 20150304
+
+* Allow to run some commands as the APP_USER instead of root
+* Some profile.d scripts output stuff (e.g. newest nodejs buildpack), so redirect to /dev/null
+
 ## 1.4.2 - 20150227
 
 * Use Shellwords to escape command line args

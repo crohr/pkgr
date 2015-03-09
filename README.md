@@ -12,7 +12,7 @@ Hosted service available at <https://packager.io/>.
 * NodeJS
 * Go
 
-You can also point to other buildpacks ([doc](https://packager.io/documentation/reference/the-pkgryml-file.html#buildpack)). They may just work.
+You can also point to other buildpacks ([doc](https://packager.io/documentation/customizing-the-build/#buildpack)). They may just work.
 
 ## Supported distributions (64bits only)
 

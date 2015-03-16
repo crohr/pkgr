@@ -24,13 +24,7 @@ module Pkgr
       update_config
       check
       setup
-
-      if config.installer
-        setup_pipeline
-      else
-        setup_addons
-      end
-
+      setup_pipeline
       compile
       write_env
       write_init
@@ -74,8 +68,6 @@ module Pkgr
         end
       end
       config.distribution = distribution
-      # required to build proper Addon objects
-      config.addons_dir = addons_dir
       # useful for templates that need to read files
       config.source_dir = source_dir
       config.build_dir = build_dir
@@ -109,17 +101,6 @@ module Pkgr
     def setup_pipeline
       pipeline.each do |component|
         @config = component.call(config)
-      end
-    end
-
-    # LEGACY, remove once openproject no longer needs it
-    # If addons are declared in .pkgr.yml, add them
-    def setup_addons
-      config.addons.each do |addon|
-        puts "-----> [addon] #{addon.name} (#{addon.url} @ #{addon.branch})"
-        addon.install!(source_dir)
-        dependency = distribution.add_addon(addon)
-        config.dependencies.push(dependency) if dependency
       end
     end
 
@@ -261,10 +242,6 @@ module Pkgr
 
     def vendor_dir
       File.join(source_dir, "vendor", "pkgr")
-    end
-
-    def addons_dir
-      File.join(vendor_dir, "addons")
     end
 
     # Directory where binstubs will be created for the corresponding Procfile commands.

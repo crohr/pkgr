@@ -7,8 +7,6 @@ export APP_USER="<%= user %>"
 export APP_WIZARDS="<%= wizards.map{|wizard_group| wizard_group.map{|w| w.name}.join("|")}.join(",") %>"
 export APP_RUNNER_TYPE="<%= distribution.runner.type %>"
 export APP_RUNNER_CLI="<%= distribution.runner.cli %>"
-# Legacy addons
-export APP_ADDONS="<%= addons.map{|addon| addon.name}.join(" ") %>"
 export PORT=${PORT:=6000}
 <% if cli.is_a?(String) %>
 export HOME=${HOME:="/home/<%= user %>"}

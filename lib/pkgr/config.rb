@@ -122,13 +122,6 @@ module Pkgr
       @errors ||= []
     end
 
-    def addons
-      # make proper Addon objects out of existing addon slugs
-      (@table[:addons] || []).map do |addon_slug|
-        Addon.new(addon_slug, addons_dir, self)
-      end
-    end
-
     def installer
       return nil if @table[:installer].nil? || @table[:installer] == false
       @table[:installer]
@@ -137,7 +130,7 @@ module Pkgr
     def wizards
       @wizards ||= (@table[:wizards] || []).map do |wizard_string|
         wizard_string.split(/\s*\|\s*/).map do |wizard|
-          Addon.new(wizard, nil, nil)
+          Addon.new(wizard)
         end
       end
     end

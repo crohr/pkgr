@@ -58,19 +58,6 @@ module Pkgr
         @debtemplates ||= Tempfile.new("debtemplates")
       end
 
-      def add_addon(addon)
-        # make a debian package out of the addon
-        Dir.chdir(addon.dir) do
-          make_package = Mixlib::ShellOut.new %{dpkg-buildpackage -b -d}
-          make_package.logger = Pkgr.logger
-          make_package.run_command
-          make_package.error!
-        end
-        FileUtils.mv(Dir.glob(File.join(File.dirname(addon.dir), "*.deb")), Dir.pwd)
-        # return name of the dependency
-        addon.debian_dependency_name
-      end
-
       class DebianFpmCommand < FpmCommand
         def args
           list = super

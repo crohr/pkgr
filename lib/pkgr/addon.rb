@@ -8,6 +8,15 @@ module Pkgr
       File.basename(url_without_branch, ".git").sub("addon-", "")
     end
 
+    def install!(dir, shell = Command.new(Pkgr.logger))
+      addon_dir = "#{dir}/#{name}"
+      FileUtils.mkdir_p addon_dir
+      puts "-----> [wizard] adding #{name} wizard (#{url}##{branch})"
+      shell.run! "curl -L --max-redirs 3 --retry 5 -s '#{tarball_url}' | tar xzf - --strip-components=1 -C '#{addon_dir}'"
+    end
+
+  private
+
     def url
       if @nickname.start_with?("http")
         url_without_branch
@@ -19,15 +28,6 @@ module Pkgr
         "https://github.com/#{user}/#{repo}"
       end
     end
-
-    def install!(dir)
-      addon_dir = "#{dir}/#{name}"
-      FileUtils.mkdir_p addon_dir
-      puts "-----> [wizard] adding #{name} wizard (#{url}##{branch})"
-      shell.run! "curl -L --max-redirs 3 --retry 5 -s '#{tarball_url}' | tar xzf - --strip-components=1 -C '#{addon_dir}'"
-    end
-
-  private
 
     def branch
       @nickname.split("#")[1] || "master"

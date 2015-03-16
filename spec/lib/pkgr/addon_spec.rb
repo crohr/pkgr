@@ -25,5 +25,17 @@ describe Pkgr::Addon do
       expect(addon.name).to eq("mysql")
       expect(addon.url).to eq("https://github.com/crohr/addon-mysql")
     end
+
+    it "accepts full URLs for git repositories" do
+      addon = Pkgr::Addon.new("https://github.com/crohr/addon-mysql.git")
+      expect(addon.name).to eq("mysql")
+      expect(addon.url).to eq("https://github.com/crohr/addon-mysql")
+    end
+
+    it "accepts full URLs for git repositories including a branch" do
+      addon = Pkgr::Addon.new("https://github.com/crohr/addon-mysql.git#foo-branch")
+      expect(addon.name).to eq("mysql")
+      expect(addon.url).to eq("https://github.com/crohr/addon-mysql")
+    end
   end
 end

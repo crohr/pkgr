@@ -57,5 +57,14 @@ describe Pkgr::Addon do
       expect_download 'https://github.com/crohr/addon-mysql/archive/foo-branch.tar.gz', 'somedir/mysql'
       addon.install! 'somedir', shell
     end
+
+    it "accepts a relative file path" do
+      addon = Pkgr::Addon.new(Pathname("./spec/fixtures/addon-mysql").realpath)
+      expect(addon.name).to eq("mysql")
+
+      addon.install! 'spec/tmp/somedir'
+
+      expect(File.exists?('spec/tmp/somedir/mysql/bin/compile')).to be true
+    end
   end
 end

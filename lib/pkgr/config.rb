@@ -130,6 +130,10 @@ module Pkgr
     def wizards
       @wizards ||= (@table[:wizards] || []).map do |wizard_string|
         wizard_string.split(/\s*\|\s*/).map do |wizard|
+          if wizard.start_with?('.')
+            wizard = Pathname.new(source_dir).join(wizard).realpath
+          end
+
           Addon.new(wizard)
         end
       end

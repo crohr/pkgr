@@ -19,10 +19,4 @@ describe Pkgr::Distributions::Centos do
       expect(distribution.dependencies(["dep1", "dep2"])).to include("postgresql-libs", "dep1", "dep2")
     end
   end
-
-  describe "#add_addon" do
-    it "does nothing yet" do
-      expect(distribution.add_addon(double(:addon))).to eq(nil)
-    end
-  end
 end

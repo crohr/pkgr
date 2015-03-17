@@ -1,68 +1,70 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe Pkgr::Addon do
-  let(:addons_dir) { Dir.mktmpdir }
-  let(:config) { double(:config) }
+  let(:shell) { double 'Shell' }
+
+  def expect_download(url, target)
+    expect(shell).to receive(:run!).once.with(
+      "curl -L --max-redirs 3 --retry 5 -s '#{url}' | tar xzf - --strip-components=1 -C '#{target}'"
+    )
+  end
 
   describe "name and url" do
     it "does not change the name if repo user set" do
-      addon = Pkgr::Addon.new("crohr/addon-mysql", addons_dir, config)
+      addon = Pkgr::Addon.new("crohr/addon-mysql")
       expect(addon.name).to eq("mysql")
-      expect(addon.url).to eq("https://github.com/crohr/addon-mysql")
+
+      expect_download 'https://github.com/crohr/addon-mysql/archive/master.tar.gz', 'somedir/mysql'
+      addon.install! 'somedir', shell
     end
 
     it "defaults to pkgr/name if no repo user set" do
-      addon = Pkgr::Addon.new("addon-mysql", addons_dir, config)
+      addon = Pkgr::Addon.new("addon-mysql")
       expect(addon.name).to eq("mysql")
-      expect(addon.url).to eq("https://github.com/pkgr/addon-mysql")
+
+      expect_download 'https://github.com/pkgr/addon-mysql/archive/master.tar.gz', 'somedir/mysql'
+      addon.install! 'somedir', shell
     end
 
     it "defaults to pkgr/name if no repo user set" do
-      addon = Pkgr::Addon.new("mysql", addons_dir, config)
+      addon = Pkgr::Addon.new("mysql")
       expect(addon.name).to eq("mysql")
-      expect(addon.url).to eq("https://github.com/pkgr/addon-mysql")
+
+      expect_download 'https://github.com/pkgr/addon-mysql/archive/master.tar.gz', 'somedir/mysql'
+      addon.install! 'somedir', shell
     end
 
     it "accepts HTTP URIs" do
-      addon = Pkgr::Addon.new("https://github.com/crohr/addon-mysql", addons_dir, config)
+      addon = Pkgr::Addon.new("https://github.com/crohr/addon-mysql")
       expect(addon.name).to eq("mysql")
-      expect(addon.url).to eq("https://github.com/crohr/addon-mysql")
-    end
-  end
 
-  describe "debtemplates" do
-    let(:addon) { Pkgr::Addon.new("mysql", addons_dir, config) }
-    let(:debian_dir) { File.join(addon.dir, "debian") }
-
-    before do
-      FileUtils.mkdir_p debian_dir
+      expect_download 'https://github.com/crohr/addon-mysql/archive/master.tar.gz', 'somedir/mysql'
+      addon.install! 'somedir', shell
     end
 
-    it "returns the templates file" do
-      File.open(File.join(debian_dir, "templates"), "w+") {|f| f.puts "template" }
-      expect(addon.debtemplates.read).to eq("template\n")
+    it "accepts full URLs for git repositories" do
+      addon = Pkgr::Addon.new("https://github.com/crohr/addon-mysql.git")
+      expect(addon.name).to eq("mysql")
+
+      expect_download 'https://github.com/crohr/addon-mysql/archive/master.tar.gz', 'somedir/mysql'
+      addon.install! 'somedir', shell
     end
 
-    it "returns an empty io if debian/templates does not exist" do
-      expect(addon.debtemplates.read).to eq("")
-    end
-  end
+    it "accepts full URLs for git repositories including a branch" do
+      addon = Pkgr::Addon.new("https://github.com/crohr/addon-mysql.git#foo-branch")
+      expect(addon.name).to eq("mysql")
 
-  describe "debconfig" do
-    let(:addon) { Pkgr::Addon.new("mysql", addons_dir, config) }
-    let(:debian_dir) { File.join(addon.dir, "debian") }
-
-    before do
-      FileUtils.mkdir_p debian_dir
+      expect_download 'https://github.com/crohr/addon-mysql/archive/foo-branch.tar.gz', 'somedir/mysql'
+      addon.install! 'somedir', shell
     end
 
-    it "returns the config file" do
-      File.open(File.join(debian_dir, "config"), "w+") {|f| f.puts "config" }
-      expect(addon.debconfig.read).to eq("config\n")
-    end
+    it "accepts a relative file path" do
+      addon = Pkgr::Addon.new(Pathname("./spec/fixtures/addon-mysql").realpath)
+      expect(addon.name).to eq("mysql")
 
-    it "returns an empty io if debian/config does not exist" do
-      expect(addon.debconfig.read).to eq("")
+      addon.install! 'spec/tmp/somedir'
+
+      expect(File.exists?('spec/tmp/somedir/mysql/bin/compile')).to be true
     end
   end
 end

@@ -113,12 +113,6 @@ describe Pkgr::Config do
     end
   end
 
-  describe "#addons" do
-    it "has none by default" do
-      expect(config.addons.length).to eq(0)
-    end
-  end
-
   describe "#crons" do
     it "has none by default" do
       expect(config.crons.length).to eq(0)

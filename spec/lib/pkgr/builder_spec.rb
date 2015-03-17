@@ -189,24 +189,6 @@ describe Pkgr::Builder do
     end
   end
 
-  describe "#setup_addons" do
-    let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
-
-    it "does nothing if no addons" do
-      expect do
-        builder.setup_addons
-      end.to_not raise_error
-    end
-
-    it "installs the addon and adds it" do
-      addon = Pkgr::Addon.new("mysql", "path/to/addons/dir", config)
-      allow(config).to receive(:addons).and_return([addon])
-      expect(addon).to receive(:install!).with(builder.source_dir)
-      expect(builder.distribution).to receive(:add_addon).with(addon)
-      builder.setup_addons
-    end
-  end
-
   describe "#package" do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
 

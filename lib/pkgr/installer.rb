@@ -29,11 +29,7 @@ module Pkgr
       Dir.chdir(installer_tmp_dir) do
         config.wizards.each do |addon_group|
           addon_group.each do |addon|
-            addon_dir = "addons/#{addon.name}"
-            FileUtils.mkdir_p addon_dir
-            puts "-----> [wizard] adding #{addon.name} wizard (#{addon.url}##{addon.branch})"
-            shell.run!(
-              "curl -L --max-redirs 3 --retry 5 -s '#{addon.tarball_url}' | tar xzf - --strip-components=1 -C '#{addon_dir}'")
+            addon.install! 'addons'
           end
         end
 

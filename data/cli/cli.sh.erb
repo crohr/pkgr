@@ -231,18 +231,7 @@ configure() {
 }
 
 reconfigure() {
-  if [ "$APP_ADDONS" = "" ] ; then
-    configure --reconfigure
-  else
-    # only available for debian for now
-    if which dpkg-reconfigure &>/dev/null ; then
-      for addon in ${APP_ADDONS}; do
-        dpkg-reconfigure "${APP_NAME}-${addon}"
-      done
-      # always reconfigure main package as well
-      dpkg-reconfigure "${APP_NAME}"
-    fi
-  fi
+  configure --reconfigure
 }
 
 while : ; do

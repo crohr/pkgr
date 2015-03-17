@@ -131,10 +131,6 @@ module Pkgr
         "etc/cron.d"
       end
 
-      def add_addon(addon)
-        nil
-      end
-
       def preinstall_file
         @preinstall_file ||= generate_hook_file("preinstall.sh")
         @preinstall_file.path

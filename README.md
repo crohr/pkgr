@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make debian or rpm packages out of any app, including init script, logrotate, etc. Excellent way to distribute apps or command line tools without complicated installation instructions.
+Make debian or rpm packages out of any app, including init script, crons, logrotate, etc. Excellent way to distribute apps or command line tools without complicated installation instructions.
 
 Hosted service available at <https://packager.io/>. Free for OpenSource apps.
 

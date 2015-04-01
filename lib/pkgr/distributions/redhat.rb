@@ -7,3 +7,5 @@ module Pkgr
     end
   end
 end
+
+require 'pkgr/distributions/amazon'

@@ -22,6 +22,7 @@ You can also point to other buildpacks ([doc](https://packager.io/documentation/
 * RHEL/CentOS 6
 * Suse Linux Enterprise Server 12
 * Fedora 20
+* Amazon Linux AMI 2014
 
 ## Examples
 

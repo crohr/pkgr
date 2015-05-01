@@ -148,6 +148,11 @@ If you get the following error `ERROR:  While executing gem ... (ArgumentError) 
     export LC_ALL=en_US.UTF-8
     sudo gem install pkgr
 
+Looking for the init script? It is created the first time you run this command
+
+    sudo my-app scale web=1 worker=1
+
+
 ## Authors
 
 * Cyril Rohr <cyril.rohr@gmail.com> - <http://crohr.me>, <https://packager.io>

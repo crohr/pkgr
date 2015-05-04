@@ -5,7 +5,7 @@ After=<%= name %>.service
 
 [Service]
 # this service is just a placeholder
-ExecStart=/bin/bash -c 'while true; do sleep 10m; done'
+ExecStart=/bin/sleep infinity
 
 [Install]
 WantedBy=<%= name %>.service

@@ -1,6 +1,6 @@
 start on (started network-interface
           or started network-manager
-          or started networking)
+          or started networking) and filesystem
 
 # The `networking` job is a task, which means it will be stopped after the network interfaces have been configured.
 # That's why we don't stop on "stopping networking".

@@ -9,6 +9,10 @@ module Pkgr
         type == "upstart"
       end
 
+      def systemd?
+        type == "systemd"
+      end
+
       def templates(process, app_name)
         send("templates_#{type}", process, app_name)
       end
@@ -28,6 +32,14 @@ module Pkgr
           Templates::FileTemplate.new("upstart/#{app_name}.conf", data_file("master.conf.erb")),
           Templates::FileTemplate.new("upstart/#{app_name}-#{process.name}.conf", data_file("process_master.conf.erb")),
           Templates::FileTemplate.new("upstart/#{app_name}-#{process.name}-PROCESS_NUM.conf", data_file("process.conf.erb"))
+        ]
+      end
+
+      def templates_systemd(process, app_name)
+        [
+          Templates::FileTemplate.new("systemd/#{app_name}.service", data_file("master.service.erb")),
+          Templates::FileTemplate.new("systemd/#{app_name}-#{process.name}.service", data_file("process_master.service.erb")),
+          Templates::FileTemplate.new("systemd/#{app_name}-#{process.name}-PROCESS_NUM.service", data_file("process.service.erb"))
         ]
       end
 

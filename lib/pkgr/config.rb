@@ -9,7 +9,8 @@ module Pkgr
       "ubuntu-lucid" => "ubuntu-10.04",
       "ubuntu-precise" => "ubuntu-12.04",
       "debian-squeeze" => "debian-6",
-      "debian-wheezy" => "debian-7"
+      "debian-wheezy" => "debian-7",
+      "debian-jessie" => "debian-8"
     }
 
     class << self

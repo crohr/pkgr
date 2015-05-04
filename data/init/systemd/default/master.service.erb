@@ -1,0 +1,9 @@
+[Unit]
+StopWhenUnneeded=true
+
+[Service]
+# this service is just a placeholder
+ExecStart=/bin/bash -c 'while true; do sleep 10m; done'
+
+[Install]
+WantedBy=multi-user.target

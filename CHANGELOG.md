@@ -1,3 +1,14 @@
+## 1.4.4 - 20150512
+
+* Add CentOS / RHEL 7 support with systemd
+* Add Debian 8 "jessie" support with systemd
+* Upstart: make sure to start once filesystem is up
+* Add Amazon Linux 2015 support
+* Allow addons to be installed from a local relative path
+* Add SLES12 support
+* Extract SVN version number, if available
+* Changed interpreter in maintainer scripts to /bin/bash in order to avoid forbidden-postrm-interpreter errors on Debian 7
+
 ## 1.4.3 - 20150304
 
 * Allow to run some commands as the APP_USER instead of root

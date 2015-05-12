@@ -18,7 +18,9 @@ You can also point to other buildpacks ([doc](https://packager.io/documentation/
 
 * Ubuntu 14.04 ("trusty")
 * Ubuntu 12.04 ("precise")
+* Debian 8 ("jessie")
 * Debian 7 ("wheezy")
+* RHEL/CentOS 7
 * RHEL/CentOS 6
 * Suse Linux Enterprise Server 12
 * Fedora 20

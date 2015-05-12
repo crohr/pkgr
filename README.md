@@ -154,6 +154,9 @@ Looking for the init script? It is created the first time you run this command
 
     sudo my-app scale web=1 worker=1
 
+Issue getting nokogiri to compile? Try the following based on this [comment](https://github.com/crohr/pkgr/issues/60#issuecomment-96631181):
+
+    bundle config --local build.nokogiri "--use-system-libraries --with-xml2-include=/usr/include/libxml2"
 
 ## Authors
 

@@ -27,6 +27,8 @@ yum -y install \
 
 yum install -y rpm-build
 
+echo "pkgr ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
 install_ruby() {
   cd /usr/local/src/ && wget --quiet http://pyyaml.org/download/libyaml/yaml-0.1.6.tar.gz && tar xzf yaml-0.1.6.tar.gz
   cd /usr/local/src/yaml-0.1.6/ && ./configure --prefix=/usr/local && make && make install

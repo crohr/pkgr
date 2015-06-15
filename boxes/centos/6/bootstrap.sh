@@ -14,18 +14,32 @@ yum -y install \
   vim \
   sudo \
   wget \
-  curl \
+  curl-devel \
   openssl-devel \
   readline-devel \
   libxml2-devel \
   libxslt-devel \
   libevent-devel \
+  libmcrypt-devel \
+  libpng-devel \
+  libjpeg-devel \
+  bzip2-devel \
+  freetype-devel \
   postgresql-devel \
   mysql-devel \
   sqlite-devel \
   gcc gcc-c++ kernel-devel
 
 yum install -y rpm-build
+
+wget http://download.icu-project.org/files/icu4c/51.2/icu4c-51_2-src.tgz
+tar zxf icu4c-51_2-src.tgz
+cd icu/source
+./configure
+make
+make install
+ldconfig -v
+ln -s /usr/local/lib/*.so.* /lib64
 
 install_ruby() {
   cd /usr/local/src/ && wget --quiet http://pyyaml.org/download/libyaml/yaml-0.1.6.tar.gz && tar xzf yaml-0.1.6.tar.gz

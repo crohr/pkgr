@@ -108,6 +108,10 @@ module Pkgr
       @table[:maintainer] || "<someone@pkgr>"
     end
 
+    def vendor
+      @table[:vendor] || "pkgr <https://github.com/crohr/pkgr>"
+    end
+
     def env
       @table[:env].is_a?(Pkgr::Env) ? @table[:env] : Pkgr::Env.new(@table[:env])
     end

@@ -1,8 +1,2 @@
-start on (started network-interface
-          or started network-manager
-          or started networking) and filesystem
-
-# The `networking` job is a task, which means it will be stopped after the network interfaces have been configured.
-# That's why we don't stop on "stopping networking".
-# See <https://github.com/ddollar/foreman/issues/263>
-stop on runlevel [!2345]
+start on runlevel [2345]
+stop on runlevel [06]

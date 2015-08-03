@@ -142,14 +142,6 @@ scale_up() {
   echo "Scaling up..."
 
   if [ "${APP_RUNNER_TYPE}" = "upstart" ]; then
-    # copy initd
-    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}") $(_p "/etc/init.d/")
-    chmod 0755 $(_p "/etc/init.d/${APP_NAME}")
-    # copy master
-    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}.conf") $(_p "/etc/init/")
-    # copy master process
-    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}-${PROCESS_NAME}.conf") $(_p "/etc/init/")
-
     for i in $(seq ${SCALE_DELTA}); do
       index=$((${i} + ${CURRENT_SCALE}))
       PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
@@ -165,15 +157,6 @@ scale_up() {
     $APP_RUNNER_CLI start ${APP_NAME}-${PROCESS_NAME} || true
     $APP_RUNNER_CLI start ${APP_NAME} || true
   elif [ "$APP_RUNNER_TYPE" = "systemd" ]; then
-    local source=$(_p "${APP_HOME}/vendor/pkgr/scaling/systemd")
-    # copy master
-    cp ${source}/${APP_NAME}.service $SYSTEMD_DIR
-    # copy master process
-    cp ${source}/${APP_NAME}-${PROCESS_NAME}.service $SYSTEMD_DIR
-
-    $APP_RUNNER_CLI enable ${APP_NAME}.service || true
-    $APP_RUNNER_CLI enable ${APP_NAME}-${PROCESS_NAME}.service || true
-
     for i in $(seq ${SCALE_DELTA}); do
       index=$((${i} + ${CURRENT_SCALE}))
       PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
@@ -189,12 +172,6 @@ scale_up() {
     $APP_RUNNER_CLI start ${APP_NAME}-${PROCESS_NAME}.service
     $APP_RUNNER_CLI start ${APP_NAME}.service
   else
-    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}") $(_p /etc/init.d/)
-    chmod a+x $(_p "/etc/init.d/${APP_NAME}")
-    sysv_enable ${APP_NAME}
-    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}-${PROCESS_NAME}") $(_p /etc/init.d/)
-    chmod a+x $(_p "/etc/init.d/${APP_NAME}-${PROCESS_NAME}")
-    sysv_enable ${APP_NAME}-${PROCESS_NAME}
     for i in $(seq ${SCALE_DELTA}); do
       index=$((${i} + ${CURRENT_SCALE}))
       PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
@@ -246,6 +223,32 @@ scale() {
   CURRENT_SCALE=$(current_number_of_processes ${PROCESS_NAME})
   CURRENT_SCALE=${CURRENT_SCALE:="0"}
   SCALE_DELTA=$((${NEW_SCALE} - ${CURRENT_SCALE}))
+
+  if [ "${APP_RUNNER_TYPE}" = "upstart" ]; then
+    # copy initd
+    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}") $(_p "/etc/init.d/")
+    chmod 0755 $(_p "/etc/init.d/${APP_NAME}")
+    # copy master
+    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}.conf") $(_p "/etc/init/")
+    # copy master process
+    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}-${PROCESS_NAME}.conf") $(_p "/etc/init/")
+  elif [ "$APP_RUNNER_TYPE" = "systemd" ]; then
+    local source=$(_p "${APP_HOME}/vendor/pkgr/scaling/systemd")
+    # copy master
+    cp ${source}/${APP_NAME}.service $SYSTEMD_DIR
+    # copy master process
+    cp ${source}/${APP_NAME}-${PROCESS_NAME}.service $SYSTEMD_DIR
+
+    $APP_RUNNER_CLI enable ${APP_NAME}.service || true
+    $APP_RUNNER_CLI enable ${APP_NAME}-${PROCESS_NAME}.service || true
+  else
+    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}") $(_p /etc/init.d/)
+    chmod a+x $(_p "/etc/init.d/${APP_NAME}")
+    sysv_enable ${APP_NAME}
+    cp $(_p "${APP_HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}-${PROCESS_NAME}") $(_p /etc/init.d/)
+    chmod a+x $(_p "/etc/init.d/${APP_NAME}-${PROCESS_NAME}")
+    sysv_enable ${APP_NAME}-${PROCESS_NAME}
+  fi
 
   if [ $SCALE_DELTA -gt 0 ]; then
     scale_up "${PROCESS_NAME}" $CURRENT_SCALE $NEW_SCALE $SCALE_DELTA

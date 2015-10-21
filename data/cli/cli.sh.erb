@@ -300,7 +300,8 @@ while : ; do
       if [ $(id -u) = $(id -u ${APP_USER}) ]; then
         exec sh -c "cd $(_p ${APP_HOME}) && $runnable"
       else
-        exec chroot --userspec ${APP_USER}:${APP_GROUP} "/" sh -c "cd $(_p ${APP_HOME}) && $runnable"
+        additional_groups="$(id -Gn ${APP_USER} |  tr ' ' ',')"
+        exec chroot --userspec ${APP_USER}:${APP_GROUP} --groups="${additional_groups}" "/" sh -c "cd $(_p ${APP_HOME}) && $runnable"
       fi
 
       break ;;

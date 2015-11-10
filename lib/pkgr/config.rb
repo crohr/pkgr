@@ -76,6 +76,10 @@ module Pkgr
       @table.has_key?(:cli) ? @table[:cli] : true
     end
 
+    def skip_default_dependencies?
+      @table[:default_dependencies] === false
+    end
+
     def home
       @table[:home] || "/opt/#{name}"
     end

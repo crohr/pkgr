@@ -80,6 +80,7 @@ module Pkgr
 
       def dependencies(other_dependencies = nil)
         deps = YAML.load_file(data_file("dependencies", "#{os}.yml"))
+        deps = {} if config.skip_default_dependencies?
         (deps["default"] || []) | (deps[slug] || []) | (other_dependencies || [])
       end # def dependencies
 

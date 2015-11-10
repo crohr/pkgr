@@ -5,7 +5,6 @@ require 'pkgr/fpm_command'
 
 module Pkgr
   module Distributions
-    # Contains the various components required to make a packaged app integrate well with a Debian system.
     class Sles < Base
       # Only keep major digits
       def release
@@ -25,7 +24,12 @@ module Pkgr
       end
 
       def installer_dependencies
-        super.push("which").push("net-tools").uniq
+        if release.to_i > 11
+          super.push("which").push("net-tools").uniq
+        else
+          # sles-11 already has which installed
+          super.push("net-tools").uniq
+        end
       end
 
       def fpm_command(build_dir)
@@ -42,6 +46,3 @@ module Pkgr
     end
   end
 end
-
-require 'pkgr/distributions/redhat'
-require 'pkgr/distributions/centos'

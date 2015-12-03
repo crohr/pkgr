@@ -35,8 +35,8 @@ module Pkgr
       buildpack_detect.exitstatus == 0
     end
 
-    def compile(path, compile_cache_dir)
-      cmd = %{env -i PATH="$PATH"#{env} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" }
+    def compile(path, compile_cache_dir, compile_env_dir)
+      cmd = %{env -i PATH="$PATH"#{env} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" "#{compile_env_dir}" }
       Pkgr.debug "Running #{cmd.inspect}"
 
       Dir.chdir(path) do
@@ -52,8 +52,8 @@ module Pkgr
       true
     end
 
-    def release(path, compile_cache_dir)
-      buildpack_release = Mixlib::ShellOut.new("#{dir}/bin/release \"#{path}\" \"#{compile_cache_dir}\" > #{path}/.release")
+    def release(path)
+      buildpack_release = Mixlib::ShellOut.new("#{dir}/bin/release \"#{path}\" > #{path}/.release")
       buildpack_release.logger = Pkgr.logger
       buildpack_release.run_command
       buildpack_release.exitstatus == 0

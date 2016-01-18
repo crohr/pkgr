@@ -69,10 +69,10 @@ module Pkgr
 
       # Returns a list of Buildpack objects
       def buildpacks
-        custom_buildpack_uri = config.buildpack
-        if custom_buildpack_uri
-          uuid = Digest::SHA1.hexdigest(custom_buildpack_uri)
-          [Buildpack.new(custom_buildpack_uri, :custom, config.env)]
+        if config.buildpacks && config.buildpacks.length > 0
+          config.buildpacks.map { |url| Buildpack.new(url, :custom, config.env) }
+        elsif config.buildpack
+          [Buildpack.new(config.buildpack, :custom, config.env)]
         else
           load_buildpack_list
         end

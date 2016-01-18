@@ -232,6 +232,7 @@ module Pkgr
 
       args.push "--license \"#{license}\"" unless license.nil? || license.empty?
       args.push "--buildpack \"#{buildpack}\"" unless buildpack.nil? || buildpack.empty?
+      args.push "--buildpacks \"#{buildpacks.map{|d| "\"#{d}\""}.join}\"" unless buildpacks.nil? || buildpacks.empty?
       args.push "--buildpack_list \"#{buildpack_list}\"" unless buildpack_list.nil? || buildpack_list.empty?
       args.push "--force-os \"#{force_os}\"" unless force_os.nil? || force_os.empty?
       args.push "--runner \"#{runner}\"" unless runner.nil? || runner.empty?

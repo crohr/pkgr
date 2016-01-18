@@ -1,3 +1,6 @@
+## master
+* Permit specifying multiple buildpacks to execute
+
 ## 1.4.4 - 20150512
 
 * Add CentOS / RHEL 7 support with systemd

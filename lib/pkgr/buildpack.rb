@@ -98,7 +98,7 @@ module Pkgr
 
     def replace_app_with_app_home(app_home)
       Dir.chdir(dir) do
-        buildpack_replace = Mixlib::ShellOut.new("find . -type f -not -path '*/.git/*' -print0 | xargs -0 perl -pi -e s,/app,#{app_home},g")
+        buildpack_replace = Mixlib::ShellOut.new("find . -type f -not -path '*/.git/*' -print0 | xargs -0 perl -pi -e s,/app/,#{app_home}/,g")
         buildpack_replace.logger = Pkgr.logger
         buildpack_replace.run_command
         buildpack_replace.error!

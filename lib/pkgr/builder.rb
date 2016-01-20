@@ -109,6 +109,11 @@ module Pkgr
       if buildpack_for_app
         puts "-----> #{buildpack_for_app.banner} app"
 
+        begin
+          FileUtils.mkdir_p(app_home_dir)
+        rescue Errno::EACCES => e
+          Pkgr.logger.warn "Can't create #{app_home_dir.inspect}, which may be needed by some buildpacks."
+        end
         FileUtils.mkdir_p(compile_cache_dir)
         FileUtils.mkdir_p(compile_env_dir)
 
@@ -257,6 +262,11 @@ module Pkgr
     # Returns the path to the app's (supposedly present) Procfile.
     def procfile
       File.join(source_dir, "Procfile")
+    end
+
+    # Some buildpacks may need the target home dir to exist
+    def app_home_dir
+      config.home
     end
 
     # Directory where the buildpacks can store stuff.

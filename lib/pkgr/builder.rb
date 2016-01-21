@@ -120,7 +120,7 @@ module Pkgr
         buildpacks_for_app.each do |buildpack|
           puts "-----> #{buildpack.banner} app"
           buildpack.compile(source_dir, compile_cache_dir, compile_env_dir)
-          buildpack.release(source_dir, compile_cache_dir)
+          buildpack.release(source_dir)
         end
 
         run_hook config.after_hook

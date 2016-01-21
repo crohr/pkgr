@@ -31,10 +31,7 @@ module Pkgr
 
     method_option :buildpack,
       :type => :string,
-      :desc => "Custom buildpack to use"
-    method_option :buildpacks,
-      :type => :array,
-      :desc => "Custom buildpacks to use. Takes preference over --buildpack if specified."
+      :desc => "Custom buildpack to use. May be a single string or a list."
     method_option :buildpack_list,
       :type => :string,
       :desc => "Specify a file containing a list of buildpacks to use (--buildpack takes precedence if given)"

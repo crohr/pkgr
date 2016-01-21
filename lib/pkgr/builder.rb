@@ -287,24 +287,23 @@ module Pkgr
       @distribution ||= Distributions.current(config)
     end
 
-    # List of available buildpacks for the current distribution.
-    def buildpacks
-      distribution.buildpacks
-    end
-
     # Buildpacks detected for the app, if any. If multiple buildpacks are explicitly specified, all are used
     def buildpacks_for_app
       raise "#{source_dir} does not exist" unless File.directory?(source_dir)
-      @buildpacks_for_app ||= if config.buildpacks
-        buildpacks.find_all do |buildpack|
-          buildpack.setup(config.edge, config.home)
-          buildpack.detect(source_dir)
+      @buildpacks_for_app ||= begin
+        mode, buildpacks = distribution.buildpacks
+        case mode
+        when :custom
+          buildpacks.find_all do |buildpack|
+            buildpack.setup(config.edge, config.home)
+            buildpack.detect(source_dir)
+          end
+        else
+          [buildpacks.find do |buildpack|
+            buildpack.setup(config.edge, config.home)
+            buildpack.detect(source_dir)
+          end].compact
         end
-      else
-        [buildpacks.find do |buildpack|
-          buildpack.setup(config.edge, config.home)
-          buildpack.detect(source_dir)
-        end].compact
       end
     end
 

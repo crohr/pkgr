@@ -39,7 +39,7 @@ describe Pkgr::Distributions::Base do
   describe "#buildpacks" do
     it "can take an external list of default buildpacks" do
       config.buildpack_list = fixture("buildpack-list")
-      list = distribution.buildpacks
+      type, list = distribution.buildpacks
       expect(list.length).to eq(2)
       expect(list.all?{|b| b.is_a?(Pkgr::Buildpack)}).to eq(true)
       expect(list.first.env.to_hash).to eq({
@@ -50,7 +50,7 @@ describe Pkgr::Distributions::Base do
     it "prioritize buildpack specific environment variables over the global ones" do
       config.env = Pkgr::Env.new(["VENDOR_URL=http://global/path"])
       config.buildpack_list = fixture("buildpack-list")
-      list = distribution.buildpacks
+      type, list = distribution.buildpacks
       expect(list.first.env.to_hash["VENDOR_URL"]).to eq("https://path/to/vendor")
       expect(list.last.env.to_hash["VENDOR_URL"]).to eq("http://global/path")
     end

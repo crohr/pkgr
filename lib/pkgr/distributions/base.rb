@@ -69,12 +69,10 @@ module Pkgr
 
       # Returns a list of Buildpack objects
       def buildpacks
-        if config.buildpacks && config.buildpacks.length > 0
-          config.buildpacks.map { |url| Buildpack.new(url, :custom, config.env) }
-        elsif config.buildpack
-          [Buildpack.new(config.buildpack, :custom, config.env)]
+        if config.buildpacks
+          [:custom, config.buildpacks.map { |url| Buildpack.new(url, :custom, config.env) }]
         else
-          load_buildpack_list
+          [:builtin, load_buildpack_list]
         end
       end # def buildpacks
 

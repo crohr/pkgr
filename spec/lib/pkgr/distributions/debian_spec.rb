@@ -41,7 +41,7 @@ describe Pkgr::Distributions::Debian do
 
   describe "#buildpacks" do
     it "has a list of default buildpacks" do
-      list = distribution.buildpacks
+      type, list = distribution.buildpacks
       expect(list).to_not be_empty
       expect(list.all?{|b| b.is_a?(Pkgr::Buildpack)}).to eq(true)
     end

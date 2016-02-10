@@ -27,6 +27,13 @@ module Pkgr
         [os, release].join("-")
       end # def slug
 
+      def target
+        {
+          "centos-6" => "el:6",
+          "centos-7" => "el:7"
+        }.fetch(slug, slug.sub("-", ":"))
+      end
+
       def package_test_command(package)
         raise NotImplementedError, "package_test_command must be implemented"
       end

@@ -68,6 +68,7 @@ module Pkgr
         end
       end
       config.distribution = distribution
+      config.env.variables.push("TARGET=#{distribution.target}")
       # useful for templates that need to read files
       config.source_dir = source_dir
       config.build_dir = build_dir

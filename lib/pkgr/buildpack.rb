@@ -20,7 +20,7 @@ module Pkgr
       @url, @branch = url.split("#")
       @branch ||= "master"
       @type = type
-      @env = env
+      @env = env || Env.new
     end
 
     def buildpack_cache_dir
@@ -28,7 +28,7 @@ module Pkgr
     end
 
     def detect(path)
-      buildpack_detect = Mixlib::ShellOut.new("#{dir}/bin/detect \"#{path}\"")
+      buildpack_detect = Mixlib::ShellOut.new("env -i #{compound_environment(path)} #{dir}/bin/detect \"#{path}\"")
       buildpack_detect.logger = Pkgr.logger
       buildpack_detect.run_command
       @banner = buildpack_detect.stdout.chomp
@@ -36,7 +36,7 @@ module Pkgr
     end
 
     def compile(path, compile_cache_dir, compile_env_dir)
-      cmd = %{env -i PATH="$PATH"#{env} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" "#{compile_env_dir}" }
+      cmd = %{env -i #{compound_environment(path)} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" "#{compile_env_dir}" }
       Pkgr.debug "Running #{cmd.inspect}"
 
       Dir.chdir(path) do
@@ -53,7 +53,7 @@ module Pkgr
     end
 
     def release(path)
-      buildpack_release = Mixlib::ShellOut.new("#{dir}/bin/release \"#{path}\" > #{path}/.release")
+      buildpack_release = Mixlib::ShellOut.new("env -i #{compound_environment(path)} #{dir}/bin/release \"#{path}\" > #{path}/.release")
       buildpack_release.logger = Pkgr.logger
       buildpack_release.run_command
       buildpack_release.exitstatus == 0
@@ -103,6 +103,18 @@ module Pkgr
         buildpack_replace.run_command
         buildpack_replace.error!
       end
+    end
+
+  private
+
+    def compound_environment(path)
+      Env.new(['PATH="$PATH"']).merge(env).merge(exported_environment(File.join(path, "export")))
+    end
+
+    def exported_environment(path)
+      Env.from_export(path)
+    rescue Errno::ENOENT
+      Env.new
     end
   end
 end

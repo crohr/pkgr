@@ -75,7 +75,7 @@ module Pkgr
     def refresh(edge = true)
       return if !edge
       Dir.chdir(dir) do
-        buildpack_refresh = Mixlib::ShellOut.new("git fetch origin && ( git reset --hard #{branch} || git reset --hard origin/#{branch} )")
+        buildpack_refresh = Mixlib::ShellOut.new("git fetch origin && ( git reset --hard #{branch} || git reset --hard origin/#{branch} ) && chmod -f +x bin/detect && chmod -f +x bin/compile && chmod -f +x bin/release")
         buildpack_refresh.logger = Pkgr.logger
         buildpack_refresh.run_command
         buildpack_refresh.error!

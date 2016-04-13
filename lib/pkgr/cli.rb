@@ -57,6 +57,10 @@ module Pkgr
     method_option :description,
       :type => :string,
       :desc => "Project description"
+    method_option :category,
+      :type => :string,
+      :default => "none",
+      :desc => "Category this package belongs to"
     method_option :version,
       :type => :string,
       :desc => "Package version (if git directory given, it will use the latest git tag available)"
@@ -138,6 +142,10 @@ module Pkgr
       :type => :string,
       :default => default_data_dir,
       :desc => "Custom path to data directory. Can be used for overriding default templates, hooks(pre-, post- scripts), configs (buildpacks, distro dependencies), environments, etc."
+    method_option :directories,
+      :type => :string,
+      :default => nil,
+      :desc => "Recursively mark a directory as being owned by the package"
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

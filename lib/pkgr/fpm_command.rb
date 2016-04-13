@@ -31,11 +31,13 @@ module Pkgr
       list << "--description" << config.description
       list << "--maintainer" << config.maintainer
       list << "--vendor" << config.vendor
-      list << %{--template-scripts}
+      list << "--category" << config.category
+      list << "--template-scripts"
       list << "--before-install" << distribution.preinstall_file
       list << "--after-install" << distribution.postinstall_file
       list << "--before-remove" << distribution.preuninstall_file
       list << "--after-remove" << distribution.postuninstall_file
+      list << "--directories" << config.directories unless config.directories.nil?
       distribution.dependencies(config.dependencies).each{|d| list << "-d" << d}
       list.compact
     end

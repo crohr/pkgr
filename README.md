@@ -96,7 +96,7 @@ Full command line options are given below:
 
 ## Why?
 
-Tools such as [Capistrano](http://capify.org/) are great for deploying
+Tools such as [Capistrano](http://capistranorb.com/) are great for deploying
 applications, but the deployment recipe can quickly become a mess, and scaling
 the deployment to more than a few servers can prove to be difficult. Plus, if
 you're already using automation tools such as

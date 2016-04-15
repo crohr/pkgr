@@ -50,6 +50,7 @@ fi
 
 # Source all environment variables for the app. This must be done as
 # privileged user since the config variables are only readable by root.
+PORT_WAS=$PORT
 for file in $(_p "/etc/${APP_NAME}/conf.d")/*; do
   if [ -f $file ]; then . $file; fi
 done
@@ -293,6 +294,9 @@ while : ; do
         runnable="${runnable}$(printf " %q" ${COMMAND} "$@")"
       fi
 
+      # fix port
+      export PORT=$PORT_WAS
+
       # Do not use su, to avoid creating a new process. Note: chroot version
       # is too old on Ubuntu Lucid, so this will fail. It works on Debian
       # Squeeze though (and later).
@@ -300,7 +304,8 @@ while : ; do
       if [ $(id -u) = $(id -u ${APP_USER}) ]; then
         exec sh -c "cd $(_p ${APP_HOME}) && $runnable"
       else
-        exec chroot --userspec ${APP_USER}:${APP_GROUP} "/" sh -c "cd $(_p ${APP_HOME}) && $runnable"
+        additional_groups="$(id -Gn ${APP_USER} |  tr ' ' ',')"
+        exec chroot --userspec ${APP_USER}:${APP_GROUP} --groups="${additional_groups}" "/" sh -c "cd $(_p ${APP_HOME}) && $runnable"
       fi
 
       break ;;

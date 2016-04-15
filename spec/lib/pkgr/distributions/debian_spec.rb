@@ -12,6 +12,17 @@ describe Pkgr::Distributions::Debian do
     expect(distribution.debtemplates.read).to eq("")
   end
 
+  describe "dependencies" do
+    it "has default dependencies" do
+      expect(distribution.dependencies).to_not be_empty
+    end
+
+    it "can skip default dependencies" do
+      config.default_dependencies = false
+      expect(distribution.dependencies).to be_empty
+    end
+  end
+
   it "has file and dir templates" do
     config.name = "my-app"
     config.home = "/opt/my-app"

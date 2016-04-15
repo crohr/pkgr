@@ -76,6 +76,10 @@ module Pkgr
       @table.has_key?(:cli) ? @table[:cli] : true
     end
 
+    def skip_default_dependencies?
+      @table[:default_dependencies] === false
+    end
+
     def home
       @table[:home] || "/opt/#{name}"
     end
@@ -102,6 +106,10 @@ module Pkgr
 
     def maintainer
       @table[:maintainer] || "<someone@pkgr>"
+    end
+
+    def vendor
+      @table[:vendor] || "pkgr <https://github.com/crohr/pkgr>"
     end
 
     def env

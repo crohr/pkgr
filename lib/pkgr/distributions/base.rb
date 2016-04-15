@@ -27,6 +27,13 @@ module Pkgr
         [os, release].join("-")
       end # def slug
 
+      def target
+        {
+          "centos-6" => "el:6",
+          "centos-7" => "el:7"
+        }.fetch(slug, slug.sub("-", ":"))
+      end
+
       def package_test_command(package)
         raise NotImplementedError, "package_test_command must be implemented"
       end
@@ -80,6 +87,7 @@ module Pkgr
 
       def dependencies(other_dependencies = nil)
         deps = YAML.load_file(data_file("dependencies", "#{os}.yml"))
+        deps = {} if config.skip_default_dependencies?
         (deps["default"] || []) | (deps[slug] || []) | (other_dependencies || [])
       end # def dependencies
 

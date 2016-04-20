@@ -68,6 +68,7 @@ module Pkgr
         end
       end
       config.distribution = distribution
+      config.env.variables.push("TARGET=#{distribution.target}")
       # useful for templates that need to read files
       config.source_dir = source_dir
       config.build_dir = build_dir
@@ -109,11 +110,17 @@ module Pkgr
       if buildpack_for_app
         puts "-----> #{buildpack_for_app.banner} app"
 
+        begin
+          FileUtils.mkdir_p(app_home_dir)
+        rescue Errno::EACCES => e
+          Pkgr.logger.warn "Can't create #{app_home_dir.inspect}, which may be needed by some buildpacks."
+        end
         FileUtils.mkdir_p(compile_cache_dir)
+        FileUtils.mkdir_p(compile_env_dir)
 
         run_hook config.before_hook
-        buildpack_for_app.compile(source_dir, compile_cache_dir)
-        buildpack_for_app.release(source_dir, compile_cache_dir)
+        buildpack_for_app.compile(source_dir, compile_cache_dir, compile_env_dir)
+        buildpack_for_app.release(source_dir)
         run_hook config.after_hook
       else
         raise Errors::UnknownAppType, "Can't find a buildpack for your app"
@@ -258,9 +265,19 @@ module Pkgr
       File.join(source_dir, "Procfile")
     end
 
+    # Some buildpacks may need the target home dir to exist
+    def app_home_dir
+      config.home
+    end
+
     # Directory where the buildpacks can store stuff.
     def compile_cache_dir
       config.compile_cache_dir || File.join(source_dir, ".git/cache")
+    end
+
+    # Directory where the buildpacks can store config envs.
+    def compile_env_dir
+      config.compile_env_dir ||= Dir.mktmpdir
     end
 
     # Returns the current distribution we're packaging for.

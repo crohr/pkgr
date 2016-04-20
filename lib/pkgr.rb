@@ -13,8 +13,13 @@ module Pkgr
     class ConfigurationInvalid < Base; end
   end
 
+  def data_dir=(path)
+    @data_dir = path
+  end
+  module_function :data_dir=
+
   def data_dir
-    File.expand_path("../../data", __FILE__)
+    @data_dir ||= File.expand_path("../../data", __FILE__)
   end
   module_function :data_dir
 end

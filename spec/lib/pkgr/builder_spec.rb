@@ -116,7 +116,7 @@ describe Pkgr::Builder do
     it "raises an error if something occurs during buildpack compilation" do
       buildpack = double(Pkgr::Buildpack, :banner => "Ruby/Rails")
       builder.stub(:buildpack_for_app => buildpack)
-      buildpack.should_receive(:compile).with(builder.source_dir, builder.compile_cache_dir).and_raise(Pkgr::Errors::Base)
+      buildpack.should_receive(:compile).with(builder.source_dir, builder.compile_cache_dir, builder.compile_env_dir).and_raise(Pkgr::Errors::Base)
 
       expect{ builder.compile }.to raise_error(Pkgr::Errors::Base)
     end
@@ -124,7 +124,7 @@ describe Pkgr::Builder do
     it "raises an error if something occurs during buildpack release" do
       buildpack = double(Pkgr::Buildpack, :banner => "Ruby/Rails", :compile => true)
       builder.stub(:buildpack_for_app => buildpack)
-      buildpack.should_receive(:release).with(builder.source_dir, builder.compile_cache_dir).and_raise(Pkgr::Errors::Base)
+      buildpack.should_receive(:release).with(builder.source_dir).and_raise(Pkgr::Errors::Base)
 
       expect{ builder.compile }.to raise_error(Pkgr::Errors::Base)
     end

@@ -5,6 +5,12 @@ require 'pkgr/env'
 
 module Pkgr
   class CLI < Thor
+    no_tasks do
+      def self.default_data_dir
+        File.expand_path("../../../data", __FILE__)
+      end
+    end
+
     class_option :verbose,
       :type => :boolean,
       :default => false,
@@ -37,8 +43,7 @@ module Pkgr
       :desc => "Maintainer"
     method_option :vendor,
       :type => :string,
-      :desc => "Package vendor",
-      :default => "pkgr <https://github.com/crohr/pkgr>"
+      :desc => "Package vendor"
     method_option :architecture,
       :type => :string,
       :default => "x86_64",
@@ -129,10 +134,15 @@ module Pkgr
       :type => :boolean,
       :default => true,
       :desc => "Verifies output package"
+    method_option :data_dir,
+      :type => :string,
+      :default => default_data_dir,
+      :desc => "Custom path to data directory. Can be used for overriding default templates, hooks(pre-, post- scripts), configs (buildpacks, distro dependencies), environments, etc."
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]
       Pkgr.level = Logger::DEBUG if options[:debug]
+      Pkgr.data_dir = options[:data_dir]
 
       Pkgr::Buildpack.buildpacks_cache_dir = options[:buildpacks_cache_dir] if options[:buildpacks_cache_dir]
 

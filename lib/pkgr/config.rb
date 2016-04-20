@@ -9,7 +9,8 @@ module Pkgr
       "ubuntu-lucid" => "ubuntu-10.04",
       "ubuntu-precise" => "ubuntu-12.04",
       "debian-squeeze" => "debian-6",
-      "debian-wheezy" => "debian-7"
+      "debian-wheezy" => "debian-7",
+      "debian-jessie" => "debian-8"
     }
 
     class << self
@@ -75,6 +76,10 @@ module Pkgr
       @table.has_key?(:cli) ? @table[:cli] : true
     end
 
+    def skip_default_dependencies?
+      @table[:default_dependencies] === false
+    end
+
     def home
       @table[:home] || "/opt/#{name}"
     end
@@ -101,6 +106,10 @@ module Pkgr
 
     def maintainer
       @table[:maintainer] || "<someone@pkgr>"
+    end
+
+    def vendor
+      @table[:vendor] || "pkgr <https://github.com/crohr/pkgr>"
     end
 
     def env

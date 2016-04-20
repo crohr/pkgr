@@ -13,7 +13,12 @@ module Pkgr
       end
 
       def runner
-        @runner ||= Runner.new("sysv", "lsb-3.1", "update-rc.d")
+        @runner ||= case release
+        when /^8/
+          Runner.new("systemd", "default", "systemctl")
+        else
+          Runner.new("sysv", "lsb-3.1", "update-rc.d")
+        end
       end
 
       def package_test_command(package)

@@ -25,6 +25,8 @@ yum -y install \
   sqlite-devel \
   gcc gcc-c++ kernel-devel
 
+yum install -y rpm-build
+
 install_ruby() {
   cd /usr/local/src/ && wget --quiet http://pyyaml.org/download/libyaml/yaml-0.1.6.tar.gz && tar xzf yaml-0.1.6.tar.gz
   cd /usr/local/src/yaml-0.1.6/ && ./configure --prefix=/usr/local && make && make install

@@ -1,0 +1,15 @@
+[Unit]
+StopWhenUnneeded=true
+Requires=<%= name %>-<%= process_name %>.service
+After=<%= name %>-<%= process_name %>.service
+
+[Service]
+Environment=PORT=PORT_NUM
+ExecStart=/usr/bin/<%= name %> run <%= process_name %>
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=%n
+
+[Install]
+WantedBy=<%= name %>-<%= process_name %>.service

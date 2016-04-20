@@ -1,0 +1,11 @@
+[Unit]
+StopWhenUnneeded=true
+Requires=<%= name %>.service
+After=<%= name %>.service
+
+[Service]
+# this service is just a placeholder
+ExecStart=/bin/sleep infinity
+
+[Install]
+WantedBy=<%= name %>.service

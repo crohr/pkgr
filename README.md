@@ -18,7 +18,9 @@ You can also point to other buildpacks ([doc](https://packager.io/documentation/
 
 * Ubuntu 14.04 ("trusty")
 * Ubuntu 12.04 ("precise")
+* Debian 8 ("jessie")
 * Debian 7 ("wheezy")
+* RHEL/CentOS 7
 * RHEL/CentOS 6
 * Suse Linux Enterprise Server 12
 * Fedora 20
@@ -30,7 +32,11 @@ See <https://packager.io/> for examples of apps packaged with `pkgr` (Gitlab, Op
 
 ## Installation
 
-On a debian based build machine:
+You can find DEB and RPM packages for a wide range of distributions on Packager.io:
+
+<https://packager.io/gh/crohr/pkgr>
+
+Or, installing as a gem, on debian-based machines:
 
     sudo apt-get update
     sudo apt-get install -y build-essential ruby1.9.1-full rubygems1.9.1
@@ -90,7 +96,7 @@ Full command line options are given below:
 
 ## Why?
 
-Tools such as [Capistrano](http://capify.org/) are great for deploying
+Tools such as [Capistrano](http://capistranorb.com/) are great for deploying
 applications, but the deployment recipe can quickly become a mess, and scaling
 the deployment to more than a few servers can prove to be difficult. Plus, if
 you're already using automation tools such as
@@ -147,6 +153,14 @@ If you get the following error `ERROR:  While executing gem ... (ArgumentError) 
     export LANG=en_US.UTF-8
     export LC_ALL=en_US.UTF-8
     sudo gem install pkgr
+
+Looking for the init script? It is created the first time you run this command
+
+    sudo my-app scale web=1 worker=1
+
+Issue getting nokogiri to compile? Try the following based on this [comment](https://github.com/crohr/pkgr/issues/60#issuecomment-96631181):
+
+    bundle config --local build.nokogiri "--use-system-libraries --with-xml2-include=/usr/include/libxml2"
 
 ## Authors
 

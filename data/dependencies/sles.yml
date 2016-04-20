@@ -4,7 +4,12 @@ default:
   - libxml2
   - libxslt
   - libevent
-  - postgresql93
-  - libmysqlclient18
   - sqlite3
   - shadow
+sles-11:
+  - libmysqlclient15
+  - libmysqlclient_r15
+  - postgresql
+sles-12:
+  - libmysqlclient18
+  - postgresql93

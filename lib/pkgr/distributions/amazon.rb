@@ -28,6 +28,12 @@ module Pkgr
         AmazonFpmCommand.new(self, build_dir).command
       end
 
+      def templates
+        list = super
+        list.push Templates::DirTemplate.new("etc/init")
+        list
+      end
+
       class AmazonFpmCommand < FpmCommand
         def args
           list = super

@@ -10,7 +10,12 @@ module Pkgr
       end
 
       def runner
-        @runner ||= Runner.new("upstart", "1.5", "initctl")
+        @runner ||= case release
+        when /^16.04/
+          Runner.new("systemd", "default", "systemctl")
+        else
+          Runner.new("upstart", "1.5", "initctl")
+        end
       end
 
       def templates

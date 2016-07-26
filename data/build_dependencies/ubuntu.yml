@@ -13,3 +13,5 @@ ubuntu-10.04:
   - libssl0.9.8
 ubuntu-12.04:
   - libssl1.0.0
+ubuntu-16.04:
+  - libssl1.0.0

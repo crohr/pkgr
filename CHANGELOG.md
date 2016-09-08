@@ -1,3 +1,8 @@
+## 1.5.1 - 20160908
+
+* Update Ruby buildpack URL to get the latest ruby versions asutomatically
+* Add support for Python!
+
 ## 1.5.0 - 20160908
 
 * Fix upstart job for CentOS

@@ -2,7 +2,9 @@
 
 ## Goal
 
-Make debian or rpm packages out of any app, including init script, crons, logrotate, etc. Excellent way to distribute apps or command line tools without complicated installation instructions.
+Make debian or rpm packages out of any app, including init script, crons,
+logrotate, etc. Excellent way to distribute apps or command line tools without
+complicated installation instructions.
 
 Hosted service available at <https://packager.io/>. Free for OpenSource apps.
 
@@ -10,12 +12,19 @@ Hosted service available at <https://packager.io/>. Free for OpenSource apps.
 
 * Ruby
 * NodeJS
+* Python
 * Go
 
-You can also point to other buildpacks ([doc](https://packager.io/documentation/customizing-the-build/#buildpack)). They may just work.
+You can also try out PHP support by specifying the following buildpack:
+`https://github.com/pkgr/heroku-buildpack-php#buildcurl`
+
+You can also point to other buildpacks
+([doc](https://packager.io/documentation/customizing-the-build/#buildpack)).
+They may just work.
 
 ## Supported distributions (64bits only)
 
+* Ubuntu 16.04 ("xenial")
 * Ubuntu 14.04 ("trusty")
 * Ubuntu 12.04 ("precise")
 * Debian 8 ("jessie")
@@ -23,7 +32,8 @@ You can also point to other buildpacks ([doc](https://packager.io/documentation/
 * RHEL/CentOS 7
 * RHEL/CentOS 6
 * Suse Linux Enterprise Server 12
-* Fedora 20
+* Suse Linux Enterprise Server 11
+* Amazon Linux AMI 2015
 * Amazon Linux AMI 2014
 
 ## Examples

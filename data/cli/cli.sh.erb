@@ -107,7 +107,7 @@ update_port() {
   if [ "${process_name}" = "web" ]; then
     sed -i "s/PORT_NUM/${port}/g" "${file}"
   else
-    sed -i "s/^env .*PORT_NUM.*$//g" "${file}"
+    sed -i "s/^env.*PORT_NUM$//Ig" ${file}"
     sed -i "s/^export PORT=PORT_NUM$//g" "${file}"
   fi
 }

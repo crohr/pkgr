@@ -111,7 +111,6 @@ module Pkgr
       :desc => "Specific system dependencies that must be present before building"
     method_option :disable_default_dependencies,
       :type => :boolean,
-      :default => false,
       :desc => "Disable default dependencies"
     method_option :host,
       :type => :string,
@@ -152,7 +151,6 @@ module Pkgr
       :desc => "Recursively mark a directory as being owned by the package"
     method_option :disable_cli,
       :type => :boolean,
-      :default => false,
       :desc => "Disable installing CLI"
 
     def package(tarball)

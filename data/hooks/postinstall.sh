@@ -13,6 +13,7 @@ LOGS="/var/log/${APP_NAME}"
 chown -R ${APP_USER}.${APP_GROUP} ${APP_HOME}
 
 # link app log directory to /var/log/NAME
+mkdir -p ${LOGS}
 rm -rf ${HOME_LOGS}
 ln -fs ${LOGS} ${HOME_LOGS}
 chown -R ${APP_USER}.${APP_GROUP} ${LOGS}

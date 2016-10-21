@@ -3,7 +3,7 @@ module Pkgr
     attr_reader :variables
 
     def self.from_export(file)
-      new File.read(file).split("\n").map { |line| line.sub!("export", "") }
+      new(File.read(file).split("\n").map { |line| line.sub(/^export\s+/, "") })
     end
 
     def initialize(variables = nil)

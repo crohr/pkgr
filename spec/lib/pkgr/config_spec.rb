@@ -1,16 +1,30 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe Pkgr::Config do
+  let(:default_options) do
+    config = { shell: Thor::Base.shell.new }
+    args = ['package', 'foo']
+    cli = nil
+    Pkgr::CLI.send(:dispatch, nil, args, nil, config) { |o| cli = o }
+    cli.options
+  end
+
   let(:options) do
-    {
+    default_options.merge(
       :version => "0.0.1",
       :name => "my-app",
       :iteration => "1234",
       :env => ["RACK_ENV=staging", "CURL_TIMEOUT=250"]
-    }
+    )
   end
 
   let(:config) { Pkgr::Config.new(options) }
+
+  before(:each) do
+    # This is required to suppress a warning in Thor
+    Pkgr::CLI.desc 'foo', 'bar'
+    allow_any_instance_of(Pkgr::CLI).to receive(:package)
+  end
 
   it "is valid" do
     expect(config).to be_valid
@@ -191,7 +205,7 @@ describe Pkgr::Config do
 
   describe '#cli?' do
     context "default configuration" do
-      it "returns false" do
+      it "returns true" do
         expect(config.cli?).to eq(true)
       end
     end

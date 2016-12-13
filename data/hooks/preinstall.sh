@@ -12,12 +12,12 @@ if ! getent passwd "${APP_USER}" > /dev/null; then
     if ! getent group "${APP_GROUP}" > /dev/null ; then
       groupadd --system "${APP_GROUP}"
     fi
-    useradd "${APP_USER}" -g "${APP_GROUP}" --system --create-home --shell /bin/bash
+    useradd "${APP_USER}" -g "${APP_GROUP}" --system --create-home --home-dir "${APP_HOME}" --shell /bin/bash
   else
     if ! getent group "${APP_GROUP}" > /dev/null; then
       addgroup "${APP_GROUP}" --system --quiet
     fi
-    adduser "${APP_USER}" --disabled-login --ingroup "${APP_GROUP}" --system --quiet --shell /bin/bash
+    adduser "${APP_USER}" --disabled-login --ingroup "${APP_GROUP}" --system --quiet --home "${APP_HOME}" --shell /bin/bash
   fi
 fi
 

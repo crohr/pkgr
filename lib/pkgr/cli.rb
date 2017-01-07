@@ -152,6 +152,9 @@ module Pkgr
     method_option :disable_cli,
       :type => :boolean,
       :desc => "Disable installing CLI"
+    method_option :tmpdir,
+      :type => :string,
+      :desc => 'Set a custom tmpdir for hook scripts to get created in'
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

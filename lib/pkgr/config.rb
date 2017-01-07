@@ -100,6 +100,10 @@ module Pkgr
       @table[:group] || user
     end
 
+    def tmpdir
+      @table[:tmpdir]
+    end
+
     def architecture
       @table[:architecture] || "x86_64"
     end
@@ -251,6 +255,7 @@ module Pkgr
       args.push "--verify" if verify
       args.push "--no-clean" if !clean
       args.push "--no-edge" if !edge
+      args.push "--tmpdir" if !tmpdir
       args
     end
   end

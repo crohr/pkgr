@@ -27,7 +27,7 @@ fi
 # https://www.debian.org/doc/debian-policy/ch-maintainerscripts.html
 CUSTOM_PREINSTALL_SCRIPT="<%= Base64.encode64 File.read(before_install) %>"
 
-tmpfile=$(mktemp)
+<%= "tmpfile=$(#{"TMPDIR=\"#{tmpdir}\" " if tmpdir}mktemp)" %>
 chmod a+x "${tmpfile}"
 echo "${CUSTOM_PREINSTALL_SCRIPT}" | base64 -d - > ${tmpfile}
 

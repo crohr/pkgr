@@ -107,20 +107,23 @@ module Pkgr
 
     # Pass the app through the buildpack
     def compile
-      if buildpack_for_app
-        puts "-----> #{buildpack_for_app.banner} app"
+      begin
+        FileUtils.mkdir_p(app_home_dir)
+      rescue Errno::EACCES => e
+        Pkgr.logger.warn "Can't create #{app_home_dir.inspect}, which may be needed by some buildpacks."
+      end
+      FileUtils.mkdir_p(compile_cache_dir)
+      FileUtils.mkdir_p(compile_env_dir)
 
-        begin
-          FileUtils.mkdir_p(app_home_dir)
-        rescue Errno::EACCES => e
-          Pkgr.logger.warn "Can't create #{app_home_dir.inspect}, which may be needed by some buildpacks."
-        end
-        FileUtils.mkdir_p(compile_cache_dir)
-        FileUtils.mkdir_p(compile_env_dir)
-
+      if buildpacks_for_app.size > 0
         run_hook config.before_hook
-        buildpack_for_app.compile(source_dir, compile_cache_dir, compile_env_dir)
-        buildpack_for_app.release(source_dir)
+
+        buildpacks_for_app.each do |buildpack|
+          puts "-----> #{buildpack.banner} app"
+          buildpack.compile(source_dir, compile_cache_dir, compile_env_dir)
+          buildpack.release(source_dir)
+        end
+
         run_hook config.after_hook
       else
         raise Errors::UnknownAppType, "Can't find a buildpack for your app"
@@ -285,17 +288,23 @@ module Pkgr
       @distribution ||= Distributions.current(config)
     end
 
-    # List of available buildpacks for the current distribution.
-    def buildpacks
-      distribution.buildpacks
-    end
-
-    # Buildpack detected for the app, if any.
-    def buildpack_for_app
+    # Buildpacks detected for the app, if any. If multiple buildpacks are explicitly specified, all are used
+    def buildpacks_for_app
       raise "#{source_dir} does not exist" unless File.directory?(source_dir)
-      @buildpack_for_app ||= buildpacks.find do |buildpack|
-        buildpack.setup(config.edge, config.home)
-        buildpack.detect(source_dir)
+      @buildpacks_for_app ||= begin
+        mode, buildpacks = distribution.buildpacks
+        case mode
+        when :custom
+          buildpacks.find_all do |buildpack|
+            buildpack.setup(config.edge, config.home)
+            buildpack.detect(source_dir)
+          end
+        else
+          [buildpacks.find do |buildpack|
+            buildpack.setup(config.edge, config.home)
+            buildpack.detect(source_dir)
+          end].compact
+        end
       end
     end
 

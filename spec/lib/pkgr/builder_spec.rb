@@ -103,19 +103,14 @@ describe Pkgr::Builder do
     let(:builder) { Pkgr::Builder.new("path/to/tarball.tgz", config) }
     let(:distribution) { Pkgr::Distributions::Ubuntu.new("12.04") }
 
-    it "has a list of buildpacks" do
-      builder.stub(:distribution => distribution)
-      expect(builder.buildpacks).to_not be_empty
-    end
-
     it "raises an error if it can't find a proper buildpack" do
-      builder.stub(:buildpack_for_app => nil)
+      builder.stub(:buildpacks_for_app => [])
       expect{ builder.compile }.to raise_error(Pkgr::Errors::UnknownAppType)
     end
 
     it "raises an error if something occurs during buildpack compilation" do
       buildpack = double(Pkgr::Buildpack, :banner => "Ruby/Rails")
-      builder.stub(:buildpack_for_app => buildpack)
+      builder.stub(:buildpacks_for_app => [buildpack])
       buildpack.should_receive(:compile).with(builder.source_dir, builder.compile_cache_dir, builder.compile_env_dir).and_raise(Pkgr::Errors::Base)
 
       expect{ builder.compile }.to raise_error(Pkgr::Errors::Base)
@@ -123,7 +118,7 @@ describe Pkgr::Builder do
 
     it "raises an error if something occurs during buildpack release" do
       buildpack = double(Pkgr::Buildpack, :banner => "Ruby/Rails", :compile => true)
-      builder.stub(:buildpack_for_app => buildpack)
+      builder.stub(:buildpacks_for_app => [buildpack])
       buildpack.should_receive(:release).with(builder.source_dir).and_raise(Pkgr::Errors::Base)
 
       expect{ builder.compile }.to raise_error(Pkgr::Errors::Base)
@@ -131,7 +126,7 @@ describe Pkgr::Builder do
 
     it "succeeds if everything went well" do
       buildpack = double(Pkgr::Buildpack, :banner => "Ruby/Rails", :compile => true, :release => true)
-      builder.stub(:buildpack_for_app => buildpack)
+      builder.stub(:buildpacks_for_app => [buildpack])
 
       expect{ builder.compile }.to_not raise_error
     end

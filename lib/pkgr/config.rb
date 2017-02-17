@@ -128,6 +128,10 @@ module Pkgr
       @table[:env].is_a?(Pkgr::Env) ? @table[:env] : Pkgr::Env.new(@table[:env])
     end
 
+    def buildpacks
+      @table[:buildpack].is_a?(String) ? @table[:buildpack].split(",") : @table[:buildpack]
+    end
+
     def valid?
       @errors = []
       @errors.push("name can't be blank") if name.nil? || name.empty?

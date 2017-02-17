@@ -1,3 +1,7 @@
+## master
+
+* Permit specifying multiple buildpacks to execute
+
 ## 1.5.1 - 20160908
 
 * Update Ruby buildpack URL to get the latest ruby versions asutomatically

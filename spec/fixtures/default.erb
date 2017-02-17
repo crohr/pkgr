@@ -7,3 +7,5 @@ done
 for file in <%= home %>/.profile.d/*.sh; do
   if [ -f $file ]; then . $file; fi
 done
+
+<%= "tmpfile=$(#{"TMPDIR=\"#{tmpdir}\" " if tmpdir}mktemp)" %>

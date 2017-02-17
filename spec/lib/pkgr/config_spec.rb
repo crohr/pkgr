@@ -244,4 +244,21 @@ describe Pkgr::Config do
       end
     end
   end
+
+  describe '#tmpdir' do
+    context 'when the --tmpdir flag is not passed' do
+      it 'returns nil when unset' do
+        expect(config.tmpdir).to be_nil
+      end
+    end
+
+    context 'when the --tmpdir flag is passed' do
+      let(:custom_tmpdir) { 'custom_tmpdir' }
+      let(:options) { super().merge(tmpdir: custom_tmpdir) }
+
+      it 'returns the custom tmpdir' do
+        expect(config.tmpdir).to eq(custom_tmpdir)
+      end
+    end
+  end
 end

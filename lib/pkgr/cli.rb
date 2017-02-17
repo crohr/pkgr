@@ -57,6 +57,10 @@ module Pkgr
     method_option :description,
       :type => :string,
       :desc => "Project description"
+    method_option :category,
+      :type => :string,
+      :default => "none",
+      :desc => "Category this package belongs to"
     method_option :version,
       :type => :string,
       :desc => "Package version (if git directory given, it will use the latest git tag available)"
@@ -105,6 +109,9 @@ module Pkgr
       :type => :array,
       :default => [],
       :desc => "Specific system dependencies that must be present before building"
+    method_option :disable_default_dependencies,
+      :type => :boolean,
+      :desc => "Disable default dependencies"
     method_option :host,
       :type => :string,
       :desc => "Remote host to build on (default: local machine)"
@@ -138,6 +145,16 @@ module Pkgr
       :type => :string,
       :default => default_data_dir,
       :desc => "Custom path to data directory. Can be used for overriding default templates, hooks(pre-, post- scripts), configs (buildpacks, distro dependencies), environments, etc."
+    method_option :directories,
+      :type => :string,
+      :default => nil,
+      :desc => "Recursively mark a directory as being owned by the package"
+    method_option :disable_cli,
+      :type => :boolean,
+      :desc => "Disable installing CLI"
+    method_option :tmpdir,
+      :type => :string,
+      :desc => 'Set a custom tmpdir for hook scripts to get created in'
 
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]

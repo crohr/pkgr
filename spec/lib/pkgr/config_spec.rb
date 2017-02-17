@@ -1,7 +1,30 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe Pkgr::Config do
-  let(:config) { Pkgr::Config.new(:version => "0.0.1", :name => "my-app", :iteration => "1234", :env => ["RACK_ENV=staging", "CURL_TIMEOUT=250"]) }
+  let(:default_options) do
+    config = { shell: Thor::Base.shell.new }
+    args = ['package', 'foo']
+    cli = nil
+    Pkgr::CLI.send(:dispatch, nil, args, nil, config) { |o| cli = o }
+    cli.options
+  end
+
+  let(:options) do
+    default_options.merge(
+      :version => "0.0.1",
+      :name => "my-app",
+      :iteration => "1234",
+      :env => ["RACK_ENV=staging", "CURL_TIMEOUT=250"]
+    )
+  end
+
+  let(:config) { Pkgr::Config.new(options) }
+
+  before(:each) do
+    # This is required to suppress a warning in Thor
+    Pkgr::CLI.desc 'foo', 'bar'
+    allow_any_instance_of(Pkgr::CLI).to receive(:package)
+  end
 
   it "is valid" do
     expect(config).to be_valid
@@ -121,6 +144,121 @@ describe Pkgr::Config do
     it "correctly exports the crons if any" do
       config = Pkgr::Config.new(crons: ["path/to/cron1", "path/to/cron2"])
       expect(config.crons).to eq(["path/to/cron1", "path/to/cron2"])
+    end
+  end
+
+  describe "#skip_default_dependencies?" do
+    context "default configuration" do
+      it "returns false" do
+        expect(config.skip_default_dependencies?).to eq(false)
+      end
+
+      context "when default_dependencies is set to false in .pkgr.yml" do
+        let(:options) { super().merge(default_dependencies: false) }
+
+        it "returns true" do
+          expect(config.skip_default_dependencies?).to eq(true)
+        end
+      end
+
+      context "when default_dependencies is set to an array in .pkgr.yml" do
+        let(:options) { super().merge(default_dependencies: ['foo']) }
+
+        it "returns false" do
+          expect(config.skip_default_dependencies?).to eq(false)
+        end
+      end
+    end
+
+    context "when --disable-default-dependencies is passed" do
+      let(:options) { super().merge(disable_default_dependencies: true) }
+
+      it "returns true" do
+        expect(config.skip_default_dependencies?).to eq(true)
+      end
+
+      context "when default_dependencies is set to an array in .pkgr.yml" do
+        let(:options) { super().merge(default_dependencies: ['foo']) }
+
+        it "returns true" do
+          expect(config.skip_default_dependencies?).to eq(true)
+        end
+      end
+    end
+
+    context "when --no-disable-default-dependencies is passed" do
+      let(:options) { super().merge(disable_default_dependencies: false) }
+
+      it "returns false" do
+        expect(config.skip_default_dependencies?).to eq(false)
+      end
+
+      context "when default_dependencies is set to false in .pkgr.yml" do
+        let(:options) { super().merge(default_dependencies: false) }
+
+        it "returns false" do
+          expect(config.skip_default_dependencies?).to eq(false)
+        end
+      end
+    end
+  end
+
+  describe '#cli?' do
+    context "default configuration" do
+      it "returns true" do
+        expect(config.cli?).to eq(true)
+      end
+    end
+
+    context 'when the --disable-cli flag is not passed' do
+      context "when cli is set to false in .pkgr.yml" do
+        let(:options) { super().merge(cli: false) }
+
+        it "returns false" do
+          expect(config.cli?).to eq(false)
+        end
+      end
+    end
+
+    context 'when the --disable-cli flag is passed' do
+      let(:options) { super().merge(disable_cli: true) }
+
+      it "returns false" do
+        expect(config.cli?).to eq(false)
+      end
+    end
+
+    context 'when the --no-disable-cli flag is passed' do
+      let(:options) { super().merge(disable_cli: false) }
+
+      it "returns true" do
+        expect(config.cli?).to eq(true)
+      end
+
+      context "when cli is set to false in .pkgr.yml" do
+        let(:options) { super().merge(cli: false) }
+
+        it "returns true" do
+          expect(config.cli?).to eq(true)
+        end
+      end
+    end
+  end
+
+  describe '#tmpdir' do
+    context 'when the --tmpdir flag is not passed' do
+      it 'returns nil when unset' do
+        expect(config.tmpdir).to be_nil
+      end
+    end
+
+    context 'when the --tmpdir flag is passed' do
+      let(:custom_tmpdir) { 'custom_tmpdir' }
+      let(:options) { super().merge(tmpdir: custom_tmpdir) }
+
+      it 'returns the custom tmpdir' do
+        expect(config.tmpdir).to eq(custom_tmpdir)
+      end
     end
   end
 end

@@ -43,7 +43,7 @@ echo "=============="
 # Call custom postinstall script.
 CUSTOM_POSTINSTALL_SCRIPT="<%= Base64.encode64 File.read(after_install) %>"
 
-tmpfile=$(mktemp)
+<%= "tmpfile=$(#{"TMPDIR=\"#{tmpdir}\" " if tmpdir}mktemp)" %>
 chmod a+x "${tmpfile}"
 echo "${CUSTOM_POSTINSTALL_SCRIPT}" | base64 -d - > ${tmpfile}
 

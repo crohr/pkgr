@@ -73,11 +73,19 @@ module Pkgr
     end
 
     def cli?
-      @table.has_key?(:cli) ? @table[:cli] : true
+      if disable_cli.nil?
+        @table.has_key?(:cli) ? @table[:cli] : true
+      else
+        !disable_cli
+      end
     end
 
     def skip_default_dependencies?
-      @table[:default_dependencies] === false
+      if disable_default_dependencies.nil?
+        @table[:default_dependencies] === false
+      else
+        disable_default_dependencies == true
+      end
     end
 
     def home
@@ -90,6 +98,10 @@ module Pkgr
 
     def group
       @table[:group] || user
+    end
+
+    def tmpdir
+      @table[:tmpdir]
     end
 
     def architecture
@@ -247,6 +259,7 @@ module Pkgr
       args.push "--verify" if verify
       args.push "--no-clean" if !clean
       args.push "--no-edge" if !edge
+      args.push "--tmpdir" if !tmpdir
       args
     end
   end

@@ -18,7 +18,7 @@ fi
 # Call custom postuninstall script.
 CUSTOM_POSTUNINSTALL_SCRIPT="<%= Base64.encode64 File.read(after_remove) %>"
 
-tmpfile=$(mktemp)
+<%= "tmpfile=$(#{"TMPDIR=\"#{tmpdir}\" " if tmpdir}mktemp)" %>
 chmod a+x "${tmpfile}"
 echo "${CUSTOM_POSTUNINSTALL_SCRIPT}" | base64 -d - > ${tmpfile}
 

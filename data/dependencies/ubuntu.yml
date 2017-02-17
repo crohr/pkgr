@@ -19,3 +19,9 @@ ubuntu-12.04:
   - libevent-2.0-5
   - libevent-core-2.0-5
   - libevent-extra-2.0-5
+ubuntu-16.04:
+  - libssl1.0.0
+  - libmysqlclient20
+  - libevent-2.0-5
+  - libevent-core-2.0-5
+  - libevent-extra-2.0-5

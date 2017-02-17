@@ -1,5 +1,30 @@
 ## master
+
 * Permit specifying multiple buildpacks to execute
+
+## 1.5.1 - 20160908
+
+* Update Ruby buildpack URL to get the latest ruby versions asutomatically
+* Add support for Python!
+
+## 1.5.0 - 20160908
+
+* Fix upstart job for CentOS
+* Reinstall master and process master init scripts whenever scale is called
+* Run chroot with the user's configured groups
+* Add SLES11 support
+* Fix postinstall shebang
+* Can now disable default dependencies with `default_dependencies: false`
+* Allow to override `data_dir` folder
+* Generate init files with correct PORT
+* Allow hard-coded defaults to be overridden by pkgr.yml
+* Pass ENV_DIR to compile script
+* Replace only instances of `/app/` and not `/app` in buildpacks
+* Create /app dir, which is required by some buildpacks to compile (e.g. GO)
+* Pass TARGET as an env variable when compiling, so that it can be used to fetch binaries from buildcurl.com
+* Add possibility to set category and directories fpm option
+* Support for Ubuntu 16.04
+* Add command-line flags for disabling default dependencies and CLI
 
 ## 1.4.4 - 20150512
 

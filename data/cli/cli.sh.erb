@@ -109,6 +109,7 @@ update_port() {
   else
     sed -i "s/^env .*PORT_NUM.*$//g" "${file}"
     sed -i "s/^export PORT=PORT_NUM$//g" "${file}"
+    sed -i "s/^Environment=PORT=PORT_NUM$//g" "${file}"
   fi
 }
 

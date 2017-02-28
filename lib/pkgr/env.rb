@@ -11,7 +11,7 @@ module Pkgr
     end
 
     def to_s
-      to_hash.map {|k, v| " #{k}=#{v}" }.join
+      to_hash.map{|k, v| [k, v.to_s.inspect].join("=")}.join(" ")
     end
 
     def present?
@@ -32,7 +32,7 @@ module Pkgr
       return {} if variables == []
 
       variables.inject({}) do |h, var|
-        name, value = var.split('=')
+        name, value = var.split('=', 2)
         h[name.strip] = value.strip
         h
       end

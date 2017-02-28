@@ -16,14 +16,14 @@ describe Pkgr::Env do
   end
 
   describe 'environment example' do
-    subject { described_class.new(["CURL_TIMEOUT=250", "BUNDLE_WITHOUT=development test"]) }
+    subject { described_class.new(["CURL_TIMEOUT=250", "BUNDLE_WITHOUT=development test", "PATH=\"$PATH\""]) }
     it "should be present" do
       expect(subject).to be_present
     end
 
     it "should have the correct hash" do
-      expect(subject.to_hash).to eq({"CURL_TIMEOUT" => "250", "BUNDLE_WITHOUT" => "development test"})
-      expect(subject.to_s).to eq("CURL_TIMEOUT=\"250\" BUNDLE_WITHOUT=\"development test\"")
+      expect(subject.to_hash).to eq({"CURL_TIMEOUT" => "250", "BUNDLE_WITHOUT" => "development test", "PATH" => "$PATH"})
+      expect(subject.to_s).to eq("CURL_TIMEOUT=\"250\" BUNDLE_WITHOUT=\"development test\" PATH=\"$PATH\"")
     end
   end
 

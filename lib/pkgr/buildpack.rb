@@ -108,7 +108,7 @@ module Pkgr
   private
 
     def compound_environment(path)
-      Env.new(['PATH="$PATH"']).merge(env).merge(exported_environment(File.join(path, "export")))
+      Env.new(['PATH=$PATH']).merge(env).merge(exported_environment(File.join(path, "export")))
     end
 
     def exported_environment(path)

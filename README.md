@@ -60,7 +60,8 @@ Full command line options are given below:
       [--architecture=ARCHITECTURE]                  # Target architecture for the package
                                                      # Default: x86_64
       [--runner=RUNNER]                              # Force a specific runner (e.g. upstart-1.5, sysv-lsb-1.3)
-      [--homepage=HOMEPAGE]                          # Project homepage
+      [--homepage=HOMEPAGE]                          # Project homepage (e.g. "https://pkgr.example.org")
+      [--home=HOME]                                  # Project home (e.g. "/usr/share/PACKAGE_HOME")
       [--description=DESCRIPTION]                    # Project description
       [--version=VERSION]                            # Package version (if git directory given, it will use the latest git tag available)
       [--iteration=ITERATION]                        # Package iteration (you should keep the default here)

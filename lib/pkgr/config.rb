@@ -207,6 +207,7 @@ module Pkgr
         "--group \"#{group}\"",
         "--iteration \"#{iteration}\"",
         "--homepage \"#{homepage}\"",
+        "--home \"#{home}\"",
         "--architecture \"#{architecture}\"",
         "--description \"#{description}\"",
         "--maintainer \"#{maintainer}\"",

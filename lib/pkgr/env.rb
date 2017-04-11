@@ -10,6 +10,7 @@ module Pkgr
 
     def initialize(variables = nil)
       @variables = variables || []
+      @variables.compact!
     end
 
     def to_s
@@ -34,7 +35,7 @@ module Pkgr
 
       variables.inject({}) do |h, var|
         name, value = var.split('=', 2)
-        h[name.strip] = EnvValue.new(value).strip.unquote
+        h[name.strip] = EnvValue.new(value || "").strip.unquote
         h
       end
     end

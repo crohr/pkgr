@@ -54,11 +54,11 @@ Or, installing as a gem, on debian-based machines:
 
 ## Usage
 
-To package your app, you can either execute `pkgr` locally if your app repository is on the same machine:
+To package your app, execute `pkgr` against your app's repository:
 
     pkgr package path/to/app/repo
 
-The resulting .deb package will be in your current working directory.
+The resulting `.deb` or `.rpm` package will be in your current working directory. That is, you need to run `pkgr` on the target distribution for which you want to generate a package.
 
 Full command line options are given below:
 
@@ -147,11 +147,13 @@ Finally, it's a great way to share your open source software with your users and
 
 * Your app will reside in `/opt/app-name`.
 
-* You'll also get upstart (or sysvinit) initialization scripts that you can use directly:
+* You'll also get upstart, systemd, or sysvinit initialization scripts (depending on your distribution) that you can use directly:
 
         service my-app start/stop/restart/status
 
-* Logs will be stored in `/var/log/app-name/`, with a proper logrotate config automatically added.
+  Note: init scripts are generated only after you've done a `scale` command for the process type, e.g. `my-app scale web=1`.
+
+* Logs will be stored in `/var/log/app-name/`, with a proper logrotate config automatically added. For systemd-based distributions, you will find the logs in the systemd journal.
 
 * Config files can be added in `/etc/app-name/`
 

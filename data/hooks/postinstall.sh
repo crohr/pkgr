@@ -26,6 +26,10 @@ chown ${APP_USER}.${APP_GROUP} /var/db/${APP_NAME}
 chmod 0750 /etc/${APP_NAME} /etc/${APP_NAME}/conf.d
 find /etc/${APP_NAME} -type f -exec chmod 0640 {} +
 
+<% if crons.any? %>
+mkdir -p <%= crons_dir %>
+<% end %>
+
 <% crons.each do |cron| %>
 rm -f <%= cron.destination %>
 cp <%= cron.source %> <%= cron.destination %>

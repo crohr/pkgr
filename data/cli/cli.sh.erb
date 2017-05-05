@@ -97,14 +97,27 @@ current_number_of_processes() {
   return 0
 }
 
+# Return the process index in the Procfile, ignoring any comment lines
+process_index() {
+  process_name="$1"
+  if [ -f "$(_p "${APP_HOME}/Procfile")" ]; then
+    index="$(cat "$(_p "${APP_HOME}/Procfile")" | grep -ve '^#' | grep -n "$process_name:" | cut -f 1 -d ':')"
+  else
+    index=0
+  fi
+  echo $(($index - 1))
+}
+
 update_port() {
   file="$1"
   process_name="$2"
   port="$3"
   index="$4"
+  process_offset=$(process_index "$process_name")
+  port_with_offset=$(($port + $process_offset * 100))
 
   sed -i "s/PROCESS_NUM/${index}/g" "${file}"
-  sed -i "s/PORT_NUM/${port}/g" "${file}"
+  sed -i "s/PORT_NUM/${port_with_offset}/g" "${file}"
 }
 
 sysv_enable() {

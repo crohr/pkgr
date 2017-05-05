@@ -115,6 +115,12 @@ describe "bash cli" do
       f.puts %{export APP_USER="#{ENV['USER']}"}
       f.puts %{export PORT=6000}
     end
+    File.open(File.join(directory, config.home, "Procfile"), "w+") do |f|
+      f.puts "web: echo web-process"
+      f.puts "worker: echo worker-process"
+      f.puts "# comment"
+      f.puts "geo: echo geo-process"
+    end
   end
 
   after(:each) do
@@ -212,7 +218,7 @@ describe "bash cli" do
 
         process.call("run web -1")
         expect(process).to be_ok
-        expect(process.stdout.split("\n")).to eq(["vendor"])
+        expect(process.stdout.split("\n")).to eq(["Procfile", "vendor"])
       end
     end
   end # distribution independent
@@ -242,6 +248,8 @@ describe "bash cli" do
         end
 
         create_scaling_templates("upstart-1.5", "web", "ls -al")
+        create_scaling_templates("upstart-1.5", "worker", "echo worker-process")
+        create_scaling_templates("upstart-1.5", "geo", "echo geo-process")
       end
 
       it "scales up from 0" do
@@ -314,6 +322,20 @@ describe "bash cli" do
         expect(File.exist?(init2)).to be_truthy
         expect(File.read(init1)).to include("PORT=6000")
         expect(File.read(init2)).to include("PORT=6001")
+      end
+
+      it "properly increments ports" do
+        process.call("scale web=2")
+        expect(process).to be_ok
+        process.call("scale geo=1")
+        expect(process).to be_ok
+
+        init1 = File.join(directory, "etc", "init", "my-app-web-1.conf")
+        init2 = File.join(directory, "etc", "init", "my-app-web-2.conf")
+        init3 = File.join(directory, "etc", "init", "my-app-geo-1.conf")
+        expect(File.read(init1)).to include("PORT=6000")
+        expect(File.read(init2)).to include("PORT=6001")
+        expect(File.read(init3)).to include("PORT=6200")
       end
     end
 

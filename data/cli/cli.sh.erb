@@ -281,6 +281,17 @@ reconfigure() {
   configure --reconfigure
 }
 
+config_set() {
+  # http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html#tag_02_06_02
+  local key="${1%%=*}"
+  local value="${1#*=}"
+  local file=$(_p "/etc/${APP_NAME}/conf.d/other")
+  touch "$file"
+  sed -i -r "s/^\s*export\s+${key}.*$//g" $(_p "/etc/${APP_NAME}/conf.d")/*
+  echo "export ${key}=\"${value}\"" >> "${file}"
+  sed -i '/^\s*$/d' "$file"
+}
+
 while : ; do
   case "$1" in
     run)
@@ -348,18 +359,7 @@ while : ; do
 
     config:set)
       [ $# -lt 2 ] && usage
-
-      CONFIG=(${2//=/ })
-
-      VAR=${CONFIG[0]:?"Invalid variable name"}
-      VALUE="${2:$((${#VAR} + 1))}"
-
-      CONFIG_FILE=$(_p "/etc/${APP_NAME}/conf.d/other")
-      touch ${CONFIG_FILE}
-
-      sed -i -r "s/^\s*export\s+${VAR}.*$//g" $(_p "/etc/${APP_NAME}/conf.d")/*
-
-      echo "export ${VAR}=\"${VALUE}\"" >> "${CONFIG_FILE}"
+      config_set "$2"
 
       break;;
 

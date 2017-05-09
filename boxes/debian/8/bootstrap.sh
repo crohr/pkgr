@@ -23,6 +23,8 @@ apt-get -y install \
   libreadline-dev \
   build-essential
 
+echo "pkgr ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
 ruby -v || curl https://s3.amazonaws.com/pkgr-buildpack-ruby/current/debian-8/ruby-2.2.2.tgz -o - | tar xzf - -C /usr/local
 
 ( bundle -v | grep "${BUNDLER_VERSION}" ) || ( gem install bundler --no-ri --no-rdoc --version "${BUNDLER_VERSION}" )

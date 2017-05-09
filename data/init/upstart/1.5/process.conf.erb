@@ -1,7 +1,9 @@
 start on starting <%= name %>-<%= process_name %>
 stop on stopping <%= name %>-<%= process_name %>
 respawn
+respawn limit 6 60
 
 env PORT=PORT_NUM
 
 exec <%= name %> run <%= process_name %> >> /var/log/<%= name %>/<%= process_name %>-PROCESS_NUM.log 2>&1
+post-stop exec sleep 10

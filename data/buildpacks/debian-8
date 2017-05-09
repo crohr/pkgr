@@ -2,3 +2,4 @@ https://github.com/pkgr/heroku-buildpack-ruby.git#buildcurl,BUILDPACK_NODE_VERSI
 https://github.com/pkgr/heroku-buildpack-python.git#buildcurl
 https://github.com/heroku/heroku-buildpack-nodejs.git#v58
 https://github.com/kr/heroku-buildpack-go.git
+https://github.com/pierredup/packager-buildpack-php.git

@@ -12,7 +12,12 @@ module Pkgr
       end
 
       def runner
-        @runner ||= Runner.new("sysv", "lsb-3.1", "chkconfig")
+        @runner ||= if release.to_i > 11
+          # newer releases can use systemd as the init system
+          Runner.new("systemd", "default", "systemctl")
+        else
+          Runner.new("sysv", "lsb-3.1", "chkconfig")
+        end
       end
 
       def package_test_command(package)

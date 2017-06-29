@@ -1,6 +1,7 @@
 ## master
 
 * Permit specifying multiple buildpacks to execute
+* Upgrade default ruby and nodejs buildpacks to v164 and v104
 
 ## 1.5.1 - 20160908
 

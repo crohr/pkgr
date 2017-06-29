@@ -6,7 +6,9 @@ Make debian or rpm packages out of any app, including init script, crons,
 logrotate, etc. Excellent way to distribute apps or command line tools without
 complicated installation instructions.
 
-Hosted service available at <https://packager.io/>. Free for OpenSource apps.
+Hosted service available at [Packager.io][packager-io]. Free for OpenSource apps.
+
+[packager-io]: https://packager.io/
 
 ## Officially supported languages
 
@@ -15,8 +17,9 @@ Hosted service available at <https://packager.io/>. Free for OpenSource apps.
 * Python
 * Go
 
-You can also try out PHP support by specifying the following buildpack:
-`https://github.com/pkgr/heroku-buildpack-php#buildcurl`
+In beta:
+
+* PHP, using the following buildpack: `https://github.com/pkgr/heroku-buildpack-php#buildcurl`
 
 You can also point to other buildpacks
 ([doc](https://packager.io/documentation/customizing-the-build/#buildpack)).
@@ -38,7 +41,7 @@ They may just work.
 
 ## Examples
 
-See <https://packager.io/> for examples of apps packaged with `pkgr` (Gitlab, OpenProject, Discourse, etc.).
+See [Packager.io][packager-io] for examples of apps packaged with `pkgr` (Gitlab, OpenProject, Discourse, etc.).
 
 ## Installation
 

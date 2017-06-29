@@ -12,6 +12,10 @@ export ORIGINAL_PWD=$(pwd)
 # required for chroot on fedora
 PATH="$PATH:/usr/sbin"
 
+if [ -n "$PORT" ]; then
+  BASE_PORT=$PORT
+fi
+
 # Helper function that returns the real path, based on the given ROOT_PATH
 _p() {
   echo "${ROOT_PATH%%/}${1}"
@@ -26,6 +30,22 @@ usage() {
   echo "  $APP_NAME config:set VAR=VALUE"
   echo "  $APP_NAME configure"
   echo "  $APP_NAME reconfigure"
+  echo "  $APP_NAME restart"
+  echo ""
+  echo "Details:"
+  echo "  $APP_NAME configure"
+  echo "    * If using an installer:"
+  echo "      This command will launch the installer wizard."
+  echo "      You can pass the installer seed file on STDIN."
+  echo "   * Without installer:"
+  echo "      This will execute the configure script at $APP_HOME/packaging/scripts/configure (if any)."
+  echo "      Environment variables can also be given on STDIN, and will be saved in the /etc/$APP_NAME/conf.d folder."
+  echo ""
+  echo "  $APP_NAME reconfigure"
+  echo "    This command allows to reconfigure the application. Only useful if using an installer."
+  echo ""
+  echo "  $APP_NAME restart [process]"
+  echo "    This will restart the application (or the given process), in a distribution-independent manner."
 }
 
 DEFAULT_FILE=$(_p "/etc/default/${APP_NAME}")
@@ -50,10 +70,17 @@ fi
 
 # Source all environment variables for the app. This must be done as
 # privileged user since the config variables are only readable by root.
-PORT_WAS=$PORT
 for file in $(_p "/etc/${APP_NAME}/conf.d")/*; do
   if [ -f $file ]; then . $file; fi
 done
+
+if [ -z "$BASE_PORT" ]; then
+  BASE_PORT=$PORT
+fi
+
+if [ -z "$BASE_PORT" ]; then
+  BASE_PORT=6000
+fi
 
 # Some actions require root privileges
 ensure_root() {
@@ -70,18 +97,26 @@ show_env() {
 }
 
 logs() {
-  if [ "$1" = "" ]; then
-    for file in $(_p "/var/log/${APP_NAME}")/*.log ; do
-      echo "==> ${file} <=="
-      cat "${file}"
-    done
+  if [ "${APP_RUNNER_TYPE}" == "systemd" ]; then
+    exec journalctl -u "$APP_NAME-*" -e "$@"
   else
-    tail $(_p "/var/log/${APP_NAME}")/*.log $@
+    if [ "$1" == "" ]; then
+      for file in $(_p "/var/log/${APP_NAME}")/*.log ; do
+        echo "==> ${file} <=="
+        cat "${file}"
+      done
+    else
+      tail $(_p "/var/log/${APP_NAME}")/*.log "$@"
+    fi
   fi
 }
 
 tail_logs() {
-  tail -f $(_p "/var/log/${APP_NAME}")/*.log
+  if [ "${APP_RUNNER_TYPE}" == "systemd" ]; then
+    exec journalctl -u "$APP_NAME-*" -f "$@"
+  else
+    exec tail -f $(_p "/var/log/${APP_NAME}")/*.log
+  fi
 }
 
 current_number_of_processes() {
@@ -97,7 +132,7 @@ current_number_of_processes() {
   return 0
 }
 
-# Return the process index in the Procfile, ignoring any comment lines
+# Return the process index in the Procfile, ignoring any comment lines.
 process_index() {
   process_name="$1"
   if [ -f "$(_p "${APP_HOME}/Procfile")" ]; then
@@ -108,16 +143,36 @@ process_index() {
   echo $(($index - 1))
 }
 
-update_port() {
-  file="$1"
-  process_name="$2"
-  port="$3"
-  index="$4"
-  process_offset=$(process_index "$process_name")
-  port_with_offset=$(($port + $process_offset * 100))
+# Returns whether a custom PORT has been set for this process.
+is_custom_port() {
+  test "$PORT" != "$BASE_PORT"
+}
 
-  sed -i "s/PROCESS_NUM/${index}/g" "${file}"
-  sed -i "s/PORT_NUM/${port_with_offset}/g" "${file}"
+# Returns the port to be used by the process.
+process_port() {
+  local process_name="$1"
+  local process_scale_index="$2"
+  if [ "$process_scale_index" == "" ]; then
+    process_scale_index=1
+  fi
+  if is_custom_port; then
+    # legacy: port was set in init files, not touching
+    echo "$BASE_PORT"
+  else
+    local process_offset=$(process_index "$process_name")
+    local port_with_offset=$(($PORT + $process_offset * 100 + $process_scale_index - 1))
+    echo "$port_with_offset"
+  fi
+}
+
+# Writes the process index in the init file, so that the right PORT can be set
+# when running the process.
+update_port() {
+  local file="$1"
+  local process_name="$2"
+  local index="$3"
+  local port_with_offset=$(process_port "$process_name" "$index")
+  sed -i "s/__PROCESS_INDEX__/${index}/g" "${file}"
 }
 
 sysv_enable() {
@@ -155,68 +210,66 @@ scale_up() {
       index=$((${i} + ${CURRENT_SCALE}))
       PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
       cp $(_p "${APP_HOME}/vendor/pkgr/scaling/upstart/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM.conf") $(_p "/etc/init/${PROCESS_ID}.conf")
-      port=$((${PORT} + ${index} - 1))
 
-      update_port $(_p "/etc/init/${PROCESS_ID}.conf") "${PROCESS_NAME}" $port $index
+      update_port $(_p "/etc/init/${PROCESS_ID}.conf") "${PROCESS_NAME}" $index
 
       # directly call initctl instead of service, otherwise CentOS 6.x does not understand.
-      $APP_RUNNER_CLI start "${PROCESS_ID}"
+      control_process start "${PROCESS_NAME}-${index}"
     done
 
-    $APP_RUNNER_CLI start ${APP_NAME}-${PROCESS_NAME} || true
-    $APP_RUNNER_CLI start ${APP_NAME} || true
+    control_process start "${PROCESS_NAME}" || true
+    control_process start || true
   elif [ "$APP_RUNNER_TYPE" = "systemd" ]; then
     for i in $(seq ${SCALE_DELTA}); do
       index=$((${i} + ${CURRENT_SCALE}))
       PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
       cp ${source}/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM.service $SYSTEMD_DIR/${PROCESS_ID}.service
-      port=$((${PORT} + ${index} - 1))
 
-      update_port $SYSTEMD_DIR/${PROCESS_ID}.service "${PROCESS_NAME}" $port $index
+      update_port $SYSTEMD_DIR/${PROCESS_ID}.service "${PROCESS_NAME}" $index
 
       $APP_RUNNER_CLI enable "${PROCESS_ID}.service"
     done
 
     $APP_RUNNER_CLI daemon-reload
-    $APP_RUNNER_CLI start ${APP_NAME}-${PROCESS_NAME}.service
-    $APP_RUNNER_CLI start ${APP_NAME}.service
+    control_process start "${PROCESS_NAME}"
+    control_process start
   else
     for i in $(seq ${SCALE_DELTA}); do
       index=$((${i} + ${CURRENT_SCALE}))
       PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
       cp $(_p "${APP_HOME}/vendor/pkgr/scaling/sysv/${APP_NAME}-${PROCESS_NAME}-PROCESS_NUM") $(_p "/etc/init.d/${PROCESS_ID}")
-      port=$((${PORT} + ${index} - 1))
 
-      update_port $(_p "/etc/init.d/${PROCESS_ID}") "${PROCESS_NAME}" $port $index
+      update_port $(_p "/etc/init.d/${PROCESS_ID}") "${PROCESS_NAME}" $index
 
       chmod a+x $(_p "/etc/init.d/${PROCESS_ID}")
-      sysv_enable ${PROCESS_ID}
-      $(_p "/etc/init.d/${PROCESS_ID}") start
+      sysv_enable "${PROCESS_ID}"
+      control_process start "${PROCESS_NAME}-${index}"
     done
   fi
   echo "--> done."
 }
 
 scale_down() {
-  PROCESS_NAME="${1}"
-  CURRENT_SCALE=${2}
-  NEW_SCALE=${3}
-  SCALE_DELTA=${4}
+  local PROCESS_NAME="${1}"
+  local CURRENT_SCALE=${2}
+  local NEW_SCALE=${3}
+  local SCALE_DELTA=${4}
+  local index
+  local PROCESS_ID
 
   echo "Scaling down..."
   for i in $(seq $(($SCALE_DELTA * -1))); do
     index=$((${i} + ${NEW_SCALE}))
     PROCESS_ID="${APP_NAME}-${PROCESS_NAME}-${index}"
 
+    control_process stop "${PROCESS_NAME}-${index}" || true # dont fail if server stopped differently
+
     if [ "${APP_RUNNER_TYPE}" = "upstart" ]; then
-      $APP_RUNNER_CLI stop "${PROCESS_ID}" || true # dont fail if server stopped differently
       rm -f $(_p "/etc/init/${PROCESS_ID}.conf")
     elif [ "${APP_RUNNER_TYPE}" = "systemd" ]; then
-      $APP_RUNNER_CLI stop "${PROCESS_ID}.service" || true # dont fail if server stopped differently
       $APP_RUNNER_CLI disable "${PROCESS_ID}.service" || true
       rm -f $SYSTEMD_DIR/${PROCESS_ID}.service
     else
-      $(_p "/etc/init.d/${PROCESS_ID}") stop
       sysv_disable ${PROCESS_ID}
       rm -f $(_p "/etc/init.d/${PROCESS_ID}")
     fi
@@ -270,10 +323,29 @@ scale() {
 
 configure() {
   local installer_dir="$(_p "/usr/share/${APP_NAME}/installer")"
+  local configure_script="$(_p "$APP_HOME/packaging/scripts/configure")"
+  local stdin="false"
+  if [ ! -t 0 ]; then
+    stdin="true"
+  elif [ "$1" == "-" ]; then
+    shift
+    stdin="true"
+  fi
+
   if [ -d "$installer_dir" ] ; then
-    ${installer_dir}/bin/run $@
+    if [ "$stdin" == "true" ]; then
+      cat > $(_p "/etc/$APP_NAME/installer.dat")
+    fi
+    exec ${installer_dir}/bin/run "$@"
   else
-    echo "No installer has been configured for ${APP_NAME}"
+    if [ "$stdin" == "true" ]; then
+      cat | grep -v '^#' | while read -r line ; do
+        config_set "$line"
+      done
+    fi
+    if [ -f "$configure_script" -a -x "$configure_script" ] ; then
+      exec $0 run "$configure_script" "$@"
+    fi
   fi
 }
 
@@ -292,6 +364,25 @@ config_set() {
   sed -i '/^\s*$/d' "$file"
 }
 
+# Executes the given command (start, stop, restart, status, etc.) on the given
+# process, abstracting away the differences between init systems.
+control_process() {
+  local cmd="$1"
+  local process="$2"
+  local service="$APP_NAME"
+  if [ "$process" != "" ]; then
+    service="$service-$process"
+  fi
+
+  if [ "${APP_RUNNER_TYPE}" == "upstart" ]; then
+    $APP_RUNNER_CLI "$cmd" "${service}"
+  elif [ "$APP_RUNNER_TYPE" = "systemd" ]; then
+    $APP_RUNNER_CLI "$cmd" "${service}.service"
+  else
+    $(_p "/etc/init.d/${service}") "$cmd"
+  fi
+}
+
 while : ; do
   case "$1" in
     run)
@@ -302,6 +393,7 @@ while : ; do
       runnable=$(echo -n "exec")
 
       if [ -f $(_p "${APP_HOME}/vendor/pkgr/processes/${COMMAND}") ]; then
+        export PORT=$(process_port "$COMMAND" "$APP_PROCESS_INDEX")
         # Command alias defined in Procfile
         runnable="${runnable}$(printf " %q" $(_p "${APP_HOME}/vendor/pkgr/processes/${COMMAND}") "$@")"
       else
@@ -312,9 +404,6 @@ while : ; do
         # bash-arguments>.
         runnable="${runnable}$(printf " %q" ${COMMAND} "$@")"
       fi
-
-      # fix port
-      export PORT=$PORT_WAS
 
       # Do not use su, to avoid creating a new process. Note: chroot version
       # is too old on Ubuntu Lucid, so this will fail. It works on Debian
@@ -344,12 +433,17 @@ while : ; do
       done
       break ;;
 
+    restart)
+      shift
+      control_process "restart" "$@"
+      break;;
+
     logs)
       shift
       if [ "$1" = "--tail" ]; then
         tail_logs
       else
-        logs ${@}
+        logs "${@}"
       fi
       break;;
 
@@ -370,14 +464,16 @@ while : ; do
 
     configure)
       ensure_root
+      shift
 
-      configure $@
+      configure "$@"
       break;;
 
     reconfigure)
       ensure_root
+      shift
 
-      reconfigure $@
+      reconfigure "$@"
       break;;
 
     *)

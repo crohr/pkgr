@@ -14,19 +14,18 @@
 ### END INIT INFO
 
 export PATH=/sbin:/usr/sbin:/bin:/usr/bin
-export PORT=PORT_NUM
+export APP_PROCESS_INDEX=__PROCESS_INDEX__
 
 name="<%= name %>"
 process_name="<%= process_name %>"
 user="<%= user %>"
 group="<%= group %>"
-full_process_name="${name}-${process_name}-PROCESS_NUM"
+full_process_name="${name}-${process_name}-${APP_PROCESS_INDEX}"
 pidfile="/var/run/${full_process_name}.pid"
-
 
 start() {
   # Run the program!
-  ${name} run ${process_name} >> /var/log/${name}/${process_name}-PROCESS_NUM.log 2>&1 &
+  ${name} run ${process_name} >> /var/log/${name}/${process_name}-${APP_PROCESS_INDEX}.log 2>&1 &
 
   # Generate the pidfile from here. If we instead made the forked process
   # generate it there will be a race condition between the pidfile writing

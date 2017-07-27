@@ -12,8 +12,8 @@ apt-get -y install \
   sudo \
   lsb-release \
   curl \
-  libssl1.0.0 \
-  libmysqlclient-dev \
+  libssl1.0.2 \
+  default-libmysqlclient-dev \
   libpq-dev \
   libsqlite3-0 \
   libevent-dev \

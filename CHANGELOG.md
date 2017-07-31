@@ -1,5 +1,6 @@
 ## master
 
+* Support for debian 9
 * Permit specifying multiple buildpacks to execute
 * Upgrade default ruby and nodejs buildpacks to v164 and v104
 

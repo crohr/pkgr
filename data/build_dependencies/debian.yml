@@ -13,3 +13,7 @@ debian-6:
   - libssl0.9.8
 debian-7:
   - libssl1.0.0
+debian-8:
+  - libssl1.0.0
+debian-9:
+  - libssl1.0.2

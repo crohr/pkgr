@@ -1,6 +1,5 @@
 default:
   - curl
-  - libmysqlclient-dev
   - libpq-dev
   - libsqlite3-0
   - libevent-dev
@@ -11,9 +10,13 @@ default:
   - build-essential
 debian-6:
   - libssl0.9.8
+  - libmysqlclient-dev
 debian-7:
   - libssl1.0.0
+  - libmysqlclient-dev
 debian-8:
   - libssl1.0.0
+  - libmysqlclient-dev
 debian-9:
   - libssl1.0.2
+  - default-libmysqlclient-dev

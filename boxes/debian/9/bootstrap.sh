@@ -2,7 +2,7 @@
 
 set -e
 
-BUNDLER_VERSION="1.7.12"
+BUNDLER_VERSION="1.15.3"
 
 apt-get -y update
 
@@ -23,13 +23,20 @@ apt-get -y install \
   libreadline-dev \
   build-essential
 
-ruby -v || curl https://s3.amazonaws.com/pkgr-buildpack-ruby/current/debian-8/ruby-2.2.2.tgz -o - | tar xzf - -C /usr/local
+ruby -v || curl -sGL buildcurl.com -d recipe=ruby -d version=2.4.0 -d target=debian:9 -o - | tar xzf - -C /usr/local
 
 ( bundle -v | grep "${BUNDLER_VERSION}" ) || ( gem install bundler --no-ri --no-rdoc --version "${BUNDLER_VERSION}" )
+
 # default to /vagrant when logging in
-( grep "cd /vagrant" /home/vagrant/.bash_profile ) || ( echo "cd /vagrant" >> /home/vagrant/.bash_profile )
+cat > /home/vagrant.bash_profile <<CONF
+export HOME=/home/vagrant
+cd /vagrant
+CONF
 
 echo "nameserver 8.8.8.8
 nameserver 4.4.4.4" > /etc/resolv.conf
+
+# required for libffi to install properly it seems
+ln -s /usr/bin/install /bin/install
 
 echo "DONE"

@@ -1,6 +1,15 @@
 ## master
 
 * Support for debian 9
+* Support for configuring app environment through `cat env-file | my-app configure`
+* Running `my-app configure` will try to run a configure script if one found in `packaging/scripts/configure`
+* Introduction of `my-app restart [process]` command, to abstract differences among init systems
+* `my-app logs` now forwards to journalctl, on systemd-enabled distributions
+* Lots of fixes and improvements as to how PORTs are defined
+  - Interactive runs properly handle PORT given on command line, e.g. `PORT=xxx my-app run web`
+  - A PORT is now assigned for each Procfile process, offset by 100 from base PORT for each process type
+  - Each worker of a specific process type is assigned a PORT equal to BASE_PORT+PORT_OFFSET+WORKER_INDEX-1
+  - Existing PORT configuration is not touched for backwards compatibility (you only get the new configuration when running the `scale` command).
 * Permit specifying multiple buildpacks to execute
 * Upgrade default ruby and nodejs buildpacks to v164 and v104
 

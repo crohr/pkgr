@@ -23,7 +23,7 @@ debian-7:
   - libreadline6
 debian-8:
   - libssl1.0.0
-  - libmysqlclient20
+  - libmysqlclient18
   - libevent-2.0-5
   - libevent-core-2.0-5
   - libevent-extra-2.0-5

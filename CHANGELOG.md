@@ -1,5 +1,6 @@
 ## master
 
+* Handle both opt/ logs and systemd logs
 * Support for debian 9
 * Support for configuring app environment through `cat env-file | my-app configure`
 * Running `my-app configure` will try to run a configure script if one found in `packaging/scripts/configure`

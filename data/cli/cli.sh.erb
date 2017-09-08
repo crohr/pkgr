@@ -96,26 +96,42 @@ show_env() {
   env -i ROOT_PATH=${ROOT_PATH} ${0} run env | sort
 }
 
+logs_opt() {
+  if [ "$1" == "" ]; then
+    for file in $(_p "/var/log/${APP_NAME}")/*.log ; do
+      echo "==> ${file} <=="
+      cat "${file}"
+    done
+  else
+    tail $(_p "/var/log/${APP_NAME}")/*.log "$@"
+  fi
+}
+logs_systemd() {
+  journalctl -u "$APP_NAME-*" -e "$@"
+}
+
 logs() {
   if [ "${APP_RUNNER_TYPE}" == "systemd" ]; then
-    exec journalctl -u "$APP_NAME-*" -e "$@"
+    # combine output of both opt and systemd logs
+    # no options given to log_opt since we want to use newer options of journalctl
+    { logs_opt & logs_systemd "$@" ; }
   else
-    if [ "$1" == "" ]; then
-      for file in $(_p "/var/log/${APP_NAME}")/*.log ; do
-        echo "==> ${file} <=="
-        cat "${file}"
-      done
-    else
-      tail $(_p "/var/log/${APP_NAME}")/*.log "$@"
-    fi
+    logs_opt "$@"
   fi
 }
 
+tail_logs_opt() {
+  tail -f $(_p "/var/log/${APP_NAME}")/*.log
+}
+tail_logs_systemd() {
+  journalctl -u "$APP_NAME-*" -f "$@"
+}
 tail_logs() {
   if [ "${APP_RUNNER_TYPE}" == "systemd" ]; then
-    exec journalctl -u "$APP_NAME-*" -f "$@"
+    # combine output of both opt and systemd logs
+    { tail_logs_opt & tail_logs_systemd "$@" ; }
   else
-    exec tail -f $(_p "/var/log/${APP_NAME}")/*.log
+    tail_logs_opt
   fi
 }
 
@@ -440,7 +456,8 @@ while : ; do
 
     logs)
       shift
-      if [ "$1" = "--tail" ]; then
+      if [ "$1" == "--tail" -o "$1" == "-f" ]; then
+        shift
         tail_logs
       else
         logs "${@}"

@@ -33,13 +33,13 @@ usage() {
   echo "  $APP_NAME restart"
   echo ""
   echo "Details:"
-  echo "  $APP_NAME configure"
+  echo "  $APP_NAME configure [-f FILE|-]"
   echo "    * If using an installer:"
   echo "      This command will launch the installer wizard."
-  echo "      You can pass the installer seed file on STDIN."
+  echo "      You can pass the installer seed file as argument or on STDIN."
   echo "   * Without installer:"
   echo "      This will execute the configure script at $APP_HOME/packaging/scripts/configure (if any)."
-  echo "      Environment variables can also be given on STDIN, and will be saved in the /etc/$APP_NAME/conf.d folder."
+  echo "      A file containing environment variables can be given as argument or on STDIN (-f -), and will be saved in the /etc/$APP_NAME/conf.d folder."
   echo ""
   echo "  $APP_NAME reconfigure"
   echo "    This command allows to reconfigure the application. Only useful if using an installer."
@@ -340,22 +340,20 @@ scale() {
 configure() {
   local installer_dir="$(_p "/usr/share/${APP_NAME}/installer")"
   local configure_script="$(_p "$APP_HOME/packaging/scripts/configure")"
-  local stdin="false"
-  if [ ! -t 0 ]; then
-    stdin="true"
-  elif [ "$1" == "-" ]; then
-    shift
-    stdin="true"
+  local file=""
+  if [ "$1" == "-f" ]; then
+    file="$2"
+    shift 2
   fi
 
   if [ -d "$installer_dir" ] ; then
-    if [ "$stdin" == "true" ]; then
-      cat > $(_p "/etc/$APP_NAME/installer.dat")
+    if [ "$file" != "" ]; then
+      cat "$file" > $(_p "/etc/$APP_NAME/installer.dat")
     fi
     exec ${installer_dir}/bin/run "$@"
   else
-    if [ "$stdin" == "true" ]; then
-      cat | grep -v '^#' | while read -r line ; do
+    if [ "$file" != "" ]; then
+      cat "$file" | grep -v '^#' | while read -r line ; do
         config_set "$line"
       done
     fi

@@ -258,7 +258,7 @@ describe "bash cli" do
 
     describe "configure" do
       it "properly sets the variables given on stdin" do
-        process.call("configure", input: "K1=V1
+        process.call("configure -f -", input: "K1=V1
 #
 K2=V2")
         expect(process).to be_ok
@@ -282,7 +282,7 @@ K2=V2")
           f.puts "echo KEY=$KEY ARG1=$1"
         end
         FileUtils.chmod 0755, File.join(target_dir, "configure")
-        process.call("configure arg", input: "KEY=HELLO FROM CONFIGURE")
+        process.call("configure -f - arg", input: "KEY=HELLO FROM CONFIGURE")
         expect(process.stdout).to eq("KEY=HELLO FROM CONFIGURE ARG1=arg")
       end
     end

@@ -1,5 +1,7 @@
 # pkgr
 
+[![Build Status](https://travis-ci.org/crohr/pkgr.svg?branch=master)](https://travis-ci.org/crohr/pkgr)
+
 ## Goal
 
 Make debian or rpm packages out of any app, including init script, crons,

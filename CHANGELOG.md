@@ -1,5 +1,8 @@
 ## master
 
+
+## 1.6.0
+
 * Handle both opt/ logs and systemd logs
 * Support for debian 9
 * Support for configuring app environment through `cat env-file | my-app configure`
@@ -13,6 +16,11 @@
   - Existing PORT configuration is not touched for backwards compatibility (you only get the new configuration when running the `scale` command).
 * Permit specifying multiple buildpacks to execute
 * Upgrade default ruby and nodejs buildpacks to v164 and v104
+* Fix runtime postgres dependency for sles12
+* Add home parameter in CLI
+* Do not attempt to create /usr/bin if CLI disabled
+* Ensure existence of the logs directory
+* Travis updates and build status image
 
 ## 1.5.1 - 20160908
 

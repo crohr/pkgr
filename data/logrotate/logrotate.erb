@@ -1,8 +1,8 @@
 # <%= name %> logs:
 /var/log/<%= name %>/*.log {
-  daily
+  <%= logrotate_frequency %>
   missingok
-  rotate 14
+  rotate <%= logrotate_backlog %>
   compress
   delaycompress
   notifempty

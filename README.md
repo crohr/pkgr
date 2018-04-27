@@ -81,6 +81,11 @@ Full command line options are given below:
       [--architecture=ARCHITECTURE]                  # Target architecture for the package
                                                      # Default: x86_64
       [--runner=RUNNER]                              # Force a specific runner (e.g. upstart-1.5, sysv-lsb-1.3)
+      [--logrotate-frequency=FREQUENCY]              # Set logrotate frequency
+                                                     # Default: daily
+                                                     # Possible values: daily, weekly, monthly, yearly
+      [--logrotate-backlog=BACKLOG]                  # Set logrotate backlog
+                                                     # Default: 14
       [--homepage=HOMEPAGE]                          # Project homepage (e.g. "https://pkgr.example.org")
       [--home=HOME]                                  # Project home (e.g. "/usr/share/PACKAGE_HOME")
       [--description=DESCRIPTION]                    # Project description
@@ -198,5 +203,3 @@ Issue getting nokogiri to compile? Try the following based on this [comment](htt
 ## Copyright
 
 See LICENSE (MIT)
-
-

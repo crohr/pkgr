@@ -29,6 +29,7 @@ They may just work.
 
 ## Supported distributions (64bits only)
 
+* Ubuntu 18.04 ("bionic")
 * Ubuntu 16.04 ("xenial")
 * Ubuntu 14.04 ("trusty")
 * Ubuntu 12.04 ("precise")

@@ -1,5 +1,7 @@
 ## master
 
+## 1.7.0
+
 * Ubuntu 18.04
 * Ruby buildpack v183-1
 

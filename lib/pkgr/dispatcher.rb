@@ -42,7 +42,7 @@ module Pkgr
         v = (Git.new(path).latest_tag || "").gsub(/^[^\d]+(\d.*)/, '\1')
         # If it's not a Git archive, try to figure out svn revision number
         begin
-          v = `cd #{path.to_s}&&svn info|grep Revision`.to_s.gsub!(/\D/, "") if (v !~ /^\d/)
+          v = `cd #{path.to_s} && svn info 2>/dev/null | grep Revision`.to_s.gsub!(/\D/, "") if (v !~ /^\d/)
         rescue
         end
         v = "0.0.0" if v !~ /^\d/

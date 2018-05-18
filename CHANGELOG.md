@@ -1,5 +1,9 @@
 ## master
 
+## 1.7.1
+
+* Work around bundler requiring a writable home dir for executing bundle install
+
 ## 1.7.0
 
 * Ubuntu 18.04

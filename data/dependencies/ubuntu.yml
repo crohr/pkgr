@@ -5,23 +5,38 @@ default:
   - openssl
   - libxml2
   - libxslt1.1
-  - libreadline5
-  - libreadline6
 ubuntu-10.04:
+  - libreadline5
   - libssl0.9.8
   - libmysqlclient16
   - libevent-1.4-2
   - libevent-core-1.4-2
   - libevent-extra-1.4-2
 ubuntu-12.04:
+  - libreadline6
+  - libssl1.0.0
+  - libmysqlclient18
+  - libevent-2.0-5
+  - libevent-core-2.0-5
+  - libevent-extra-2.0-5
+ubuntu-14.04:
+  - libreadline6
   - libssl1.0.0
   - libmysqlclient18
   - libevent-2.0-5
   - libevent-core-2.0-5
   - libevent-extra-2.0-5
 ubuntu-16.04:
+  - libreadline6
   - libssl1.0.0
   - libmysqlclient20
   - libevent-2.0-5
   - libevent-core-2.0-5
   - libevent-extra-2.0-5
+ubuntu-18.04:
+  - libreadline7
+  - libssl1.0.0
+  - libmysqlclient20
+  - libevent-2.1-6
+  - libevent-core-2.1-6
+  - libevent-extra-2.1-6

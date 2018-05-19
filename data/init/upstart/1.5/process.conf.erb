@@ -2,6 +2,6 @@ start on starting <%= name %>-<%= process_name %>
 stop on stopping <%= name %>-<%= process_name %>
 respawn
 
-env PORT=PORT_NUM
+env APP_PROCESS_INDEX=__PROCESS_INDEX__
 
 exec <%= name %> run <%= process_name %> >> /var/log/<%= name %>/<%= process_name %>-PROCESS_NUM.log 2>&1

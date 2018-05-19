@@ -12,4 +12,4 @@ sles-11:
   - postgresql
 sles-12:
   - libmysqlclient18
-  - postgresql93
+  - postgresql

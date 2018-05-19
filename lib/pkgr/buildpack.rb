@@ -7,8 +7,14 @@ module Pkgr
       attr_writer :buildpacks_cache_dir
 
       def buildpacks_cache_dir
-        @buildpacks_cache_dir ||= File.expand_path("~/.pkgr/buildpacks").tap do |dir|
-          FileUtils.mkdir_p(dir)
+        default_buildpacks_cache_dir = File.expand_path("~/.pkgr/buildpacks")
+        @buildpacks_cache_dir ||= begin
+          default_buildpacks_cache_dir.tap do |dir|
+            FileUtils.mkdir_p(dir)
+          end
+        rescue
+          Pkgr.warn "Unable to create directory at #{default_buildpacks_cache_dir.inspect}. Using temporary directory."
+          Dir.mktmpdir
         end
       end
     end
@@ -36,7 +42,10 @@ module Pkgr
     end
 
     def compile(path, compile_cache_dir, compile_env_dir)
-      cmd = %{env -i #{compound_environment(path)} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" "#{compile_env_dir}" }
+      compile_home_dir = Dir.mktmpdir
+      # Required to work around bundler forcing a writable home dir
+      local_env = Env.new(["HOME=#{compile_home_dir}"])
+      cmd = %{env -i #{compound_environment(path, local_env)} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" "#{compile_env_dir}" }
       Pkgr.debug "Running #{cmd.inspect}"
 
       Dir.chdir(path) do
@@ -48,7 +57,8 @@ module Pkgr
         end
         raise "compile failed" unless $?.exitstatus.zero?
       end
-
+    ensure
+      FileUtils.remove_entry_secure compile_home_dir
       true
     end
 
@@ -107,8 +117,8 @@ module Pkgr
 
   private
 
-    def compound_environment(path)
-      Env.new(['PATH=$PATH']).merge(env).merge(exported_environment(File.join(path, "export")))
+    def compound_environment(path, local_env = Env.new)
+      Env.new(['PATH=$PATH']).merge(local_env).merge(env).merge(exported_environment(File.join(path, "export")))
     end
 
     def exported_environment(path)

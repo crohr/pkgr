@@ -99,16 +99,17 @@ module Pkgr
         app_name = config.name
         list = []
 
-        # directories
-        [
-          "usr/bin",
+        directories = [
           config.home.gsub(/^\//, ""),
           "etc/#{app_name}/conf.d",
           "etc/default",
           "var/log/#{app_name}",
           "var/db/#{app_name}",
           "usr/share/#{app_name}"
-        ].each{|dir| list.push Templates::DirTemplate.new(dir) }
+        ]
+
+        directories << "usr/bin" if config.cli?
+        directories.each{|dir| list.push Templates::DirTemplate.new(dir) }
 
         list.push Templates::FileTemplate.new("etc/default/#{app_name}", data_file("environment", "default.erb"))
         list.push Templates::FileTemplate.new("etc/logrotate.d/#{app_name}", data_file("logrotate", "logrotate.erb"))

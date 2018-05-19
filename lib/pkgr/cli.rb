@@ -51,9 +51,21 @@ module Pkgr
     method_option :runner,
       :type => :string,
       :desc => "Force a specific runner (e.g. upstart-1.5, sysv-lsb-1.3)"
+    method_option :logrotate_frequency,
+      :type => :string,
+      :desc => "Set logrotate backlog",
+      :enum => %w(daily weekly monthly yearly),
+      :default => "daily"
+    method_option :logrotate_backlog,
+      :type => :numeric,
+      :desc => "Set logrotate backlog",
+      :default => 14
     method_option :homepage,
       :type => :string,
       :desc => "Project homepage"
+    method_option :home,
+      :type => :string,
+      :desc => "Project home"
     method_option :description,
       :type => :string,
       :desc => "Project description"

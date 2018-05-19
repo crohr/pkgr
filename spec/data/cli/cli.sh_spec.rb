@@ -16,7 +16,6 @@ class MyProcess
     @stderr = ""
   end
 
-
   def call(args, opts = {})
     opts = {timeout: 0.5, environment: env}.merge(opts)
 
@@ -115,6 +114,12 @@ describe "bash cli" do
       f.puts %{export APP_USER="#{ENV['USER']}"}
       f.puts %{export PORT=6000}
     end
+    File.open(File.join(directory, config.home, "Procfile"), "w+") do |f|
+      f.puts "web: echo web-process"
+      f.puts "worker: echo worker-process"
+      f.puts "# comment"
+      f.puts "geo: echo geo-process"
+    end
   end
 
   after(:each) do
@@ -163,6 +168,18 @@ describe "bash cli" do
         expect(process.stdout).to eq("mysql2://username:password@hostname/datbase_name/?reconnect=true")
       end
 
+      it "correctly sets a config with non-alpha chars in the value" do
+        process.call("config:set DATABASE_URL='mysql2://username:pas#@[sword@hostname/database_name/?reconnect=true'")
+        expect(process).to be_ok
+        expect(process.stdout).to eq("")
+
+        expect(File.read("#{directory}/etc/my-app/conf.d/other")).to eq("export DATABASE_URL=\"mysql2://username:pas#@[sword@hostname/database_name/?reconnect=true\"\n")
+        process.call("config:get DATABASE_URL")
+        expect(process).to be_ok
+        expect(process.stdout).to eq("mysql2://username:pas#@[sword@hostname/database_name/?reconnect=true")
+      end
+
+
       it "allows empty values" do
         process.call("config:set YOH=YEAH")
         expect(process).to be_ok
@@ -204,15 +221,69 @@ describe "bash cli" do
         FileUtils.mkdir_p(File.dirname(web_process_filename))
         File.open(web_process_filename, "w+") do |f|
           f.puts "#!/bin/sh"
-          f << "exec "
-          f << "ls"
-          f << " $@"
+          f << "exec ls \"$@\""
         end
         FileUtils.chmod 0755, web_process_filename
 
         process.call("run web -1")
         expect(process).to be_ok
-        expect(process.stdout.split("\n")).to eq(["vendor"])
+        expect(process.stdout.split("\n")).to eq(["Procfile", "vendor"])
+      end
+
+      it "properly increments the ports" do
+        web_process_filename = File.join(directory, config.home, "vendor", "pkgr", "processes", "web")
+        geo_process_filename = File.join(directory, config.home, "vendor", "pkgr", "processes", "geo")
+        FileUtils.mkdir_p(File.dirname(web_process_filename))
+        File.open(web_process_filename, "w+") do |f|
+          f.puts "#!/bin/sh"
+          f << "echo PORT=$PORT"
+        end
+        FileUtils.cp(web_process_filename, geo_process_filename)
+        FileUtils.chmod 0755, web_process_filename
+        FileUtils.chmod 0755, geo_process_filename
+
+        process.call("run web")
+        expect(process).to be_ok
+        expect(process.stdout).to eq("PORT=6000")
+        process.call("run geo")
+        expect(process).to be_ok
+        expect(process.stdout).to eq("PORT=6200")
+        # custom
+        process.env["PORT"] = "7070"
+        process.call("run geo")
+        expect(process).to be_ok
+        expect(process.stdout).to eq("PORT=7070")
+      end
+    end
+
+    describe "configure" do
+      it "properly sets the variables given on stdin" do
+        process.call("configure -f -", input: "K1=V1
+#
+K2=V2")
+        expect(process).to be_ok
+        process.call("config:get K1")
+        expect(process.stdout).to eq("V1")
+        process.call("config:get K2")
+        expect(process.stdout).to eq("V2")
+      end
+
+      it "does nothing by default" do
+        process.call("configure")
+        expect(process.stdout).to eq("")
+      end
+
+      it "calls the configure script if provided" do
+        target_dir = File.join(directory, config.home, "packaging", "scripts")
+        FileUtils.mkdir_p target_dir
+
+        File.open(File.join(target_dir, "configure"), "w+") do |f|
+          f.puts "#!/bin/bash"
+          f.puts "echo KEY=$KEY ARG1=$1"
+        end
+        FileUtils.chmod 0755, File.join(target_dir, "configure")
+        process.call("configure -f - arg", input: "KEY=HELLO FROM CONFIGURE")
+        expect(process.stdout).to eq("KEY=HELLO FROM CONFIGURE ARG1=arg")
       end
     end
   end # distribution independent
@@ -241,7 +312,9 @@ describe "bash cli" do
           f.puts %{export APP_RUNNER_CLI="initctl"}
         end
 
-        create_scaling_templates("upstart-1.5", "web", "ls -al")
+        create_scaling_templates("upstart-1.5", "web", "echo web-process-port-$PORT")
+        create_scaling_templates("upstart-1.5", "worker", "echo worker-process-port-$PORT")
+        create_scaling_templates("upstart-1.5", "geo", "echo geo-process-port-$PORT")
       end
 
       it "scales up from 0" do
@@ -255,7 +328,7 @@ describe "bash cli" do
         expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_truthy
         process_init = File.join(directory, "etc", "init", "my-app-web-1.conf")
         expect(File.exist?(process_init)).to be_truthy
-        expect(File.read(process_init)).to include("PORT=6000")
+        expect(File.read(process_init)).to include("APP_PROCESS_INDEX=1")
       end
 
       it "scales up from x" do
@@ -270,7 +343,7 @@ describe "bash cli" do
         expect(File.exist?(File.join(directory, "etc", "init", "my-app-web.conf"))).to be_truthy
         process_init = File.join(directory, "etc", "init", "my-app-web-2.conf")
         expect(File.exist?(process_init)).to be_truthy
-        expect(File.read(process_init)).to include("PORT=6001")
+        expect(File.read(process_init)).to include("APP_PROCESS_INDEX=2")
       end
 
       it "does nothing if new scale equals existing scale" do
@@ -312,8 +385,32 @@ describe "bash cli" do
         expect(File.exist?(init1)).to be_truthy
         init2 = File.join(directory, "etc", "init", "my-app-web-2.conf")
         expect(File.exist?(init2)).to be_truthy
-        expect(File.read(init1)).to include("PORT=6000")
-        expect(File.read(init2)).to include("PORT=6001")
+        expect(File.read(init1)).to include("APP_PROCESS_INDEX=1")
+        expect(File.read(init2)).to include("APP_PROCESS_INDEX=2")
+      end
+
+      it "properly increments ports" do
+        geo_process_filename = File.join(directory, config.home, "vendor", "pkgr", "processes", "geo")
+        FileUtils.mkdir_p(File.dirname(geo_process_filename))
+        File.open(geo_process_filename, "w+") do |f|
+          f.puts "#!/bin/sh"
+          f << "echo PORT=$PORT"
+        end
+        FileUtils.chmod 0755, geo_process_filename
+
+        process.call("scale web=2")
+        expect(process).to be_ok
+        process.call("scale geo=1")
+        expect(process).to be_ok
+
+        process.call("run geo")
+        expect(process.stdout).to eq("PORT=6200")
+        init1 = File.join(directory, "etc", "init", "my-app-web-1.conf")
+        init2 = File.join(directory, "etc", "init", "my-app-web-2.conf")
+        init3 = File.join(directory, "etc", "init", "my-app-geo-1.conf")
+        expect(File.read(init1)).to include("APP_PROCESS_INDEX=1")
+        expect(File.read(init2)).to include("APP_PROCESS_INDEX=2")
+        expect(File.read(init3)).to include("APP_PROCESS_INDEX=1")
       end
     end
 
@@ -372,7 +469,7 @@ describe "bash cli" do
         expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web"))).to be_truthy
         process_init = File.join(directory, "etc", "init.d", "my-app-web-1")
         expect(File.exist?(process_init)).to be_truthy
-        expect(File.read(process_init)).to include("PORT=6000")
+        expect(File.read(process_init)).to include("APP_PROCESS_INDEX=1")
       end
 
       it "scales up from x" do
@@ -387,7 +484,7 @@ describe "bash cli" do
         expect(File.exist?(File.join(directory, "etc", "init.d", "my-app-web-1"))).to be_truthy
         process_init = File.join(directory, "etc", "init.d", "my-app-web-2")
         expect(File.exist?(process_init)).to be_truthy
-        expect(File.read(process_init)).to include("PORT=6001")
+        expect(File.read(process_init)).to include("APP_PROCESS_INDEX=2")
       end
 
       it "does nothing if new scale equals existing scale" do

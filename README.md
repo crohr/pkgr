@@ -1,12 +1,16 @@
 # pkgr
 
+[![Build Status](https://travis-ci.org/crohr/pkgr.svg?branch=master)](https://travis-ci.org/crohr/pkgr)
+
 ## Goal
 
 Make debian or rpm packages out of any app, including init script, crons,
 logrotate, etc. Excellent way to distribute apps or command line tools without
 complicated installation instructions.
 
-Hosted service available at <https://packager.io/>. Free for OpenSource apps.
+Hosted service available at [Packager.io][packager-io]. Free for OpenSource apps.
+
+[packager-io]: https://packager.io/
 
 ## Officially supported languages
 
@@ -15,8 +19,9 @@ Hosted service available at <https://packager.io/>. Free for OpenSource apps.
 * Python
 * Go
 
-You can also try out PHP support by specifying the following buildpack:
-`https://github.com/pkgr/heroku-buildpack-php#buildcurl`
+In beta:
+
+* PHP, using the following buildpack: `https://github.com/pkgr/heroku-buildpack-php#buildcurl`
 
 You can also point to other buildpacks
 ([doc](https://packager.io/documentation/customizing-the-build/#buildpack)).
@@ -24,9 +29,11 @@ They may just work.
 
 ## Supported distributions (64bits only)
 
+* Ubuntu 18.04 ("bionic")
 * Ubuntu 16.04 ("xenial")
 * Ubuntu 14.04 ("trusty")
 * Ubuntu 12.04 ("precise")
+* Debian 9 ("stretch")
 * Debian 8 ("jessie")
 * Debian 7 ("wheezy")
 * RHEL/CentOS 7
@@ -38,7 +45,7 @@ They may just work.
 
 ## Examples
 
-See <https://packager.io/> for examples of apps packaged with `pkgr` (Gitlab, OpenProject, Discourse, etc.).
+See [Packager.io][packager-io] for examples of apps packaged with `pkgr` (Gitlab, OpenProject, Discourse, etc.).
 
 ## Installation
 
@@ -75,7 +82,13 @@ Full command line options are given below:
       [--architecture=ARCHITECTURE]                  # Target architecture for the package
                                                      # Default: x86_64
       [--runner=RUNNER]                              # Force a specific runner (e.g. upstart-1.5, sysv-lsb-1.3)
-      [--homepage=HOMEPAGE]                          # Project homepage
+      [--logrotate-frequency=FREQUENCY]              # Set logrotate frequency
+                                                     # Default: daily
+                                                     # Possible values: daily, weekly, monthly, yearly
+      [--logrotate-backlog=BACKLOG]                  # Set logrotate backlog
+                                                     # Default: 14
+      [--homepage=HOMEPAGE]                          # Project homepage (e.g. "https://pkgr.example.org")
+      [--home=HOME]                                  # Project home (e.g. "/usr/share/PACKAGE_HOME")
       [--description=DESCRIPTION]                    # Project description
       [--category=CATEGORY]                          # Category this package belongs to
                                                      # Default: none
@@ -191,5 +204,3 @@ Issue getting nokogiri to compile? Try the following based on this [comment](htt
 ## Copyright
 
 See LICENSE (MIT)
-
-

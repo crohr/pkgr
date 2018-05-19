@@ -2,10 +2,11 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "debian/wheezy64"
+  config.vm.box = "ubuntu/bionic64"
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--memory", "384"]
+    vb.customize ["modifyvm", :id, "--memory", "1024"]
   end
   config.vm.synced_folder "../../../../", "/vagrant"
   config.vm.provision :shell, :path => "./bootstrap.sh"
+  config.vm.network :forwarded_port, guest: 6000, host: 6000
 end

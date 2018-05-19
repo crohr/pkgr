@@ -1,6 +1,34 @@
 ## master
 
+## 1.7.1
+
+* Work around bundler requiring a writable home dir for executing bundle install
+
+## 1.7.0
+
+* Ubuntu 18.04
+* Ruby buildpack v183-1
+
+## 1.6.0
+
+* Handle both opt/ logs and systemd logs
+* Support for debian 9
+* Support for configuring app environment through `cat env-file | my-app configure`
+* Running `my-app configure` will try to run a configure script if one found in `packaging/scripts/configure`
+* Introduction of `my-app restart [process]` command, to abstract differences among init systems
+* `my-app logs` now forwards to journalctl, on systemd-enabled distributions
+* Lots of fixes and improvements as to how PORTs are defined
+  - Interactive runs properly handle PORT given on command line, e.g. `PORT=xxx my-app run web`
+  - A PORT is now assigned for each Procfile process, offset by 100 from base PORT for each process type
+  - Each worker of a specific process type is assigned a PORT equal to BASE_PORT+PORT_OFFSET+WORKER_INDEX-1
+  - Existing PORT configuration is not touched for backwards compatibility (you only get the new configuration when running the `scale` command).
 * Permit specifying multiple buildpacks to execute
+* Upgrade default ruby and nodejs buildpacks to v164 and v104
+* Fix runtime postgres dependency for sles12
+* Add home parameter in CLI
+* Do not attempt to create /usr/bin if CLI disabled
+* Ensure existence of the logs directory
+* Travis updates and build status image
 
 ## 1.5.1 - 20160908
 

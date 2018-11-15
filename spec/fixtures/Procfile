@@ -1,3 +1,4 @@
 web: bundle exec unicorn
 worker: bundle exec sidekiq
 redis: redis-server
+urgent_web: bundle exec unicorn

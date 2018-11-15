@@ -154,6 +154,7 @@ describe Pkgr::Builder do
         "console",
         "rake",
         "redis",
+        "urgent_web",
         "web",
         "worker"
       ])
@@ -175,6 +176,8 @@ describe Pkgr::Builder do
         "/upstart/my-app-rake.conf",
         "/upstart/my-app-redis-PROCESS_NUM.conf",
         "/upstart/my-app-redis.conf",
+        "/upstart/my-app-urgent_web-PROCESS_NUM.conf",
+        "/upstart/my-app-urgent_web.conf",
         "/upstart/my-app-web-PROCESS_NUM.conf",
         "/upstart/my-app-web.conf",
         "/upstart/my-app-worker-PROCESS_NUM.conf",

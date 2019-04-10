@@ -1,5 +1,7 @@
 ## master
 
+* Update ruby buildpack to v199-1. Supports bundler2.
+
 ## 1.7.1
 
 * Work around bundler requiring a writable home dir for executing bundle install

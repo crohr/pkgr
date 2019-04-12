@@ -28,6 +28,7 @@ usage() {
   echo "  $APP_NAME logs [--tail|-n NUMBER]"
   echo "  $APP_NAME config:get VAR"
   echo "  $APP_NAME config:set VAR=VALUE"
+  echo "  $APP_NAME config:unset VAR"
   echo "  $APP_NAME configure"
   echo "  $APP_NAME reconfigure"
   echo "  $APP_NAME restart"
@@ -367,13 +368,18 @@ reconfigure() {
   configure --reconfigure
 }
 
+config_unset() {
+  local key="${1}"
+  sed -i -r "s/^\s*export\s+${key}.*$//g" $(_p "/etc/${APP_NAME}/conf.d")/*
+}
+
 config_set() {
   # http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html#tag_02_06_02
   local key="${1%%=*}"
   local value="${1#*=}"
   local file=$(_p "/etc/${APP_NAME}/conf.d/other")
   touch "$file"
-  sed -i -r "s/^\s*export\s+${key}.*$//g" $(_p "/etc/${APP_NAME}/conf.d")/*
+  config_unset "$key"
   echo "export ${key}=\"${value}\"" >> "${file}"
   sed -i '/^\s*$/d' "$file"
 }
@@ -466,10 +472,14 @@ while : ; do
       show_env
       break;;
 
+    config:unset)
+      [ $# -lt 2 ] && usage
+      config_unset "$2"
+      break;;
+
     config:set)
       [ $# -lt 2 ] && usage
       config_set "$2"
-
       break;;
 
     config:get)

@@ -1,5 +1,6 @@
 ## master
 
+* Add `config:unset` to CLI.
 * Update ruby buildpack to v199-1. Supports bundler2.
 
 ## 1.7.1

@@ -207,6 +207,14 @@ describe "bash cli" do
         process.call("config:get SERVER_HOSTNAME")
         expect(process.stdout).to eq("example.com")
       end
+
+      it "unsets a variable" do
+        process.call("config:set SERVER_HOSTNAME=example.com")
+        process.call("config:unset SERVER_HOSTNAME")
+        process.call("config:get SERVER_HOSTNAME")
+        expect(process.stdout).to eq("")
+        expect(process.stderr).to eq("")
+      end
     end
 
     describe "run" do

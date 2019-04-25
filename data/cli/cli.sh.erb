@@ -47,6 +47,7 @@ usage() {
   echo ""
   echo "  $APP_NAME restart [process]"
   echo "    This will restart the application (or the given process), in a distribution-independent manner."
+  exit 64
 }
 
 DEFAULT_FILE=$(_p "/etc/default/${APP_NAME}")

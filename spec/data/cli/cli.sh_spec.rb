@@ -130,7 +130,8 @@ describe "bash cli" do
 
     it "displays the usage if no args given" do
       process.call("")
-      expect(process).to be_ok
+      expect(process).to be_ko
+      expect(process.exit_status).to eq(64)
       expect(process.stdout).to include("my-app run COMMAND")
     end
 

@@ -61,7 +61,19 @@ for file in $(_p "${APP_HOME}/.profile.d")/*.sh; do
 done
 
 if [ "$APP_CLI" != "" ] ; then
-  exec $APP_HOME/bin/$APP_CLI "$@"
+  local cli_path="$APP_CLI"
+  if [ ! -e "$cli_path" ]; then
+    cli_path="$APP_HOME/$APP_CLI"
+  fi
+  if [ ! -e "$cli_path" ]; then
+    cli_path="$APP_HOME/bin/$APP_CLI"
+  fi
+  if [ -e "$cli_path" ]; then
+    exec "$cli_path" "$@"
+  else
+    echo "Error: the given CLI ($APP_CLI) does not point to any valid executable"
+    exit 1
+  fi
 fi
 
 if [ ! -w "$(_p "/etc/${APP_NAME}/conf.d")" ] ; then

@@ -2,7 +2,7 @@
 
 set -e
 
-BUNDLER_VERSION="1.15.3"
+BUNDLER_VERSION="1.17.3"
 
 apt-get -y update
 

@@ -14,7 +14,7 @@ module Pkgr
 
       def runner
         @runner ||= case release
-        when /^8/, /^9/
+        when /^8/, /^9/, /^10/
           Runner.new("systemd", "default", "systemctl")
         else
           Runner.new("sysv", "lsb-3.1", "update-rc.d")

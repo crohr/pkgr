@@ -33,6 +33,7 @@ They may just work.
 * Ubuntu 16.04 ("xenial")
 * Ubuntu 14.04 ("trusty")
 * Ubuntu 12.04 ("precise")
+* Debian 10 ("buster")
 * Debian 9 ("stretch")
 * Debian 8 ("jessie")
 * Debian 7 ("wheezy")

@@ -1,5 +1,6 @@
 ## master
 
+* Add support for Debian 10 "buster"
 * Add `config:unset` to CLI.
 * Update ruby buildpack to v199-1. Supports bundler2.
 

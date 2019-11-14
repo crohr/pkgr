@@ -30,7 +30,8 @@ module Pkgr
       def target
         {
           "centos-6" => "el:6",
-          "centos-7" => "el:7"
+          "centos-7" => "el:7",
+          "centos-8" => "el:8"
         }.fetch(slug, slug.sub("-", ":"))
       end
 

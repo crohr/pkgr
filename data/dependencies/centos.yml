@@ -4,6 +4,11 @@ default:
   - libxml2
   - libxslt
   - libevent
-  - postgresql-libs
   - mysql-libs
   - sqlite
+centos-6:
+  - postgresql-libs
+centos-7:
+  - postgresql-libs
+centos-8:
+  - libpq

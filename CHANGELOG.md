@@ -1,5 +1,7 @@
 ## master
 
+## 1.7.2
+
 * Add support for RHEL 8.
 * Update ruby buildpack to v206-1. Supports Rails6.
 * Add support for Debian 10 "buster"

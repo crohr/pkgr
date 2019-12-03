@@ -1,5 +1,5 @@
 language: ruby
-before_install: gem install bundler
+before_install: gem install bundler -v 1.17.3
 before_script:
   - git config --global user.email hello@world.com
   - git config --global user.name "John Doe"

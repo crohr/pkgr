@@ -51,15 +51,7 @@ See [Packager.io][packager-io] for examples of apps packaged with `pkgr` (Gitlab
 
 ## Installation
 
-You can find DEB and RPM packages for a wide range of distributions on Packager.io:
-
-<https://packager.io/gh/crohr/pkgr>
-
-Or, installing as a gem, on debian-based machines:
-
-    sudo apt-get update
-    sudo apt-get install -y build-essential ruby1.9.1-full rubygems1.9.1
-    sudo gem install pkgr
+    gem install pkgr
 
 ## Usage
 

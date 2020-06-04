@@ -40,3 +40,9 @@ ubuntu-18.04:
   - libevent-2.1-6
   - libevent-core-2.1-6
   - libevent-extra-2.1-6
+ubuntu-20.04:
+  - libreadline8
+  - libssl1.1
+  - libevent-2.1-7
+  - libevent-core-2.1-7
+  - libevent-extra-2.1-7

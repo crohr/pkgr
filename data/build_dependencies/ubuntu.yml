@@ -19,3 +19,5 @@ ubuntu-16.04:
   - libssl1.0.0
 ubuntu-18.04:
   - libssl1.0.0
+ubuntu-20.04:
+  - libssl1.1

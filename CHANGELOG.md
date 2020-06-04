@@ -1,5 +1,7 @@
 ## master
 
+* Add support for Ubuntu 20.04
+
 ## 1.7.2
 
 * Add support for RHEL 8.

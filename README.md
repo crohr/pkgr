@@ -141,7 +141,7 @@ Finally, it's a great way to share your open source software with your users and
 
 * Uses Heroku buildpacks to embed all the dependencies related to your application runtime within the debian package. For a Rails app for instance, this means that `pkgr` will embed the specific ruby runtime you asked for, along with all the gems specified in your Gemfile. However, all other dependencies you may need must be specified as additional system dependencies (see Usage). This avoids the 'packaging-the-world' approach used by other tools such as omnibus (with the pros and cons that come with it), but it still allows you to use the latest and greatest libraries for your language of choice. See this [blog post][background-pkgr] for more background.
 
-[background-pkgr]: http://blog.packager.io/post/81988994454/why-i-made-pkgr-io-digressions-on-software-packaging
+[background-pkgr]: https://blog.packager.io/posts/1-why-i-made-packager-io-digressions-on-software-packaging
 
 * Gives you a nice executable, which closely replicates the Heroku toolbelt utility. For instance, assuming you're packaging an app called `my-app`, you can do the following:
 

@@ -1,5 +1,7 @@
 ## master
 
+## 1.7.3
+
 * Add support for Ubuntu 20.04
 * Update ruby buildpack to v212-1
 

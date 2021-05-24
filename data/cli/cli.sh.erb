@@ -110,14 +110,24 @@ show_env() {
   env -i ROOT_PATH=${ROOT_PATH} ${0} run env | sort
 }
 
+logs_files() {
+  files=$(shopt -s nullglob dotglob; echo $(_p "/var/log/${APP_NAME}")/*.log)
+  echo "$files"
+}
+
 logs_opt() {
+  files=$(logs_files)
+  if [ "$files" == "" ]; then
+    return
+  fi
+
   if [ "$1" == "" ]; then
-    for file in $(_p "/var/log/${APP_NAME}")/*.log ; do
+    for file in $files ; do
       echo "==> ${file} <=="
       cat "${file}"
     done
   else
-    tail $(_p "/var/log/${APP_NAME}")/*.log "$@"
+    tail $files "$@"
   fi
 }
 logs_systemd() {
@@ -135,7 +145,11 @@ logs() {
 }
 
 tail_logs_opt() {
-  tail -f $(_p "/var/log/${APP_NAME}")/*.log
+  files=$(logs_files)
+  if [ "$files" == "" ]; then
+    return
+  fi
+  tail -f $files
 }
 tail_logs_systemd() {
   journalctl -u "$APP_NAME-*" -f "$@"

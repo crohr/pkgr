@@ -182,7 +182,7 @@ process_index() {
   if [ -f "$(_p "${APP_HOME}/Procfile")" ]; then
     index="$(cat "$(_p "${APP_HOME}/Procfile")" | grep -ve '^#' | grep -n "$process_name:" | cut -f 1 -d ':')"
   else
-    index=0
+    index=1
   fi
   echo $(($index - 1))
 }

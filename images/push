@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+set -o pipefail
+
+push_docker_image() {
+	file=$1
+	osversiondir=$(dirname $file)
+	osfamilydir=$(dirname $osversiondir)
+	osversion=$(basename $osversiondir)
+	osfamily=$(basename $osfamilydir)
+	target="$osfamily:$osversion"
+	docker_tag="$DOCKER_ORG/$osfamily:$osversion"
+
+	echo $docker_tag
+	docker push $docker_tag
+}
+
+push_docker_image "$1"

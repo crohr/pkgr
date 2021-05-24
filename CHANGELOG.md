@@ -1,5 +1,8 @@
 ## master
 
+* Publish docker images to simplify build
+* Upgrade ruby buildpack to v227-1
+
 ## 1.7.3
 
 * Add support for Ubuntu 20.04

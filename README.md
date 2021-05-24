@@ -52,15 +52,25 @@ See [Packager.io][packager-io] for examples of apps packaged with `pkgr` (Gitlab
 
 ## Installation
 
+Docker images are available for the most recent distributions. If you don't
+have docker or are interested in older distributions, you can also install
+`pkgr` as a ruby gem:
+
     gem install pkgr
 
 ## Usage
 
 To package your app, execute `pkgr` against your app's repository:
 
+    # if using the ruby gem, you need to run it under the distribution you want to package for:
     pkgr package path/to/app/repo
 
-The resulting `.deb` or `.rpm` package will be in your current working directory. That is, you need to run `pkgr` on the target distribution for which you want to generate a package.
+    # if using a docker image, you can run it from any host OS:
+    docker run --rm -it -v $(pwd):/app -v /tmp/cache pkgr/ubuntu:20.04
+    docker run --rm -it -v $(pwd):/app -v /tmp/cache pkgr/el:8
+    docker run --rm -it -v $(pwd):/app -v /tmp/cache pkgr/debian:10
+
+The resulting `.deb` or `.rpm` package will be in your current working directory. 
 
 Full command line options are given below:
 

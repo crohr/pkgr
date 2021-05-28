@@ -9,5 +9,10 @@ default:
   - libxslt-devel
   - libevent-devel
   - postgresql-devel
-  - mysql-devel
   - sqlite-devel
+centos-6:
+  - mysql-devel
+centos-7:
+  - mariadb-devel
+centos-8:
+  - mariadb-devel

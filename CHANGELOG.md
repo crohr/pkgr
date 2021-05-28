@@ -1,7 +1,10 @@
 ## master
 
+## 1.8.0
+
 * Publish docker images to simplify build
 * Upgrade ruby buildpack to v227-1
+* Improve log file display
 
 ## 1.7.3
 

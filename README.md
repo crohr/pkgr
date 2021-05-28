@@ -66,9 +66,9 @@ To package your app, execute `pkgr` against your app's repository:
     pkgr package path/to/app/repo
 
     # if using a docker image, you can run it from any host OS:
-    docker run --rm -it -v $(pwd):/app -v /tmp/cache pkgr/ubuntu:20.04
-    docker run --rm -it -v $(pwd):/app -v /tmp/cache pkgr/el:8
-    docker run --rm -it -v $(pwd):/app -v /tmp/cache pkgr/debian:10
+    docker run --rm -it -v $(pwd):/app -v /tmp/cache:/cache pkgr/ubuntu:20.04
+    docker run --rm -it -v $(pwd):/app -v /tmp/cache:/cache pkgr/el:8
+    docker run --rm -it -v $(pwd):/app -v /tmp/cache:/cache pkgr/debian:10
 
 The resulting `.deb` or `.rpm` package will be in your current working directory. 
 

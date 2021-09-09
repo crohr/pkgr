@@ -26,4 +26,7 @@ jobs:
           bundler-cache: true
 
       - name: Run tests
-        run: bundle exec rspec
+        run: |
+          git config --global user.email hello@world.com
+          git config --global user.name "John Doe"
+          bundle exec rspec

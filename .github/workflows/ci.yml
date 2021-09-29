@@ -1,0 +1,32 @@
+---
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: ["ubuntu-18.04", "ubuntu-20.04"]
+        ruby: ["1.9", "2.1", "2.2", "2.3", "2.4", "2.6", "2.7", "3.0"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Run tests
+        run: |
+          git config --global user.email hello@world.com
+          git config --global user.name "John Doe"
+          bundle exec rspec

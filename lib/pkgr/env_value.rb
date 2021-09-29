@@ -37,6 +37,10 @@ class EnvValue < String
     "#{f}#{self}#{b}"
   end
 
+  def strip
+    self.class.new(super)
+  end
+
   def unquote
     s = self.dup
 

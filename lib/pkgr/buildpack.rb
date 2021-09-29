@@ -24,7 +24,7 @@ module Pkgr
     def initialize(url, type = :builtin, env = nil)
       @uuid = Digest::SHA1.hexdigest(url)
       @url, @branch = url.split("#")
-      @branch ||= "master"
+      @branch ||= "main"
       @type = type
       @env = env || Env.new
     end

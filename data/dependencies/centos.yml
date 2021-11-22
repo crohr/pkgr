@@ -4,7 +4,6 @@ default:
   - libxml2
   - libxslt
   - libevent
-  - mysql-libs
   - sqlite
 centos-6:
   - postgresql-libs

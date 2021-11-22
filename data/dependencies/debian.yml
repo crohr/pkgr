@@ -1,5 +1,4 @@
 default:
-  - mysql-common
   - libpq5
   - libsqlite3-0
   - openssl
@@ -7,7 +6,6 @@ default:
   - libxslt1.1
 debian-6:
   - libssl0.9.8
-  - libmysqlclient16
   - libevent-1.4-2
   - libevent-core-1.4-2
   - libevent-extra-1.4-2
@@ -15,7 +13,6 @@ debian-6:
   - libreadline6
 debian-7:
   - libssl1.0.0
-  - libmysqlclient18
   - libevent-2.0-5
   - libevent-core-2.0-5
   - libevent-extra-2.0-5
@@ -23,7 +20,6 @@ debian-7:
   - libreadline6
 debian-8:
   - libssl1.0.0
-  - libmysqlclient18
   - libevent-2.0-5
   - libevent-core-2.0-5
   - libevent-extra-2.0-5
@@ -31,7 +27,6 @@ debian-8:
   - libreadline6
 debian-9:
   - libssl1.0.2
-  - libmariadbclient18
   - libevent-2.0-5
   - libevent-core-2.0-5
   - libevent-extra-2.0-5

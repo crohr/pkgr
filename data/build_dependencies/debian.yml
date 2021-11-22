@@ -27,3 +27,7 @@ debian-10:
   - libssl1.1
   - libssl-dev
   - default-libmysqlclient-dev
+debian-11:
+  - libssl1.1
+  - libssl-dev
+  - default-libmysqlclient-dev

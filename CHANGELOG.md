@@ -1,5 +1,7 @@
 ## master
 
+* add --no-gpg-checks for SLES11 and SLES12 when setting up **build** dependencies. This is suboptimal, but helps with outdated package repos.
+
 ## 1.8.0
 
 * Publish docker images to simplify build

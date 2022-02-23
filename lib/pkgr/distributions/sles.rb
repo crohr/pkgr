@@ -20,7 +20,12 @@ module Pkgr
       end
 
       def package_install_command(packages)
-        "sudo zypper refresh ; sudo zypper install -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
+        # --no-gpg-checks helps with outdated repos for SLES
+        zypper_flags = []
+        if release.to_i <= 12
+          zypper_flags.push("--no-gpg-checks")
+        end
+        "sudo zypper refresh ; sudo zypper #{zypper_flags.join(" ")} install -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
       end
 
       def installer_dependencies

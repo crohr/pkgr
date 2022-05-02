@@ -21,3 +21,5 @@ ubuntu-18.04:
   - libssl1.0.0
 ubuntu-20.04:
   - libssl1.1
+ubuntu-22.04:
+  - libssl3

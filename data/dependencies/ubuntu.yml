@@ -40,3 +40,7 @@ ubuntu-20.04:
   - libevent-2.1-7
   - libevent-core-2.1-7
   - libevent-extra-2.1-7
+ubuntu-22.04:
+  - libreadline8
+  - libssl3
+  - libev4

@@ -166,6 +166,7 @@ module Pkgr
     # Write cron files
     def setup_crons
       crons_dir = File.join("/", distribution.crons_dir)
+      config.crons_dir = crons_dir
 
       config.crons.map! do |cron_path|
         Cron.new(File.expand_path(cron_path, config.home), File.join(crons_dir, File.basename(cron_path)))

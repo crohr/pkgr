@@ -1,5 +1,6 @@
 ## master
 
+- update nodejs buildpack to v197
 - add support for Ubuntu 22.04
 - add --no-gpg-checks for SLES11 and SLES12 when setting up **build** dependencies. This is suboptimal, but helps with outdated package repos.
 - upgrade ruby buildpack

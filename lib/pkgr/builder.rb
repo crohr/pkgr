@@ -115,12 +115,13 @@ module Pkgr
       FileUtils.mkdir_p(compile_cache_dir)
       FileUtils.mkdir_p(compile_env_dir)
 
+      local_env = Env.new(["APP_PKG_VERSION=#{config.version}", "APP_PKG_ITERATION=#{config.iteration}"])
       if buildpacks_for_app.size > 0
         run_hook config.before_hook
 
         buildpacks_for_app.each do |buildpack|
           puts "-----> #{buildpack.banner} app"
-          buildpack.compile(source_dir, compile_cache_dir, compile_env_dir)
+          buildpack.compile(source_dir, compile_cache_dir, compile_env_dir, local_env: local_env)
           buildpack.release(source_dir)
         end
 

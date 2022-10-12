@@ -1,5 +1,7 @@
 ## master
 
+- Pass APP_PKG_VERSION and APP_PKG_ITERATION during compilation step
+
 ## 1.9.0
 
 - add support for Ubuntu 22.04

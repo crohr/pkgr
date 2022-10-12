@@ -25,6 +25,8 @@ Gem::Specification.new do |s|
   s.add_dependency('facter', '~> 2.1')
   s.add_dependency('mixlib-log', '~> 1.6')
   s.add_dependency('mixlib-shellout', '~> 1.4')
+  # 5+ requires ruby 2.6+
+  s.add_dependency('public_suffix', '~> 4')
   s.add_development_dependency('rspec', '~> 3')
 
   s.files = Dir.glob("{lib,data}/**/*") + %w(LICENSE README.md)

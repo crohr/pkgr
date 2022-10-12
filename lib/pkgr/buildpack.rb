@@ -41,10 +41,10 @@ module Pkgr
       buildpack_detect.exitstatus == 0
     end
 
-    def compile(path, compile_cache_dir, compile_env_dir, local_env: Env.new)
+    def compile(path, compile_cache_dir, compile_env_dir)
       compile_home_dir = Dir.mktmpdir
       # Required to work around bundler forcing a writable home dir
-      local_env = local_env.merge(Env.new(["HOME=#{compile_home_dir}"]))
+      local_env = Env.new(["HOME=#{compile_home_dir}"])
       cmd = %{env -i #{compound_environment(path, local_env)} #{dir}/bin/compile "#{path}" "#{compile_cache_dir}" "#{compile_env_dir}" }
       Pkgr.debug "Running #{cmd.inspect}"
 

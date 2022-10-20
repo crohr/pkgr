@@ -1,5 +1,6 @@
 ## master
 
+- Support SLES-15
 - Pass APP_PKG_VERSION and APP_PKG_ITERATION during compilation step
 - Update python buildpack to v221-1
 

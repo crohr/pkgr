@@ -7,12 +7,15 @@ default:
   - libxml2-devel
   - libxslt-devel
   - libevent-devel
-  - libmysqlclient-devel
   - sqlite3-devel
   - timezone
 sles-11:
+  - libmysqlclient-devel
   - kernel-default-devel
   - postgresql94-devel
 sles-12:
+  - libmysqlclient-devel
   - kernel-devel
+  - postgresql-devel
+sles-15:
   - postgresql-devel

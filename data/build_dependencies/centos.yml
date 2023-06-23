@@ -16,3 +16,5 @@ centos-7:
   - mariadb-devel
 centos-8:
   - mariadb-devel
+centos-9:
+  - mariadb-devel

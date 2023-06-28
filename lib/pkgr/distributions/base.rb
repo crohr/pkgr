@@ -28,11 +28,7 @@ module Pkgr
       end # def slug
 
       def target
-        {
-          "centos-6" => "el:6",
-          "centos-7" => "el:7",
-          "centos-8" => "el:8"
-        }.fetch(slug, slug.sub("-", ":"))
+        slug.sub("-", ":").sub("centos", "el")
       end
 
       def package_test_command(package)

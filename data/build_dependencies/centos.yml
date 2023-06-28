@@ -1,5 +1,4 @@
 default:
-  - curl
   - gcc
   - gcc-c++
   - kernel-devel

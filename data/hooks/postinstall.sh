@@ -10,19 +10,19 @@ export APP_HOME="<%= home %>"
 HOME_LOGS="${APP_HOME}/log"
 LOGS="/var/log/${APP_NAME}"
 
-chown -R ${APP_USER}.${APP_GROUP} ${APP_HOME}
+chown -R ${APP_USER}:${APP_GROUP} ${APP_HOME}
 
 # link app log directory to /var/log/NAME
 mkdir -p ${LOGS}
 rm -rf ${HOME_LOGS}
 ln -fs ${LOGS} ${HOME_LOGS}
-chown -R ${APP_USER}.${APP_GROUP} ${LOGS}
+chown -R ${APP_USER}:${APP_GROUP} ${LOGS}
 
 # Add default conf.d file
 [ -f /etc/${APP_NAME}/conf.d/other ] || touch /etc/${APP_NAME}/conf.d/other
 
-chown -R ${APP_USER}.${APP_GROUP} /etc/${APP_NAME}
-chown ${APP_USER}.${APP_GROUP} /var/db/${APP_NAME}
+chown -R ${APP_USER}:${APP_GROUP} /etc/${APP_NAME}
+chown ${APP_USER}:${APP_GROUP} /var/db/${APP_NAME}
 
 chmod 0750 /etc/${APP_NAME} /etc/${APP_NAME}/conf.d
 find /etc/${APP_NAME} -type f -exec chmod 0640 {} +

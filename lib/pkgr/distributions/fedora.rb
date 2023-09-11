@@ -7,6 +7,10 @@ module Pkgr
   module Distributions
     # Contains the various components required to make a packaged app integrate well with a Debian system.
     class Fedora < Base
+      def rpm?
+        true
+      end
+
       # Only keep major digits
       def release
         @release[/^[0-9]+/]

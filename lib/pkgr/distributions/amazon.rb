@@ -1,8 +1,9 @@
 module Pkgr
-
   module Distributions
-
     class Amazon < Base
+      def rpm?
+        true
+      end
 
       def release
         @release[/^[0-9]+/]
@@ -35,9 +36,6 @@ module Pkgr
           list
         end
       end
-
     end
-
   end
-
 end

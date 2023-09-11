@@ -22,6 +22,14 @@ module Pkgr
         self.class.name.split("::")[-1].downcase
       end # def os
 
+      def rpm?
+        false
+      end
+
+      def deb?
+        false
+      end
+
       # e.g. ubuntu-12.04
       def slug
         [os, release].join("-")

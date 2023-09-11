@@ -6,6 +6,10 @@ require 'pkgr/fpm_command'
 module Pkgr
   module Distributions
     class Sles < Base
+      def rpm?
+        true
+      end
+
       # Only keep major digits
       def release
         @release[/^[0-9]+/]

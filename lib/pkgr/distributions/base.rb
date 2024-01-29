@@ -127,6 +127,13 @@ module Pkgr
         list
       end
 
+      def config_files
+        templates
+          .filter { |template| template.is_a?(Templates::FileTemplate) }
+          .map(&:target)
+          .filter { |target| target.start_with?("etc/") }
+      end
+
       # Returns a list of <Process, FileTemplate> tuples.
       def initializers_for(app_name, procfile_entries)
         list = []

@@ -133,7 +133,7 @@ module Pkgr
     end
 
     def env
-      @table[:env].is_a?(Pkgr::Env) ? @table[:env] : Pkgr::Env.new(@table[:env])
+      @env ||= @table[:env].is_a?(Pkgr::Env) ? @table[:env] : Pkgr::Env.new(@table[:env])
     end
 
     def buildpacks

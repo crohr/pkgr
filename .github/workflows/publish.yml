@@ -1,0 +1,39 @@
+name: Publish pkgr images
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: ["debian/10"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.target }}
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }}
+          build-args: PKGR_VERSION=${{ github.sha }}
+
+      - name: Verify Docker image
+        run: |
+          docker pull ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }}
+          docker run --rm ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }} /bin/sh -c "echo 'Image works!'"

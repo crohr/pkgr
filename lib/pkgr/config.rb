@@ -140,6 +140,14 @@ module Pkgr
       @table[:buildpack].is_a?(String) ? @table[:buildpack].split(",") : @table[:buildpack]
     end
 
+    def name
+      if ENV['GITHUB_REPOSITORY']
+        ENV['GITHUB_REPOSITORY'].split("/").last
+      else
+        @table[:name] || ""
+      end
+    end
+
     def valid?
       @errors = []
       @errors.push("name can't be blank") if name.nil? || name.empty?

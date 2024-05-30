@@ -49,8 +49,3 @@ jobs:
           build-args: |
             PKGR_VERSION=${{ github.sha }}
             TARGET=${{ matrix.target }}
-
-      # - name: Verify Docker image
-      #   run: |
-      #     docker pull ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }}
-      #     docker run --rm ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }} /bin/sh -c "echo 'Image works!'"

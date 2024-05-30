@@ -141,11 +141,8 @@ module Pkgr
     end
 
     def name
-      if ENV['GITHUB_REPOSITORY']
-        ENV['GITHUB_REPOSITORY'].split("/").last
-      else
-        @table[:name] || ""
-      end
+      # handle GITHUB_REPOSITORY-like names
+      (@table[:name] || "").split("/").last
     end
 
     def valid?

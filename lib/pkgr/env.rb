@@ -35,8 +35,9 @@ module Pkgr
 
       variables.inject({}) do |h, var|
         name, value = var.split('=', 2)
-        next if name.nil?
-        h[name.strip] = EnvValue.new(value || "").strip.unquote
+        unless name.nil?
+          h[name.strip] = EnvValue.new(value || "").strip.unquote
+        end
         h
       end
     end

@@ -2,6 +2,9 @@ name: Publish pkgr images
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - base-images
 
 jobs:
   build-and-push:

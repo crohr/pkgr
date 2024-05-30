@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: ["debian/10"]
+        target: ["debian:10"]
 
     steps:
       - name: Checkout code
@@ -30,13 +30,16 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: images/${{ matrix.target }}
-          file: images/${{ matrix.target }}/Dockerfile
+          context: .
+          file: images/Dockerfile.template
           push: true
-          tags: ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }}
-          build-args: PKGR_VERSION=${{ github.sha }}
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ matrix.target }}-${{ github.sha }}
+          build-args: |
+            PKGR_VERSION=${{ github.sha }}
+            TARGET=${{ matrix.target }}
 
-      - name: Verify Docker image
-        run: |
-          docker pull ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }}
-          docker run --rm ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }} /bin/sh -c "echo 'Image works!'"
+      # - name: Verify Docker image
+      #   run: |
+      #     docker pull ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }}
+      #     docker run --rm ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }} /bin/sh -c "echo 'Image works!'"

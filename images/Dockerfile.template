@@ -1,6 +1,7 @@
 ARG TARGET
-ARG PKGR_VERSION
 FROM barebuild/$TARGET
+ARG PKGR_VERSION
+
 WORKDIR /app
 
 RUN curl -GLs https://buildcurl.com -d recipe=pkgr -d version="$PKGR_VERSION" -d target="$TARGET" -o - | tar xzf - -C /usr/local

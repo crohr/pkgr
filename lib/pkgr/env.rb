@@ -9,8 +9,7 @@ module Pkgr
     end
 
     def initialize(variables = nil)
-      @variables = variables || []
-      @variables.compact!
+      @variables = (variables || []).map{|v| v && v.split("\n")}.flatten.select{|v| v && v.length > 0}
     end
 
     def to_s

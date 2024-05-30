@@ -29,6 +29,7 @@ They may just work.
 
 ## Supported distributions (64bits only)
 
+* Ubuntu 24.04 ("noble")
 * Ubuntu 22.04 ("jammy")
 * Ubuntu 20.04 ("focal")
 * Ubuntu 18.04 ("bionic")

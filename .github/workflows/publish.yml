@@ -46,6 +46,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/${{ matrix.target }}-${{ github.sha }}
+            ghcr.io/${{ github.repository }}/${{ matrix.target }}-${{ github.ref_name }}
           build-args: |
             PKGR_VERSION=${{ github.sha }}
             TARGET=${{ matrix.target }}

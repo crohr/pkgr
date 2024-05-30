@@ -30,7 +30,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ${{ matrix.target }}
+          context: images/${{ matrix.target }}
           file: ./Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/${{ matrix.target }}:${{ github.sha }}
